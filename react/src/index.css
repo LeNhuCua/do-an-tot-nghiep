@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer components {
+    .cs-text-error {
+        @apply text-red-500 flex items-center gap-1 before:content-['_⚠'] before:text-[0.7rem] before:text-red-500;
+    }
+
+    .cs-container {
+        @apply px-2 md:px-2 lg:px-6;
+    }
+
+    .cs-hover {
+        @apply hover:text-yellow-500 transition-all duration-500 cursor-pointer;
+    }
+
+    .cs-menuItem {
+        @apply text-sm uppercase font-bold w-full h-full hover:text-white transition-all duration-300 after:hidden after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-yellow-300 after:top-0 after:left-0 after:-z-10 relative rounded-full p-2;
+    }
+    .cs-heading-primary {
+        @apply text-2xl uppercase font-bold hover:cs-hover relative before:content-['-'];
+    }
+    .animation {
+        animation: left-to-right ease-in 0.1s;
+    }
+
+    .top-bottom {
+        animation: top-bottom ease-in-out 0.5s;
+    }
+
+    .animate-aa {
+        animation: animate-aa ease-in-out 0.5s;
+    }
+
+}
+
+@layer utilities {
+    .sub-group:hover>.sub-group-content {
+        transform: translateX(0.5rem);
+    }
+
+    .is-sticky {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 49;
+        box-shadow: 0 2px 24px 0 rgb(0 0 0 / 15%);
+        background-color: #ffffff !important;
+        animation: 500ms ease-in-out fadeInDown;
+
+    }
+
+    .item-menu:hover::after {
+        display: block;
+        animation: animation ease-in 0.3s;
+    }
+
+    .item-footer:hover::before {
+        animation: before ease-in 0.3s;
+        
+        width: 1.75rem;
+    }
+
+ 
+}
+
+@keyframes before {
+    from {
+        width: 0rem;
+    }
+
+    to {
+        width: 1.75rem;
+    }
+}
+
+@keyframes animate-aa {
+    from {
+        right: -1000px;
+    }
+
+    to {
+        right: 0;
+    }
+}
+
+
+@keyframes top-bottom {
+    from {
+        top: 20px;
+    }
+
+    to {
+        top: 48px;
+    }
+}
+
+@keyframes animation {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes left-to-right {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+body {
+    font-family: (--font-family);
+}  

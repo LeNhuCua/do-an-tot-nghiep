@@ -1,19 +1,32 @@
-import React  from "react";
-
+import React, { useEffect } from "react";
 
 import { BiMap } from "react-icons/bi";
-import { Link } from "react-router-dom";
+import { Link, useActionData } from "react-router-dom";
 
 import { useStateContext } from "../../../context/ContextProvider";
-
+import { AiFillEdit, AiOutlineMail } from "react-icons/ai";
+import { API_IMAGES } from "../../../API";
+import avatar from "../../../assets/images/avatars/avatar.png";
 const Profile = () => {
-  const {  user } = useStateContext();
+  const { user, setUser } = useStateContext();
+
+  useEffect(() => {
+    if (user.length === 0) {
+      fetchUserLogin();
+    }
+  }, []);
+
+  const fetchUserLogin = async () => {
+    axiosClient.get("/user").then((res) => {
+      setUser(res.data.user);
+    });
+  };
 
   return (
     <div className="bg-gradient-to-r from-cyan-500 to-blue-500  xl:p-9">
       <div className="p-8 bg-white shadow mt-24">
-        <div className="grid grid-cols-1 md:grid-cols-3">
-          <div className="grid grid-cols-3 text-center order-last md:order-first mt-20 md:mt-0">
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {/* <div className="grid grid-cols-3 text-center order-last md:order-first mt-20 md:mt-0">
             <div>
               <p className="font-bold text-gray-700 text-xl">22</p>
               <p className="text-gray-400">Friends</p>
@@ -26,27 +39,33 @@ const Profile = () => {
               <p className="font-bold text-gray-700 text-xl">89</p>
               <p className="text-gray-400">Comments</p>
             </div>
-          </div>
+          </div> */}
           <div className="relative">
             <div className="w-48 h-48 bg-indigo-100 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-24 flex items-center justify-center text-indigo-500">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-24 w-24"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                  clipRule="evenodd"
+              {user && user.avatar ? (
+                <img
+                  className="h-full w-full rounded-full object-cover"
+                  src={`${API_IMAGES}/${user.avatar}`}
+                  alt=""
+                  srcSet=""
                 />
-              </svg>
+              ) : (
+                <img
+                  className="h-full w-full rounded-full object-cover"
+                  src={`${avatar}`}
+                  alt=""
+                  srcSet=""
+                />
+              )}
             </div>
           </div>
 
           <div className="space-x-8 flex justify-center mt-32 md:mt-0 ">
-            <Link to="/quantri/thongtincanhan/chinhsua" className="text-white py-2 px-4 uppercase rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
-              Chỉnh sửa thông tin
+            <Link
+              to="/quantri/thongtincanhan/chinhsua"
+              className="text-white py-2 px-4 uppercase no-underline rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+            >
+              <AiFillEdit className="inline" /> Chỉnh sửa thông tin
             </Link>
           </div>
         </div>
@@ -54,31 +73,39 @@ const Profile = () => {
         <div className="mt-20 text-center border-b pb-12">
           <h1 className="text-4xl font-medium text-gray-700">
             {user ? user.fullName : ""}
-            <span className="font-light text-gray-500">27</span>
+            <span className="font-light text-gray-500">
+              {" "}
+              {user && user.role ? user.role.name : ""}
+            </span>
           </h1>
-          <div className="text-sm flex justify-center items-center leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase">
-            <BiMap className="mr-2 text-lg text-blueGray-400" />
+          <div className="text-sm flex justify-center items-center leading-normal mt-0 mb-2 text-blueGray-400 font-bold ">
+            <AiOutlineMail className="mr-2 text-lg text-blueGray-400" />
 
-            <p className="font-light text-gray-600 mt-3">Bucharest, Romania</p>
+            <p className="font-light text-gray-600 mt-3">
+              {user ? user.email : ""}
+            </p>
           </div>
-   
 
           <p className="mt-8 text-gray-500">
-            Solution Manager - Creative Tim Officer
+            <span className="font-bold">Điện thoại: </span>
+            {user.phoneNumber
+              ? user.phoneNumber
+              : "Chưa cập nhật số điện thoại"}
           </p>
-          <p className="mt-2 text-gray-500">University of Computer Science</p>
-        </div>
+          <p className="mt-8 text-gray-500">
+            <span className="font-bold">Ngày sinh: </span>
 
-        <div className="mt-12 flex flex-col justify-center">
-          <p className="text-gray-600 text-center font-light lg:px-16">
-            An artist of considerable range, Ryan — the name taken by
-            Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and
-            records all of his own music, giving it a warm, intimate feel with a
-            solid groove structure. An artist of considerable range.
+            {user.birthday ? user.birthday : "Chưa cập nhật ngày sinh"}
           </p>
-          <button className="text-indigo-500 py-2 px-4  font-medium mt-4">
-            Show more
-          </button>
+          <p className="mt-8 text-gray-500">
+            <span className="font-bold">Giới tính : </span>
+
+            {user.gender
+              ? user.gender === 1
+                ? "Nam"
+                : "Nữ"
+              : "Chưa cập nhật giới tính"}
+          </p>
         </div>
       </div>
     </div>

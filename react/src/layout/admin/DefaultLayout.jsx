@@ -1,16 +1,15 @@
-import React, { useEffect } from 'react'
-import { AppSidebar, AppFooter, AppHeader, AppContent } from './index'
-import { useStateContext } from '../../context/ContextProvider';
-import { Navigate, useNavigate } from 'react-router-dom';
-import axiosClient from '../../axios-client';
-import Loading from '../../components/Loading';
-import  UseTitle  from '../../hook/UseTitle';
-import ScrollButton from '../../components/scrollbutton/ScrollButton';
-
+import React, { useEffect } from "react";
+import { AppSidebar, AppFooter, AppHeader, AppContent } from "./index";
+import { useStateContext } from "../../context/ContextProvider";
+import { Navigate, useNavigate } from "react-router-dom";
+import axiosClient from "../../axios-client";
+import Loading from "../../components/Loading";
+import UseTitle from "../../hook/UseTitle";
+import ScrollButton from "../../components/scrollbutton/ScrollButton";
 
 const DefaultLayout = () => {
   UseTitle("Quản trị");
-  const { setUser, token   } = useStateContext();
+  const { setUser, token } = useStateContext();
   if (!token) {
     return <Navigate to="/quantri/dangnhap" />;
   }
@@ -19,8 +18,6 @@ const DefaultLayout = () => {
       setUser(res.data.user);
     });
   }, []);
-
-
 
   return (
     <div>
@@ -32,9 +29,9 @@ const DefaultLayout = () => {
         </div>
         <AppFooter />
       </div>
-      <ScrollButton/>
+      <ScrollButton />
     </div>
-  )
-}
+  );
+};
 
-export default DefaultLayout
+export default DefaultLayout;

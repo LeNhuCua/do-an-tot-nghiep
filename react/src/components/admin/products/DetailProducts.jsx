@@ -9,9 +9,12 @@ import { API_IMAGES } from "../../../API";
 
 const DetailProducts = (props) => {
   const { detailFind, visible, setVisible } = props;
+  console.log(detailFind);
   const renderHeader = () => {
     return <span className="ql-formats">Thông tin</span>;
   };
+
+  const header = renderHeader();
   const renderImages = detailFind.product_image.map((image) => (
     <Image
       key={image.productImageId}
@@ -21,8 +24,24 @@ const DetailProducts = (props) => {
       preview
     />
   ));
-
-  const header = renderHeader();
+  const renderSizes = detailFind.product_size.map((size) => (
+    // <Image
+    //   key={image.productImageId}
+    //   src={`http://localhost:8000/product/image/${image.image}`}
+    //   alt="Image"
+    //   width="250"
+    //   preview
+    // />
+    <div>
+      <Divider align="left">
+        <div className="inline-flex align-items-center">
+          <i className="pi pi-info-circle mr-2"></i>
+          <b>Size: {size.size ? size.size[0].sizeValue : "2424324234"}</b>
+        </div>
+      </Divider>
+      <p className="pl-16">Giá: {size.price}</p>
+    </div>
+  ));
   return (
     <div className="card flex justify-content-center">
       <Dialog
@@ -169,6 +188,11 @@ const DetailProducts = (props) => {
             <TabPanel header="Ảnh liên quan" rightIcon="pi pi-images ml-2">
               <div className="grid grid-cols-2 xl:grid-cols-3">
                 {renderImages}
+              </div>
+            </TabPanel>
+            <TabPanel header="Kích thước" rightIcon="pi pi-images ml-2">
+              <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
+                {renderSizes}
               </div>
             </TabPanel>
           </TabView>

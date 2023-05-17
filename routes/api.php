@@ -6,10 +6,14 @@ use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\ProductTypesController;
+use App\Http\Controllers\Admin\SizeController;
+use App\Http\Controllers\Admin\SlideController;
 use App\Http\Controllers\Admin\StatisticalController;
 use App\Http\Controllers\Admin\SubCategoriesController;
 use App\Http\Controllers\Admin\TypeCategoriesController;
 use App\Http\Controllers\Admin\UnitsController;
+use App\Http\Controllers\Customer\CartsController;
+use App\Http\Controllers\Customer\ProductsController as CustomerProductsController;
 use App\Http\Middleware\CheckAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +87,18 @@ Route::group(['prefix' => 'units'], function () {
 });
 
 
+//kích thước
+Route::group(['prefix' => 'sizes'], function () {
+    Route::resource('/', SizeController::class);
+    Route::post('/importExcel', [SizeController::class, 'importExcel']);
+    Route::delete('/deleteAll', [SizeController::class, 'deleteAll']);
+    Route::get('/{id}', [SizeController::class, 'show']);
+    Route::post('/{id}', [SizeController::class, 'update']);
+    Route::delete('/{productImage}', [SizeController::class, 'deleteImages']);
+});
+
+
+
 //sản phẩm
 Route::group(['prefix' => 'products'], function () {
     Route::resource('/', ProductsController::class);
@@ -92,6 +108,19 @@ Route::group(['prefix' => 'products'], function () {
     Route::post('/{id}', [ProductsController::class, 'update']);
     Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
 });
+
+
+
+//slide
+Route::group(['prefix' => 'slides'], function () {
+    Route::resource('/', SlideController::class);
+    Route::post('/importExcel', [SlideController::class, 'importExcel']);
+    Route::delete('/deleteAll', [SlideController::class, 'deleteAll']);
+    Route::get('/{id}', [SlideController::class, 'show']);
+    Route::post('/{id}', [SlideController::class, 'update']);
+    Route::delete('/{productImage}', [SlideController::class, 'deleteImages']);
+});
+
 
 
 //hoá đơn
@@ -107,7 +136,7 @@ Route::group(['prefix' => 'invoices'], function () {
 
 
 
-//hoá đơn
+//thống kê
 Route::group(['prefix' => 'statistical'], function () {
 
     Route::get('/sales-data', [StatisticalController::class, 'getSalesDataByDay']);
@@ -129,6 +158,44 @@ Route::group(['prefix' => 'users'], function () {
 
 
 
+//KHÁCH HÀNG
+
+//sản phẩm khách hàng
+Route::group(['prefix' => 'cus-products'], function () {
+
+    Route::get('/newProducts', [CustomerProductsController::class, 'newProducts']);
+    Route::get('/hotProducts', [CustomerProductsController::class, 'hotProducts']);
+    Route::get('/showDetail', [CustomerProductsController::class, 'showDetail']);
+    Route::get('/showTypeCategories', [CustomerProductsController::class, 'showTypeCategories']);
+    Route::get('/showCategories', [CustomerProductsController::class, 'showCategories']);
+    
+    // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
+});
+
+
+//giỏ hàng// 
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::group(['prefix' => 'cart'], function () {
+
+        Route::resource('/', CartsController::class);
+        Route::put('/{id}/{scope}', [CartsController::class, 'update']);
+        Route::delete('/{id}', [CartsController::class, 'destroy']);
+        Route::get('/totalCart', [CartsController::class, 'totalCart']);
+
+
+        // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
+        // Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
+        // Route::get('/{id}', [ProductsController::class, 'show']);
+        // Route::post('/{id}', [ProductsController::class, 'update']);
+        // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+
+        // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
+    });
+});
+
+
+
 
 
 // Route::resource('/adminUsers', UsersController::class);
@@ -139,9 +206,14 @@ Route::group(['prefix' => 'users'], function () {
 // });
 
 Route::post('/signup', [UsersController::class, 'signup']);
+
+
+
 Route::post('/login', [AuthController::class, 'login']);
-// Route::post('/logout', [AuthController::class, 'logout']);
-// Route::get('/user', [AuthController::class, 'logged_user']);
+
+
+
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'logged_user']);

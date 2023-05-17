@@ -16,9 +16,11 @@ class Customer extends Model
      *
      * @var array<int, string>
      */
+    protected $table = "customers";
 
 
     protected $fillable = [
+        'customerId',
         'account',
         'password',
         'fullName',
@@ -29,6 +31,8 @@ class Customer extends Model
         'gender',
     ];
     protected $primaryKey = 'customerId';
+    public $incrementing = false;
+
     /**
      * The attributes that should be hidden for serialization.
      *

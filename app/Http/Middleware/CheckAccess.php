@@ -17,7 +17,7 @@ class CheckAccess
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = auth() -> user();
+        $user = auth('sanctum') -> user();
         dd($user);
         if($user->userId === 1){
             return $next($request);

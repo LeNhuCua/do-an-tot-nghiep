@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
+use App\Models\Product;
 use App\Models\ProductType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -74,26 +75,51 @@ class InvoicesController extends Controller
             $invoice->totalAmount  = $request->totalAmount;
             $invoice->userId  = $request->userId;
             $invoice->save();
-
-            $aa = gettype($request->invoices);
             $invoiceDetails = collect();
-            if ($request->invoices) {
+            // if ($request->invoices) {
 
-                foreach ($request->invoices as $row) {
-                    foreach ($row as $value) {
-                        $invoiceItemObject = json_decode($value);
-                        $invoiceDetail = new InvoiceDetail;
-                        $invoiceDetail->number = $invoiceItemObject->amount;
-                        $invoiceDetail->productId = $invoiceItemObject->productId;
-                        $invoiceDetail->price = $invoiceItemObject->price;
-                        $invoiceDetail->invoiceId = $invoice->invoiceId;
+            //     foreach ($request->invoices as $row) {
+            //         foreach ($row as $value) {
+            //             $invoiceItemObject = json_decode($value);
 
-                        $invoiceDetail->save();
-                        $invoiceDetails->push($invoiceItemObject);
-                    }
+            //             $product = Product::find($invoiceItemObject->productId);
+            //             $product->number -= $invoiceItemObject->amount;
+            //             $product->numberBuy += $invoiceItemObject->amount;
+            //             $product->save();
+
+            //             $invoiceDetail = new InvoiceDetail;
+            //             $invoiceDetail->number = $invoiceItemObject->amount;
+            //             $invoiceDetail->productId = $invoiceItemObject->productId;
+            //             $invoiceDetail->price = $invoiceItemObject->price;
+            //             $invoiceDetail->invoiceId = $invoice->invoiceId;
+
+            //             $invoiceDetail->save();
+            //             $invoiceDetails->push($invoiceItemObject);
+            //         }
+            //     }
+            // }
+            if ($request->bills) {
+
+                foreach ($request->bills as $value) {
+
+                    $invoiceItemObject = json_decode($value);
+
+                    $product = Product::find($invoiceItemObject->productId);
+                    $product->number -= $invoiceItemObject->amount;
+                    $product->numberBuy += $invoiceItemObject->amount;
+                    $product->save();
+
+                    $invoiceDetail = new InvoiceDetail;
+                    $invoiceDetail->number = $invoiceItemObject->amount;
+                    $invoiceDetail->productId = $invoiceItemObject->productId;
+                    $invoiceDetail->price = $invoiceItemObject->price;
+                    $invoiceDetail->invoiceId = $invoice->invoiceId;
+                    $invoiceDetail->sizeId = $invoiceItemObject->sizeId;
+
+                    $invoiceDetail->save();
+                    $invoiceDetails->push($invoiceItemObject);
                 }
             }
-
 
 
             return response()->json([
@@ -101,7 +127,6 @@ class InvoicesController extends Controller
                 'message' => 'Product Created Successfully!!',
                 'product' => $invoice,
                 'invoiceDetails' => $invoiceDetails,
-                '$aa' =>  $aa
 
             ]);
         }

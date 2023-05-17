@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -50,22 +51,24 @@ class UsersController extends Controller
                 'message' => 'Kiểm tra lại thông tin đăng kí',
             ]);
         } else {
-            $lastEmployee = User::orderBy('userId', 'desc')->first();
+            $lastUserId = User::selectRaw('SUBSTRING(userId, -5) AS userId')
+                ->orderBy('userId', 'desc')
+                ->value('userId');
+            if ($lastUserId) {
+                $newUserIdNumber = substr($lastUserId, -0) + 1;
+            }
 
-            $newMaNV = null;
-            if ($lastEmployee == null) {
-                $newMaNV = 'NV00001';
+            if ($lastUserId == null) {
+                $newUserId =  'ND00001';
             } else {
-                $newMaNVNumber = substr($lastEmployee->userId, 2) + 1;
-                $newMaNV = 'NV' . str_pad($newMaNVNumber, 5, '0', STR_PAD_LEFT);
+                $newUserId =  'ND' . str_pad($newUserIdNumber, 5, '0', STR_PAD_LEFT);
             }
             $user = User::create([
-                'userId' =>  $newMaNV,
+                'userId' =>  $newUserId,
                 'fullName' => $request->fullName,
                 'email' => $request->email,
                 'account' => $request->account,
                 'password' => Hash::make($request->password),
-                'isManager' => $request->isManager,
                 'role_id' => $request->role_id,
             ]);
             // $token = $user->createToken('main')->plainTextToken;
@@ -82,6 +85,62 @@ class UsersController extends Controller
         }
     }
 
+
+
+    public function signupCus(Request $request)
+    {
+        $messages = [
+            'required' => 'Trường :attribute phải nhập',
+            'max' => 'Trường :attribute không được vượt quá :max.',
+            'unique' => 'Trường :attribute đã tồn tại.',
+            'email' => 'The :attribute phải là email',
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'fullName' => 'required',
+            'email' => 'required',
+            'account' => 'required',
+            'password' => 'required|min:3',
+            'c_password' => 'required|same:password'
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'validation_error' => $validator->errors(),
+                'message' => 'Kiểm tra lại thông tin đăng kí',
+            ]);
+        } else {
+            $lastEmployee = Customer::orderBy('customerId', 'desc')->first();
+
+            $newMaNV = null;
+            if ($lastEmployee == null) {
+                $newMaNV = 'KH00001';
+            } else {
+                $newMaNVNumber = substr($lastEmployee->userId, 2) + 1;
+                $newMaNV = 'KH' . str_pad($newMaNVNumber, 5, '0', STR_PAD_LEFT);
+            }
+            $user = Customer::create([
+                'customerId' =>  $newMaNV,
+                'fullName' => $request->fullName,
+                'email' => $request->email,
+                'account' => $request->account,
+                'password' => Hash::make($request->password),
+
+            ]);
+            // $token = $user->createToken('main')->plainTextToken;
+            // return response(compact('user', 'token'));
+            if ($user) { // check if user is created
+                $token = $user->createToken('main')->plainTextToken;
+                return response(compact('user', 'token'));
+            } else { // Admin not created
+                return response()->json([
+                    'status' => 500,
+                    'message' => 'Đã có lỗi xảy ra khi đăng kí',
+                ]);
+            }
+        }
+    }
 
 
 

@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('invoice_details', function (Blueprint $table) {
             
             $table->integer('number');
-            $table->float('price', 12, 6);
+            $table->float('price', 20, 6);
 
             $table->string('invoiceId', 20);
             $table->foreign('invoiceId')->references('invoiceId')->on('invoices')->onUpdate('cascade')->onDelete('cascade');;

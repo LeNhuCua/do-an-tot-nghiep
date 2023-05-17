@@ -5,6 +5,7 @@ const StateContext = createContext({
   loading: false,
   setLoading: () => {},
   token: null,
+  tokenCustomer: null,
   notification: null,
   tostStatus: null,
   setTostStatus : () => {},
@@ -17,6 +18,8 @@ export const ContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
   const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
+  const [tokenCustomer, _setTokenCustomer] = useState(localStorage.getItem("ACCESS_TOKEN_CUSTOMER"));
+  // const [tokenCustomer, _setTokenCustomer] = useState("tui");
   const [notification, _setNotification] = useState("");
   const [tostStatus, setTostStatus] = useState(null);
 
@@ -32,12 +35,7 @@ export const ContextProvider = ({ children }) => {
     });
   };
 
-  // useEffect(() => {
 
-  //   axiosClient.get("/user").then((res) => {
-  //     setUser(res.data.user);
-  //   });
-  // }, []);
 
   const setToken = (token) => {
     _setToken(token);
@@ -47,6 +45,17 @@ export const ContextProvider = ({ children }) => {
       localStorage.removeItem("ACCESS_TOKEN");
     }
   };
+
+  const setTokenCustomer = (token) => {
+    _setTokenCustomer(token);
+    if (token) {
+      localStorage.setItem("ACCESS_TOKEN_CUSTOMER", token);
+    } else {
+      localStorage.removeItem("ACCESS_TOKEN_CUSTOMER");
+    }
+  };
+
+
 
   const setNotification = (message) => {
     _setNotification(message);
@@ -62,7 +71,9 @@ export const ContextProvider = ({ children }) => {
         user,
         setUser,
         token,
+        tokenCustomer,
         setToken,
+        setTokenCustomer,
         notification,
         setNotification,
         loading,

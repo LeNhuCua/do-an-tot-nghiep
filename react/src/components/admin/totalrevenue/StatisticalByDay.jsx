@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
+import { FilterMatchMode } from "primereact/api";
 
-import "react-datepicker/dist/react-datepicker.css";
+
 import { API, API_IMAGES } from "../../../API.js";
-import { TabView, TabPanel } from "primereact/tabview";
+
 import { Chart } from "primereact/chart";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { InputText } from "primereact/inputtext";
 
 const StatisticalByDay = () => {
   const formatDate = (date) => {
@@ -86,6 +88,39 @@ const StatisticalByDay = () => {
     );
   };
 
+  const [filters, setFilters] = useState({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    invoiceId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    fullName: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    phoneNumber: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    total_quantity: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    total_Amount: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  });
+
+  const onGlobalFilterChange = (e) => {
+    const value = e.target.value;
+
+    let _filters = { ...filters };
+
+    _filters["global"].value = value;
+
+    setFilters(_filters);
+  };
+  const renderHeader = useCallback(() => {
+    return (
+      <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+        <span className="p-input-icon-left">
+          <i className="pi pi-search" />
+          <InputText
+            type="search"
+            onChange={onGlobalFilterChange}
+            placeholder="Tìm kiếm..."
+          />
+        </span>
+      </div>
+    );
+  }, [onGlobalFilterChange]);
+  const header = useMemo(() => renderHeader(), [renderHeader]);
   const totalTemplate = (total) => {
     return (
       <p>
@@ -97,13 +132,9 @@ const StatisticalByDay = () => {
       </p>
     );
   };
-  const [month, setmonth] = useState(null);
-  console.log(month);
+
   return (
     <div>
-          <div className="card flex justify-content-center">
-            <Calendar value={month} onChange={(e) => setmonth(e.value)} />
-        </div>
       {!useDatePicker ? (
         <div className="flex flex-wrap gap-2">
           <div
@@ -139,7 +170,7 @@ const StatisticalByDay = () => {
               setDate(dayBeforeYesterday);
             }}
           >
-            Ngày trước nữa
+            2 ngày trước
           </div>
           <Button
             icon="pi pi-calendar"
@@ -163,11 +194,16 @@ const StatisticalByDay = () => {
             severity="secondary"
             onClick={handleUseButtons}
           />
-
         </div>
       )}
       <div className="my-3 card p-8 grid grid-cols-2">
         <div className="col-span-1">
+          <h5 className="mb-4 text-center text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white">
+            Ngày{" "}
+            <span className="text-blue-600 dark:text-blue-500">
+              {formatDate(date)}
+            </span>{" "}
+          </h5>
           <h3 className="text-lg font-medium">
             Tổng tiền bán:{" "}
             <span className="text-purple-500 font-medium">
@@ -185,7 +221,8 @@ const StatisticalByDay = () => {
             </span>
           </h3>
           <h3 className="text-lg font-medium mb-3">
-            Top 3 sản phẩm bán chạy nhất trong ngày
+            Top <span className="text-purple-500 font-medium">3</span> sản phẩm
+            bán chạy nhất trong ngày
           </h3>
 
           {bestSellProduct.length > 0 ? (
@@ -209,7 +246,7 @@ const StatisticalByDay = () => {
 
         <div className="col-span-1 flex items-center justify-end">
           <Button
-            label="Chi tiết"
+            label="Chi tiết đơn hàng bán được"
             icon="pi pi-external-link"
             onClick={() => setVisible(true)}
             className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md"
@@ -219,7 +256,7 @@ const StatisticalByDay = () => {
 
       {detailData ? (
         <Dialog
-          header="Chi tiết"
+          header={`Chi tiết đơn hàng ngày ${formatDate(date)} `}
           visible={visible}
           maximizable
           className="w-[90%] xl:w-2/3"
@@ -227,10 +264,18 @@ const StatisticalByDay = () => {
         >
           <div className="card">
             <DataTable
+              filters={filters}
+              paginator
+              scrollable
+              rows={5}
+              header={header}
               value={detailData}
               emptyMessage="Không có dữ liệu"
               sortMode="multiple"
               tableStyle={{ minWidth: "50rem" }}
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              currentPageReportTemplate="Hiển thị: {first} - {last} / {totalRecords}"
             >
               <Column field="invoiceId" header="Số hoá đơn" sortable></Column>
 

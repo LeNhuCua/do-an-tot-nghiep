@@ -19,10 +19,10 @@
     }
 
     .cs-menuItem {
-        @apply text-sm uppercase font-bold w-full h-full hover:text-white transition-all duration-300 after:hidden after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-yellow-300 after:top-0 after:left-0 after:-z-10 relative rounded-full p-2;
+        @apply text-sm uppercase no-underline text-black font-bold w-full h-full hover:text-white transition-all duration-300 after:hidden after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-yellow-300 after:top-0 after:left-0 after:-z-10 relative rounded-full p-2;
     }
     .cs-heading-primary {
-        @apply text-2xl uppercase font-bold hover:cs-hover relative before:content-['-'];
+        @apply text-xl xl:text-2xl uppercase font-bold hover:cs-hover relative before:content-['-'];
     }
     .animation {
         animation: left-to-right ease-in 0.1s;
@@ -41,6 +41,7 @@
 @layer utilities {
     .sub-group:hover>.sub-group-content {
         transform: translateX(0.5rem);
+        color: #ffffff;
     }
 
     .is-sticky {
@@ -61,12 +62,13 @@
 
     .item-footer:hover::before {
         animation: before ease-in 0.3s;
-        
         width: 1.75rem;
     }
 
  
 }
+
+
 
 @keyframes before {
     from {

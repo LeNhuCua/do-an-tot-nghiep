@@ -26,6 +26,8 @@ import { useNavigate } from "react-router-dom";
 import { DataContext } from "../../../context/DataContext";
 import UploadImages from "../../../components/admin/uploadimages/UploadImages.jsx";
 import { CascadeSelect } from "primereact/cascadeselect";
+import { MultiSelect } from "primereact/multiselect";
+import { forEach } from "lodash";
 
 export default function CreateProduct() {
   const {
@@ -42,9 +44,21 @@ export default function CreateProduct() {
   });
   const [description, setDescription] = useState("");
   const { state, dispatch } = useContext(DataContext);
-  const { typeCategories, productsType, units, categories } = state;
+  const { typeCategories, productsType, units, categories, sizes } = state;
   const [submitted, setSubmitted] = useState(false);
+
   const navigate = useNavigate();
+
+  const fetchSizes = async () => {
+    await axios.get(`${API}/api/sizes/`).then(({ data }) => {
+      dispatch({ type: "FETCH_SIZES", payload: data });
+    });
+  };
+  useEffect(() => {
+    if (sizes.length === 0) {
+      fetchSizes();
+    }
+  }, []);
 
   const fetchUnits = async () => {
     await axios.get(`${API}/api/units/`).then(({ data }) => {
@@ -89,12 +103,61 @@ export default function CreateProduct() {
   // }, []);
   const [images, setImages] = useState([]);
   const [validationError, setValidationError] = useState([]);
-  const handleImageChange = (e) => {
-    setImages(e.target.files);
-  };
 
   const [price, setPrice] = useState(null);
   const [number, setNumber] = useState(null);
+  const [selectedSizes, setSelectedSizes] = useState(null);
+
+  console.log(selectedSizes);
+  const countryTemplate = (option) => {
+    const handleInputChange = (event) => {
+      const value = event.value;
+      const updatedSizes = [...selectedSizes];
+      const index = updatedSizes.findIndex(
+        (country) => country.sizeId === option.sizeId
+      );
+      updatedSizes[index]["price"] = value;
+      setSelectedSizes(updatedSizes);
+    };
+
+    return (
+      <div className="flex gap-3 align-items-center">
+        <img
+          alt={option.sizeId}
+          src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png"
+          // className={`mr-2 flag flag-${option.code.toLowerCase()}`}
+          style={{ width: "18px" }}
+        />
+        <div>{option.sizeValue}</div>
+        {/* <input
+          type="text"
+          value={option.price || ""}
+          onChange={handleInputChange}
+        /> */}
+
+        <InputNumber
+          suffix=" VNĐ"
+          value={option.price || ""}
+          onChange={handleInputChange}
+          placeholder="Nhập giá tiền tương ứng size"
+        />
+      </div>
+    );
+  };
+
+
+
+
+  
+  const panelFooterTemplate = () => {
+    const length = selectedSizes ? selectedSizes.length : 0;
+
+    return (
+      <div className="py-2 px-3">
+        <b>{length}</b> Size được chọn.
+      </div>
+    );
+  };
   // function convertString(str) {
   //   return str.replace(/(\d+)\.(\d+) (\w+)/, "$1$3$2");
   // }
@@ -135,18 +198,24 @@ export default function CreateProduct() {
     formData.append("avatar", image);
     formData.append("description", description);
     formData.append("number", number);
-    formData.append("price", price);
+
     formData.append("weight", data.weight);
 
     for (let i = 0; i < images.length; i++) {
       formData.append(`images[${i}]`, images[i]);
     }
-
+    for (let i = 0; i < selectedSizes.length; i++) {
+      formData.append(`sizes[${i}]`, JSON.stringify(selectedSizes[i]));
+    }
+    // JSON.stringify(invoices[selectedTable][i])
     setSubmitted(true);
     await axios.post(`${API}/api/products`, formData).then((response) => {
       if (response.data.status === 400) {
         const resData = response.data.product;
         const resImages = response.data.productImages;
+        const resSizes = response.data.productSizes;
+        const resSizesValue = response.data.sizesValue;
+        console.log(resSizes);
         const createProducts = {
           productId: resData.productId,
           name: resData.name,
@@ -170,6 +239,16 @@ export default function CreateProduct() {
             name: image.productImageId,
             image: image.image,
             productId: image.productId,
+          })),
+          product_size: resSizes.map((size) => ({
+            sizeId: size.sizeId,
+            price: size.price,
+            // size: resSizesValue.map((size) => ({
+            //   sizeValue: size,
+            // })),
+            size: resSizesValue.forEach((value) => ({
+              sizeValue: value,
+            })),
           })),
         };
 
@@ -351,7 +430,7 @@ export default function CreateProduct() {
             </small>
           )}
         </CCol>
-        <CCol xl={3}>
+        {/* <CCol xl={3}>
           <Controller
             name="price"
             control={control}
@@ -388,7 +467,7 @@ export default function CreateProduct() {
               </>
             )}
           />
-        </CCol>
+        </CCol> */}
 
         <CCol xl={3}>
           <Controller
@@ -591,7 +670,19 @@ export default function CreateProduct() {
           <h6>Ảnh liên quan</h6>
           <UploadImages images={images} setImages={setImages} />
         </div>
-
+        <div className="card flex justify-content-center">
+          <MultiSelect
+            value={selectedSizes}
+            options={sizes}
+            onChange={(e) => setSelectedSizes(e.value)}
+            optionLabel="sizeValue"
+            placeholder="Chọn kích thước"
+            itemTemplate={countryTemplate}
+            panelFooterTemplate={panelFooterTemplate}
+            className="w-full md:w-20rem"
+            display="chip"
+          />
+        </div>
         <CCol xs={12}>
           <Button className="youtube p-0 w-full justify-center">
             <i className="pi pi-check"></i>

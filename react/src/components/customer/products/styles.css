@@ -1,0 +1,12 @@
+
+
+.swiper-slide {
+    display: flex;
+    flex-direction: column;
+}
+.swiper-slide .product-slide img {
+    min-width: 100%;
+    min-height: 21.5625rem;
+    max-height: 24.5625rem;
+
+} 

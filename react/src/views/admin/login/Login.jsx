@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 
 import Swal from "sweetalert2";
 
-import  UseTitle  from "../../../hook/UseTitle";
+import UseTitle from "../../../hook/UseTitle";
 import { useStateContext } from "../../../context/ContextProvider";
 
 import axiosClient from "../../../axios-client";
@@ -25,21 +25,30 @@ const Login = () => {
     return <Navigate to="/quantri" />;
   }
 
-
   const [message, setMessage] = useState([]);
   const navigate = useNavigate();
   const onSubmit = (data) => {
-    console.log(data);
     const payload = {
       account: data.account,
-      password: data.password
+      password: data.password,
     };
 
     axiosClient.post(`/login`, payload).then((res) => {
       if (res.data.status === 200) {
-        setToken(res.data.token);
-        setUser(res.data.username);
-        navigate("/quantri");
+        if (
+          res.data.user.role.name === "Admin" ||
+          res.data.user.role.name === "Manager"
+        ) {
+          setToken(res.data.token);
+          setUser(res.data.username);
+          navigate("/quantri");
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: "Bạn không có quyền truy cập vào trang này",
+          });
+          navigate("/quantri/dangnhap");
+        }
       } else if (res.data.status === 401) {
         setMessage([]);
         Swal.fire({
@@ -95,7 +104,6 @@ const Login = () => {
                     Tài khoản
                   </label>
                   <input
-  
                     type="text"
                     id="account"
                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:border-yellow-400 block w-full p-2.5 "
@@ -107,7 +115,7 @@ const Login = () => {
                   />
                   {errors?.account?.type === "required" && (
                     <small className="text-danger before:content-['_⚠']">
-                        Vui lòng nhập tài khoản
+                      Vui lòng nhập tài khoản
                     </small>
                   )}
                 </div>
@@ -119,7 +127,6 @@ const Login = () => {
                     Mật khẩu
                   </label>
                   <input
-              
                     type="password"
                     autoComplete="on"
                     id="password"
@@ -129,9 +136,9 @@ const Login = () => {
                       required: true,
                     })}
                   />
-                      {errors?.password?.type === "required" && (
+                  {errors?.password?.type === "required" && (
                     <small className="text-danger before:content-['_⚠']">
-                        Vui lòng nhập mật khẩu
+                      Vui lòng nhập mật khẩu
                     </small>
                   )}
                 </div>

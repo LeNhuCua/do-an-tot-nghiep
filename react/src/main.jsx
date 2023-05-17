@@ -24,6 +24,9 @@ import "sweetalert2/src/sweetalert2.scss";
 import { StyledEngineProvider } from "@mui/material/styles";
 
 import DataProvider from "./context/DataContext";
+import SidebarProvider from "./context/customer/SideBarContext";
+import MenusProvider from "./context/customer/MenuContext";
+import SlideProvider from "./context/customer/SlideContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -31,7 +34,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Provider store={store}>
         <StyledEngineProvider injectFirst>
           <DataProvider>
-            <App />
+            <MenusProvider>
+              <SidebarProvider>
+                <SlideProvider>
+                  <App />
+                </SlideProvider>
+              </SidebarProvider>
+            </MenusProvider>
           </DataProvider>
         </StyledEngineProvider>
       </Provider>

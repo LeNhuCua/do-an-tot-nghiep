@@ -52,7 +52,7 @@ const SearchProducts = (props) => {
   const handleBlur = () => {
     setFocused(false);
   };
-
+  console.log(products);
   return (
     <div>
       <div className="p-inputgroup relative">

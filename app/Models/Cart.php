@@ -17,11 +17,29 @@ class Cart extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'cartId',
         'quantity',
-        'customerId',
+        'userId',
         'productId',
+        'sizeId',
+        'price'
     ];
+    public $incrementing = false;
     protected $primaryKey = 'cartId';
+    protected $with = ['product', 'size', 'productSize'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'productId', 'productId');
+    }
+    public function size()
+    {
+        return $this->belongsTo(Size::class, 'sizeId', 'sizeId');
+    }
+    public function productSize()
+    {
+        return $this->hasMany(ProductSize::class, 'productSizeId', 'productSizeId');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

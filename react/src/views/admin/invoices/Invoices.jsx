@@ -42,9 +42,7 @@ export default function Invoices() {
   const [visible, setVisible] = useState(false);
   const { products } = state;
   const [loading, setLoading] = useState(true);
-  const handleCustomerInfoChange = (name, value) => {
-    setFormInput((prevState) => ({ ...prevState, [name]: value }));
-  };
+
   useEffect(() => {
     if (products.length === 0) {
       fetchProducts();
@@ -206,22 +204,67 @@ export default function Invoices() {
       }
     }
   };
+  const [selectedSizes, setSelectedSizes] = useState({});
+  let arrSelectedSizes = Object.entries(selectedSizes);
 
+  const handleSizeSelection = (productId, size) => {
+    setSelectedSizes((prevSelectedSizes) => ({
+      ...prevSelectedSizes,
+      [productId]: size,
+    }));
+  };
   const [totalAmount, setTotalAmount] = useState(0);
   const { user } = useStateContext();
 
-  function sumArray(arr) {
-    if (!Array.isArray(arr)) {
-      return 0;
+  let result = {};
+
+  for (let itemA of invoices[selectedTable]) {
+    for (let itemB of arrSelectedSizes) {
+      if (itemA.productId === itemB[1].productId) {
+        let total = itemA.amount * itemB[1].price;
+        if (!result[itemA.productId]) {
+          result[itemA.productId] = {
+            productId: itemA.productId,
+            name: itemA.name,
+            // price: itemA.price,
+            // description: itemA.description,
+            total: total,
+            amount: itemA.amount,
+            price: itemB[1].price,
+            size: itemB[1].size[0].sizeValue,
+            sizeId: itemB[1].size[0].sizeId,
+          };
+        } else {
+          result[itemA.productId].total += total;
+        }
+      }
     }
-    return arr.reduce((sum, value) => {
-      return sum + Number(value.price) * value.amount;
-    }, 0);
   }
 
+  let total = 0;
+
+  let bill = Object.entries(result).map(([key, value]) => {
+    total += value.total;
+    return {
+      ...value,
+      productId: key,
+    };
+  });
+  console.log(bill);
+
+  // for (let item of bill) {
+  //   // kiểm tra prop là thuộc tính của obj chứ không phải của prototype
+  //   total += item.price * item.amount;
+  // }
+
+  localStorage.setItem("total", total);
+
+  // localStorage.setItem("total", total);
+  console.log(total); // Output: 9600000
+
   useEffect(() => {
-    setTotalAmount(sumArray(invoices[selectedTable]));
-  }, [invoices[selectedTable]]); // Add the invoices state as a dependency
+    setTotalAmount(localStorage.getItem("total"));
+  }, [invoices[selectedTable], total]); // Add the invoices state as a dependency
   const [phone, setPhone] = useState(null);
 
   const [formInput, setFormInput] = useState({
@@ -239,11 +282,14 @@ export default function Invoices() {
     formData.append("fullName", tableData[selectedTable]?.name);
     formData.append("phoneNumber", tableData[selectedTable]?.phone);
     formData.append("userId", user.userId);
-    for (let i = 0; i < invoices[selectedTable].length; i++) {
-      formData.append(
-        `invoices[${selectedTable}][${i}]`,
-        JSON.stringify(invoices[selectedTable][i])
-      );
+    // for (let i = 0; i < invoices[selectedTable].length; i++) {
+    //   formData.append(
+    //     `invoices[${selectedTable}][${i}]`,
+    //     JSON.stringify(invoices[selectedTable][i])
+    //   );
+    // }
+    for (let i = 0; i < bill.length; i++) {
+      formData.append(`bills[${i}]`, JSON.stringify(bill[i]));
     }
     const isConfirm = await Swal.fire({
       title: `Thanh toán hoá đơn này ?`,
@@ -323,7 +369,6 @@ export default function Invoices() {
     setTableData(newTableData);
   };
 
-  console.log(invoices);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-2">
       <ScrollPanel className="col-span-3 h-[100vh]">
@@ -334,12 +379,15 @@ export default function Invoices() {
           <div className="grid grid-cols-3 lg:grid-cols-4  gap-3">
             {[...Array(tableCount)].map((_, i) => (
               <button
+                key={i}
                 className={`border p-2   ${
                   i + 1 === selectedTable && invoices[i + 1].length > 0
                     ? "bg-blue-500 text-white font-bold"
                     : i + 1 === selectedTable
                     ? "bg-blue-500 text-white font-bold"
-                    : invoices[i + 1].length > 0 ? "bg-green-300" :  ""
+                    : invoices[i + 1].length > 0
+                    ? "bg-green-300"
+                    : ""
                 }  `}
                 onClick={() => setSelectedTable(i + 1)}
               >
@@ -374,10 +422,15 @@ export default function Invoices() {
                   {invoices[selectedTable].length > 0 ? (
                     invoices[selectedTable].map((c) => (
                       <Bill
+                        key={c.productId}
                         c={c}
                         removeFromInvoice={removeFromInvoice}
                         increaseAmount={increaseAmount}
                         reduceAmount={reduceAmount}
+                        selectedSize1={selectedSizes[c.productId]}
+                        handleSizeSelection={(size) =>
+                          handleSizeSelection(c.productId, size)
+                        }
                       />
                     ))
                   ) : (
@@ -385,9 +438,9 @@ export default function Invoices() {
                       <ImFileEmpty /> Hoá đơn trống
                     </h4>
                   )}
-                  {totalAmount ? (
-                    <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                      <div class="flex justify-between text-base font-medium text-gray-900">
+                  {totalAmount != 0 ? (
+                    <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                      <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Tổng tiền</p>
 
                         {totalAmount ? (
@@ -402,7 +455,7 @@ export default function Invoices() {
                           ""
                         )}
                       </div>
-                      <div class="flex items-center justify-between text-base font-medium text-gray-900">
+                      <div className="flex items-center justify-between text-base font-medium text-gray-900">
                         <p>Tiền nhận</p>
                         <Controller
                           name="price"
@@ -449,7 +502,7 @@ export default function Invoices() {
                       /> */}
                       </div>
                       {totalAmount && tableData[selectedTable]?.inputValue ? (
-                        <div class="flex justify-between text-base font-medium text-gray-900">
+                        <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Tiền thừa</p>
 
                           <p>
@@ -466,7 +519,7 @@ export default function Invoices() {
                         ""
                       )}
 
-                      <p class="mt-0.5 text-sm text-gray-500">
+                      <p className="mt-0.5 text-sm text-gray-500">
                         Nhập tên và số điện thoại khách hàng bên dưới
                       </p>
                     </div>
@@ -500,12 +553,14 @@ export default function Invoices() {
                 </CCol>
                 <CCol xl={6}>
                   <span className="p-float-label ">
-                    <InputNumber
+                    <InputText
+                      keyfilter="int"
+                      type="text"
                       className="w-full"
                       placeholder="Vd: 0999999999"
                       value={tableData[selectedTable]?.phone || ""}
-                      onValueChange={(e) => handlePhoneChange(e, selectedTable)}
-                      useGrouping={false}
+                      onChange={(e) => handlePhoneChange(e, selectedTable)}
+                      // useGrouping={false}
                     />
                     <label htmlFor="phone">Điện thoại</label>
                   </span>
@@ -575,9 +630,14 @@ export default function Invoices() {
                   invoices[selectedTable].map((c) => (
                     <Bill
                       c={c}
+                      key={c.productId}
                       removeFromInvoice={removeFromInvoice}
                       increaseAmount={increaseAmount}
                       reduceAmount={reduceAmount}
+                      selectedSize1={selectedSizes[c.productId]}
+                      handleSizeSelection={(size) =>
+                        handleSizeSelection(c.productId, size)
+                      }
                     />
                   ))
                 ) : (
@@ -586,8 +646,8 @@ export default function Invoices() {
                   </h4>
                 )}
                 {totalAmount ? (
-                  <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                    <div class="flex justify-between text-base font-medium text-gray-900">
+                  <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                    <div className="flex justify-between text-base font-medium text-gray-900">
                       <p>Tổng tiền</p>
 
                       {totalAmount ? (
@@ -602,7 +662,7 @@ export default function Invoices() {
                         ""
                       )}
                     </div>
-                    <div class="flex items-center justify-between text-base font-medium text-gray-900">
+                    <div className="flex items-center justify-between text-base font-medium text-gray-900">
                       <p>Tiền nhận</p>
                       <Controller
                         name="price"
@@ -649,7 +709,7 @@ export default function Invoices() {
                       /> */}
                     </div>
                     {totalAmount && tableData[selectedTable]?.inputValue ? (
-                      <div class="flex justify-between text-base font-medium text-gray-900">
+                      <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Tiền thừa</p>
 
                         <p>
@@ -666,7 +726,7 @@ export default function Invoices() {
                       ""
                     )}
 
-                    <p class="mt-0.5 text-sm text-gray-500">
+                    <p className="mt-0.5 text-sm text-gray-500">
                       Nhập tên và số điện thoại khách hàng bên dưới
                     </p>
                   </div>
@@ -757,7 +817,9 @@ export default function Invoices() {
           <div style={{ display: "none" }}>
             <ComponentToPrint
               ref={componentRef}
-              invoices={invoices[selectedTable]}
+              bill={bill}
+              // invoices={invoices[selectedTable]}
+              // selectedSizes={arrSelectedSizes}
               totalAmount={totalAmount}
               name={tableData[selectedTable]?.name}
               phone={tableData[selectedTable]?.phone}

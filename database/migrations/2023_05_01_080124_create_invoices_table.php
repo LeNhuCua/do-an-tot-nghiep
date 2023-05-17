@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('invoiceId', 20)->primary();
             $table->string('fullName');
             $table->string('phoneNumber');
-            $table->float('totalAmount', 20, 8);
+            $table->float('totalAmount', 20, 6);
 
             $table->string('userId', 20);
             $table->foreign('userId')->references('userId')->on('users')->onUpdate('cascade')->onDelete('cascade');;

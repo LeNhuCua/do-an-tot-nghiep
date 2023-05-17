@@ -6,7 +6,10 @@ const initialState = {
   adminUsers: [],
   productsType: [],
   units: [],
+  sizes: [],
   products: [],
+  slides: [],
+  hotProducts: []
 };
 
 export const DataContext = createContext(initialState);
@@ -47,21 +50,6 @@ const reducer = (state, action) => {
             }
           : { ...productType }
       );
-
-      // const updatedProductsType11 = state.typeCategories.map((productType) => {
-      //   if (productType.categoryId === action.payload.categoryId) {
-      //     return {
-      //       ...productType,
-      //       ...action.payload,
-      //       category: {
-      //         ...productType.category,
-      //         ...action.payload.category,
-      //       },
-      //     };
-      //   }
-
-      //   return productType;
-      // });
 
       return {
         ...state,
@@ -210,6 +198,15 @@ const reducer = (state, action) => {
         products: updatedProductsOfUnit,
       };
 
+    //size
+    case "FETCH_SIZES":
+      return {
+        ...state,
+        sizes: action.payload,
+      };
+
+
+
     //products
     case "FETCH_PRODUCTS":
       return {
@@ -251,6 +248,42 @@ const reducer = (state, action) => {
         products: remainingProduct,
       };
 
+
+
+    //slides
+    case "FETCH_SLIDES":
+      return {
+        ...state,
+        slides: action.payload,
+      };
+
+    case "SET_SLIDES":
+      return {
+        ...state,
+        slides: action.payload,
+      };
+
+    case "ADD_SLIDE":
+      return {
+        ...state,
+        slides: [action.payload, ...state.slides],
+      };
+    case "UPDATE_SLIDE":
+      const updatedSlide = state.slides.map((slide) =>
+        slide.slideId === action.payload.slideId
+          ? {
+              ...slide,
+              ...action.payload,
+            }
+          : slide
+      );
+      return {
+        ...state,
+        slides: updatedSlide,
+      };
+
+
+
     case "FETCH_ADMINUSER":
       return {
         ...state,
@@ -261,9 +294,27 @@ const reducer = (state, action) => {
         ...state,
         adminUsers: action.payload,
       };
+
+
+
+      // khách hàng
+      case "FETCH_HOTPRODUCTS":
+        return {
+          ...state,
+          hotProducts: action.payload,
+        };
+
+
     default:
       return state;
   }
+
+
+
+
+
+
+
 };
 
 const DataProvider = ({ children }) => {

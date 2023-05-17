@@ -28,6 +28,7 @@ class ComponentToPrint extends React.Component {
                   Kim Huy
                 </h1>
               </div>
+
               <div className="p-2">
                 <ul className="flex">
                   <li className="flex items-center gap-2 p-2 border-l-2 border-indigo-200">
@@ -76,6 +77,7 @@ class ComponentToPrint extends React.Component {
                       <th className="px-4 py-2 text-xs text-gray-500 ">
                         Sản phẩm
                       </th>
+                      <th className="px-4 py-2 text-xs text-gray-500 ">Size</th>
                       <th className="px-4 py-2 text-xs text-gray-500 ">
                         Số lượng
                       </th>
@@ -90,8 +92,8 @@ class ComponentToPrint extends React.Component {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    {this.props.invoices &&
-                      this.props.invoices.map((item, index) => (
+                    {this.props.bill &&
+                      this.props.bill.map((item, index) => (
                         <tr key={item.productId} className="whitespace-nowrap">
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {index + 1}
@@ -99,6 +101,11 @@ class ComponentToPrint extends React.Component {
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-900">
                               {item.name}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm text-gray-900">
+                              {item.size}
                             </div>
                           </td>
                           <td className="px-6 py-4">
@@ -113,7 +120,6 @@ class ComponentToPrint extends React.Component {
                                 currency: "JPY",
                               }).format(item.price)}{" "}
                               đồng
-                            
                             </div>
                           </td>
                           <td className="px-6 py-4">

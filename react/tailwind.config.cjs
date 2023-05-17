@@ -13,7 +13,11 @@ module.exports = {
                 "red-400": "#CF5050",
                 "orange-400" : "#F19708",
             },
+            boxShadow: {
+                '2xl': 'rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px',
+              }
         },
+       
     },
     plugins: [
         require('flowbite/plugin')

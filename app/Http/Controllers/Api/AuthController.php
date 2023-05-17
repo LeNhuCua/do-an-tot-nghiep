@@ -107,14 +107,20 @@ class AuthController extends Controller
         }
         if (Auth::attempt($credentials)) {
             $admin = Auth::user();
-            $token = $admin->createToken($admin->account . '_Token')->plainTextToken;
+            $token = $admin->createToken('main')->plainTextToken;
 
+            $cookie = cookie('jwt', $token, 60 * 24); // 1 day
+
+           
+            // Auth::login($admin->userId);
+            
             return response()->json([
                 'status' => 200,
                 'username' => $admin->fullName,
                 'token' => $token,
                 'message' => 'Dang nhap thanh cong',
-            ]);
+                'user' => $request->user()
+            ])->withCookie($cookie);;
         }
         // return new UserResource(auth()->user());
         return response()->json([

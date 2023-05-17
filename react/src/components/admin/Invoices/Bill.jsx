@@ -1,12 +1,23 @@
-import React from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { AiOutlineClose, AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 
 const Bill = (props) => {
   const { c, removeFromInvoice, increaseAmount, reduceAmount } = props;
+  const [selectedSize, setSelectedSize] = useState(c.product_size[0]);
+  const { handleSizeSelection } = props;
+  const handleClick = (size) => {
+    setSelectedSize(size);
+    handleSizeSelection(size);
+  };
+  useEffect(() => {
+    handleSizeSelection(c.product_size[0]);
+  },[]);
+
+  console.log(selectedSize);
   return (
-    <div className="">
+    <div  key={c.productId} className="">
       <div
-        key={c.productId}
+       
         className="flex border my-2 relative flex-wrap w-full p-3 align-items-center gap-3  hover:bg-blue-100 rounded-lg"
       >
         <div
@@ -21,14 +32,56 @@ const Bill = (props) => {
             <i className="pi pi-tag text-sm"></i>
             <span>{c.productId}</span>
           </div>
-          <span className="font-bold text-900">
+
+          <div className="flex gap-3 border-t py-4">
+            {c.product_size.map((size) => (
+              <Fragment>
+                <div className="flex gap-3">
+                  <button
+                    className={`px-2 text-sm font-bold shadow-2xl  border-2 rounded-lg h-12 relative ${
+                      selectedSize === size ? "border-2 border-black" : ""
+                    }`}
+                    onClick={() => handleClick(size)}
+                  >
+                    {size.size[0].sizeValue}
+                  </button>
+                </div>
+              </Fragment>
+            ))}
+          </div>
+          <div className="flex ">
+            {c.product_size.map((size) => (
+              <div>
+                {selectedSize === size && (
+                  // <h2 className="text-red-500  text-sm font-bold">
+                  //   {new Intl.NumberFormat({
+                  //     style: "currency",
+                  //     currency: "JPY",
+                  //   }).format(size.price)}
+                  //   <span> VNĐ</span>
+                  // </h2>
+
+                  <span className="font-bold text-900">
+                    ${" "}
+                    {new Intl.NumberFormat({
+                      style: "currency",
+                      currency: "JPY",
+                    }).format(size.price)}{" "}
+                    VNĐ
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* <span className="font-bold text-900">
             ${" "}
             {new Intl.NumberFormat({
               style: "currency",
               currency: "JPY",
             }).format(c.price)}{" "}
             VNĐ
-          </span>
+          </span> */}
         </div>
         <div className="flex  gap-2">
           <button
@@ -37,7 +90,7 @@ const Bill = (props) => {
           >
             <AiOutlinePlus />
           </button>
-          <h5 >{c.amount}</h5>
+          <h5>{c.amount}</h5>
           <button
             className="w-6 h-6 bg-green-500 rounded-md hover:bg-green-400 text-white cursor-pointer flex items-center justify-center"
             onClick={() => reduceAmount(c.productId)}
@@ -45,7 +98,6 @@ const Bill = (props) => {
             <AiOutlineMinus />
           </button>
         </div>
-        
       </div>
     </div>
   );

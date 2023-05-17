@@ -18,12 +18,13 @@ class Slide extends Model
      */
 
     protected $fillable = [
-        'link',
+        'slideId',
         'image',
-        'name',
         'status'
     ];
     protected $primaryKey = 'slideId';
+    public $incrementing = false;
+
     /**
      * The attributes that should be hidden for serialization.
      *

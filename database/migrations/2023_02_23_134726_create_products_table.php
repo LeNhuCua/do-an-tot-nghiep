@@ -28,6 +28,10 @@ class CreateProductsTable extends Migration
 
             $table->decimal('weight', 12, 2);
 
+            $table->integer('rating')->nullable()->default(0);
+
+            $table->integer('numberRate')->nullable()->default(0);
+
             $table->string('productTypeId', 20);
             $table->foreign('productTypeId')->references('productTypeId')->on('product_types')->onUpdate('cascade')->onDelete('cascade');
 

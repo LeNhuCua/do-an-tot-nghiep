@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,67 +23,6 @@ class ProductsController extends Controller
         return $posts;
     }
 
-    // public function store(Request $request)
-    // {
-
-    //     $request->validate([
-
-    //         'description' => 'required',
-
-    //     ]);
-
-    //     try {
-    //         $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
-    //         $request->file('avatar')->storeAs('product/image', $imageName, 'public');
-    //         // $a =  Product::create($request->post() + ['avatar' => $imageName]);
-
-    //         $product =  Product::create([
-    //             'name' => $request->name,
-    //             'alias' => $request->alias,
-    //             'status' => $request->status,
-    //             'productTypeId' => $request->productTypeId,
-    //             'avatar' => $imageName,
-    //             'description' => $request->description,
-    //             'number' => $request->number,
-    //             'price' => $request->price,
-
-    //         ]);
-    //         $product_id = $product->id;
-
-    //         // Thêm dữ liệu vào bảng "productImage" với ProductId tương ứng với sản phẩm vừa thêm vào.
-    //         $productImage = new ProductImage;
-    //         $productImage->image = 'link_hinh_anh';
-    //         $productImage->ProductId = $product_id;
-    //         $productImage->save();
-    //         // foreach ($request->file('images') as $image) {
-    //         //     $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
-    //         //     $image->storeAs('product/image', $imageName, 'public');
-    //         //     $product->productImages()->create([
-    //         //         'image' => $image,
-    //         //     ]);
-    //         // }
-    //         // $validatedData = $request->validated();
-    //         // // thêm vào bảng ProductImage
-    //         // foreach ($validatedData['images'] as $image) {
-    //         //     $product->productImages()->create([
-    //         //         'image' => $image,
-    //         //     ]);
-    //         // }
-    //         return response()->json([
-    //             'status' => 400,
-    //             'message' => 'Product Created Successfully!!',
-    //             'product' => $product,
-    //             // 'productImages' => $productImages
-
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'message' => 'Something goes wrong while creating a product!!',
-    //             'message1' => 'Lỗi: ' . $e->getMessage(),
-
-    //         ], 500);
-    //     }
-    // }
 
     public function convertString($str)
     {
@@ -119,84 +59,11 @@ class ProductsController extends Controller
         return str_replace(' ', '-', mb_convert_case($name, MB_CASE_LOWER, 'utf-8'));
     }
 
-    // public function importExcel(Request $request)
-    // {
-    //     try {
-    //         $file = $request->file('file');
-    //         $reader = IOFactory::createReaderForFile($file->getPathname());
-    //         $spreadsheet = $reader->load($file->getPathname());
-    //         $worksheet = $spreadsheet->getActiveSheet();
-    //         $rows = $worksheet->toArray();
-
-    //         if (count($rows) <= 1) {
-    //             return response()->json([
-    //                 'status' => 455,
-    //                 'message' => 'Sheet is empty or contains only a header row',
-    //             ]);
-    //         }
-
-
-
-    //         $lastProductId = Product::selectRaw('SUBSTRING(productId, -5) AS productId')
-    //             ->orderBy('productId', 'desc')
-    //             ->value('productId');
-    //         $newProductIdNumber = substr($lastProductId, -0) + 1;
-
-    //         foreach ($rows as $index => $row) {
-    //             if ($index === 0) { // Skip header row
-    //                 continue;
-    //             }
-
-    //             $newProductId =  ($row[6] . "-" . $row[4] . "-" . $this->convertString($row[3] . $row[5])) . "-" . 'SP' . str_pad($newProductIdNumber, 5, '0', STR_PAD_LEFT);
-    //             $product = Product::where('name', $row[0])->first(); // Kiểm tra xem productId đã tồn tại trong db hay chưa
-    //             if ($product) { // Nếu đã tồn tại thì báo lỗi
-
-    //                 return response()->json([
-    //                     'status' => 422,
-    //                     'message' => 'Tên sản phẩm là ' . $row[0] . ' tại dòng thứ ' . $index . ' đã tồn tại. Vui lòng nhập tên khác',
-    //                 ]);
-    //                 break;
-    //             } else {
-
-    //                 // Save data to database using Eloquent
-    //                 $product = new Product;
-    //                 $product->productId =  $newProductId;
-    //                 $product->name = $row[0];
-    //                 $product->price = $row[1];
-    //                 $product->number = $row[2];
-    //                 $product->weight = $row[3];
-    //                 $product->productTypeId = $row[4];
-    //                 $product->unitId = $row[5];
-    //                 $product->typeCategoryId = $row[6];
-    //                 $product->status = 1;
-    //                 $product->alias = $this->convertNameWithoutAccents($row[0] . "-" . $row[6] . "-" . $row[4]) . "-" . $this->convertString(strtolower($row[3] . $row[5]));
-    //                 $product->created_at =  Carbon::now();
-    //                 $product->updated_at = Carbon::now();
-
-    //                 $product->save();
-    //                 $newProductIdNumber++; // Increment the productId number
-    //             }
-    //         }
-
-    //         // Return response to frontend
-    //         return response()->json([
-    //             'status' => 200,
-    //             'message' => 'Thành công',
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         // Handle errors
-    //         return response()->json([
-    //             'status' => 401,
-    //             'message' => "Vui lòng điền đủ các trường excel như mẫu",
-    //             'message' => 'Lỗi: ' . $e->getMessage(),
-    //         ]);
-    //     }
-    // }
 
     public function store(Request $request)
     {
 
-
+        $a = null;
         $messages = [
             'required' => 'Trường :attribute phải nhập',
             'unique' => 'Trường :attribute đã tồn tại'
@@ -205,7 +72,6 @@ class ProductsController extends Controller
         $validator = Validator::make($request->all(), [
             'alias' => 'required',
             'name' => 'required|unique:products',
-            'price' => 'required',
             'avatar' => 'required',
             'number' => 'required',
             'weight' => 'required',
@@ -221,56 +87,104 @@ class ProductsController extends Controller
 
             ]);
         } else {
-            $lastProductId = Product::selectRaw('SUBSTRING(productId, -5) AS productId')
-                ->orderBy('productId', 'desc')
-                ->value('productId');
-            $newProductIdNumber = substr($lastProductId, -0) + 1;
-            if ($lastProductId == null) {
-                $newProductId = $request->typeCategoryId . "-" . $request->productTypeId . "-" . $this->convertString($request->weight . $request->unitId) . "-" . 'SP00001';
-            } else {
-                // $newProductIdNumber = substr($lastProductId->productId, -0) + 1;
-                $newProductId =  $request->typeCategoryId . "-" . $request->productTypeId . "-" . $this->convertString($request->weight . $request->unitId) . "-"  . 'SP' . str_pad($newProductIdNumber, 5, '0', STR_PAD_LEFT);
-            }
-            $product = new Product;
-            $product->productId  = $newProductId;
-            $product->name  = $request->name;
-            $product->alias  = $request->alias;
-            $product->status  = $request->status;
-            $product->productTypeId  = $request->productTypeId;
-            $product->typeCategoryId  = $request->typeCategoryId;
-            $product->unitId  = $request->unitId;
-            $product->description  = $request->description;
-            $product->number  = $request->number;
-            $product->price  = $request->price;
-            $product->weight  = $request->weight;
-            if ($request->has('avatar')) {
-                $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
-                $request->file('avatar')->storeAs('product/image', $imageName, 'public');
-                $product->avatar = $imageName;
-            }
-            $product->save();
-            $productImage = null;
-            $productImages = collect();
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
-                    // $filename = time() . '_' . $image->getClientOriginalName();
-                    $image->storeAs('product/image', $imageName, 'public');
-                    $productImage = new ProductImage;
-                    $productImage->image = $imageName;
-                    $productImage->productId = $product->productId;
-                    $productImage->save();
-                    $productImages->push($productImage);
+            try {
+                $lastProductId = Product::selectRaw('SUBSTRING(productId, -5) AS productId')
+                    ->orderBy('productId', 'desc')
+                    ->value('productId');
+                if ($lastProductId) {
+                    $newProductIdNumber = substr($lastProductId, -0) + 1;
                 }
+
+                if ($lastProductId == null) {
+                    $newProductId = $request->typeCategoryId . "-" . $request->productTypeId . "-" . $this->convertString($request->weight . $request->unitId) . "-" . 'SP00001';
+                } else {
+                    $newProductId =  $request->typeCategoryId . "-" . $request->productTypeId . "-" . $this->convertString($request->weight . $request->unitId) . "-"  . 'SP' . str_pad($newProductIdNumber, 5, '0', STR_PAD_LEFT);
+                }
+                $product = new Product;
+                $product->productId  = $newProductId;
+                $product->name  = $request->name;
+                $product->alias  = $request->alias;
+                $product->status  = $request->status;
+                $product->productTypeId  = $request->productTypeId;
+                $product->typeCategoryId  = $request->typeCategoryId;
+                $product->unitId  = $request->unitId;
+                $product->description  = $request->description;
+                $product->number  = $request->number;
+                $product->weight  = $request->weight;
+                if ($request->has('avatar')) {
+                    $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
+                    $request->file('avatar')->storeAs('product/image', $imageName, 'public');
+                    $product->avatar = $imageName;
+                }
+                $product->save();
+                $productImage = null;
+                $productImages = collect();
+                if ($request->hasFile('images')) {
+                    foreach ($request->file('images') as $image) {
+                        $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
+                        // $filename = time() . '_' . $image->getClientOriginalName();
+                        $image->storeAs('product/image', $imageName, 'public');
+                        $productImage = new ProductImage;
+                        $productImage->image = $imageName;
+                        $productImage->productId = $product->productId;
+                        $productImage->save();
+                        $productImages->push($productImage);
+                    }
+                }
+                $productSizes = collect();
+                $sizesValue = collect();
+
+                if ($request->sizes) {
+                    $a = "có";
+                    foreach ($request->sizes as $size) {
+                        $sizeItemObject = json_decode($size);
+
+                        $days_now = Carbon::today();
+                        $dateObj = $days_now->toDateString();
+
+                        $lastProductSizeId = ProductSize::selectRaw('SUBSTRING(productSizeId, -5) AS productSizeId')
+                            ->whereDate('created_at', $days_now)
+                            ->orderBy('productSizeId', 'desc')
+                            ->value('productSizeId');
+                        if ($lastProductSizeId) {
+                            $newProductSizeIdNumber = substr($lastProductSizeId, -0) + 1;
+                        }
+                        if ($lastProductSizeId == null) {
+                            $newProductSizeId = $dateObj . 'SP_S00001';
+                        } else {
+
+                            $newProductSizeId = $dateObj . 'SP_S' . str_pad($newProductSizeIdNumber, 5, '0', STR_PAD_LEFT);
+                        }
+                        $productSize = new ProductSize;
+                        $productSize->productSizeId  = $newProductSizeId;
+                        $productSize->sizeId  = $sizeItemObject->sizeId;
+                        $productSize->price  = $sizeItemObject->price;
+                        $productSize->productId  = $product->productId;
+                        $productSize->save();
+                        $productSizes->push($productSize);
+                        $sizesValue->push($sizeItemObject->sizeValue);
+                    }
+                } else {
+                    $a = "ko";
+                }
+
+
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Product Created Successfully!!',
+                    'product' => $product,
+                    'productImages' => $productImages,
+                    'productSizes' => $productSizes,
+                    'sizesValue' => $sizesValue
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Gặp lỗi khi cập nhật!!',
+                    'eee' => 'Lỗi: ' . $e->getMessage(),
+                    'status' => 201,
+                    'a' => $a
+                ]);
             }
-
-            return response()->json([
-                'status' => 400,
-                'message' => 'Product Created Successfully!!',
-                'product' => $product,
-                'productImages' => $productImages
-
-            ]);
         }
     }
 
@@ -299,7 +213,7 @@ class ProductsController extends Controller
 
             'alias' => 'required',
             'name' => 'required',
-            'price' => 'required',
+    
             // 'avatar' => 'required',
             'number' => 'required',
             'weight' => 'required',
@@ -329,7 +243,7 @@ class ProductsController extends Controller
                 $product->unitId  = $request->unitId;
                 $product->description  = $request->description;
                 $product->number  = $request->number;
-                $product->price  = $request->price;
+   
                 $product->weight  = $request->weight;
 
 
@@ -469,6 +383,7 @@ class ProductsController extends Controller
             $lastProductId = Product::selectRaw('SUBSTRING(productId, -5) AS productId')
                 ->orderBy('productId', 'desc')
                 ->value('productId');
+
             $newProductIdNumber = substr($lastProductId, -0) + 1;
 
             foreach ($rows as $index => $row) {

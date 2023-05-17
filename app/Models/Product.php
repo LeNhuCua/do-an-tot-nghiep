@@ -31,6 +31,8 @@ class Product extends Model
         'unitId',
         'productTypeId',
         'typeCategoryId',
+        'rating',
+        'numberRate'
 
     ];
     public $incrementing = false;
@@ -45,7 +47,7 @@ class Product extends Model
         'update_at'
 
     ];
-    protected $with = ['productType','productImage','unit','typeCategory'];
+    protected $with = ['productType','productImage','unit','typeCategory','productSize'];
 
     public function productType()
     {
@@ -54,6 +56,10 @@ class Product extends Model
     public function productImage()
     {
         return $this->hasMany(ProductImage::class,'productId','productId');
+    }
+    public function productSize()
+    {
+        return $this->hasMany(ProductSize::class,'productId','productId');
     }
     public function unit()
     {

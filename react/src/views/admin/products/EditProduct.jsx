@@ -226,7 +226,6 @@ const EditProduct = () => {
             status: checked ? 1 : 0,
             avatar: resData.avatar,
             weight: resData.weight,
-            price: resData.price,
             description: resData.description,
             number: resData.number,
             product_type: {
@@ -474,7 +473,7 @@ const EditProduct = () => {
             />
           </CCol>
 
-          <CCol xl={3}>
+          {/* <CCol xl={3}>
             <Controller
               name="price"
               control={control}
@@ -511,7 +510,7 @@ const EditProduct = () => {
                 </>
               )}
             />
-          </CCol>
+          </CCol> */}
 
           <CCol xl={3}>
             <Controller

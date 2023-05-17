@@ -1,0 +1,10 @@
+.swiper-pagination-bullet {
+  cursor: pointer;
+  padding: 0.4375rem;
+  border: 1px solid black;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.swiper-pagination-bullet-active {
+  background: #FED700;
+}

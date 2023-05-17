@@ -12,7 +12,7 @@ const Register = () => {
   const passwordRef = createRef();
   const isManagerRef = createRef();
   const role = createRef();
-  
+
   const passwordConfirmationRef = createRef();
   const { setUser, setToken } = useStateContext();
   const [errors, setErrors] = useState(null);
@@ -32,8 +32,7 @@ const Register = () => {
       .post("/signup", payload)
       .then(({ data }) => {
         setUser(data.user);
-        setToken(data.token);
-        console.log(payload);
+        // setToken(data.token);
         Swal.fire({
           icon: "success",
           text: data.message,
@@ -72,12 +71,13 @@ const Register = () => {
 
           <label htmlFor="cars">Choose a car:</label>
 
-  
           <label htmlFor="cars1">Role:</label>
 
           <select ref={role}>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
+            <option value={1}>Quản trị viên</option>
+            <option value={2}>Khách hàng/</option>
+            <option value={3}>Quản lí</option>
+
           </select>
           <button className="btn btn-block">Signup</button>
           <p className="message">

@@ -10,6 +10,8 @@ import Loading from "../../../components/Loading";
 import ReactPaginate from "react-paginate";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import "./style.css";
+import { Dropdown } from "primereact/dropdown";
+import { CCol } from "@coreui/react";
 
 const ShowCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -17,26 +19,45 @@ const ShowCategories = () => {
   const { alias } = useParams();
   const [pageCount, setPageCount] = useState(0);
 
+  const [fillPrice, setFillPrice] = useState("");
+  const [sort, setSort] = useState("");
+
+  const sortOption = [
+    { name: "Giá thấp đến cao", code: "price-asc" },
+    { name: "Giá cao đến thấp", code: "price-desc" },
+    { name: "Tên A-Z", code: "name-asc" },
+    { name: "Tên Z-A", code: "name-desc" },
+    { name: "Bán chạy", code: "best-selling" },
+  ];
+  useEffect(() => {
+    if (sortOption) {
+      setSort(sortOption[1]);
+    }
+  }, []);
+
   const handlePageClick = (data) => {
     const selectedPage = data.selected + 1;
-    fetchProductCategories(selectedPage);
 
     // update URL with page number
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set("page", selectedPage);
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({ path: newUrl }, "", newUrl);
+    fetchProductCategories(selectedPage);
   };
 
   useEffect(() => {
     fetchProductCategories();
-  }, [alias]);
+  }, [alias, sort.code, fillPrice]);
 
   const fetchProductCategories = async (pageNumber = 1) => {
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get("page") || pageNumber;
+    // const response = await axios.get(
+    //   `${API}/api/cus-products/showCategories?alias=${alias}&&page=${page}&&sortRating=${sortRating}&&sortPrice=${sortPrice}`
+    // );
     const response = await axios.get(
-      `${API}/api/cus-products/showCategories?alias=${alias}&&page=${page}`
+      `${API}/api/cus-products/showCategories?alias=${alias}&&page=${page}&&sort=${sort.code}&&fillPrice=${fillPrice}`
     );
     setCategories(response.data.data);
     setPageCount(response.data.last_page);
@@ -44,11 +65,61 @@ const ShowCategories = () => {
   };
 
   return (
-    <div>
+    <div className="">
       {loading ? (
         <Loading />
       ) : categories.length > 0 ? (
-        <section className="cs-container my-4">
+        <section className="cs-container my-4 flex flex-col gap-4">
+          <div className="row container">
+            <CCol xl={6}>
+              <span>Chọn mức giá</span>
+              <Dropdown
+                filter
+                value={sort}
+                onChange={(e) => setSort(e.value)}
+                options={sortOption}
+                optionLabel="name"
+                placeholder={sortOption[1].name}
+                className="w-full md:w-14rem"
+              />
+            </CCol>
+            <CCol xl={6}>
+              {/* <label for="fill-price">Khoảng giá</label>
+              <select
+                id="fill-price"
+                value={fillPrice}
+                onChange={(e) => setFillPrice(e.target.value)}
+              >
+                <option value="">Chọn giá tiền</option>
+                <option value="nho">Nhỏ hơn 1 triệu</option>
+                <option value="lon">Lớn hơn 1 triệu</option>
+              </select> */}
+              <span>Chọn mức giá</span>
+              <Dropdown
+                filter
+                value={sort}
+                onChange={(e) => setSort(e.value)}
+                options={sortOption}
+                optionLabel="name"
+                placeholder={sortOption[1].name}
+                className="w-full md:w-14rem"
+              />
+            </CCol>
+          </div>
+
+          {/* <label for="sort">Sắp xếp theo</label>
+          <select
+            id="sort"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+          >
+            <option value="price-asc">Giá Thấp tới thấp</option>
+            <option value="price-desc">Giá Cao tới thấp</option>
+            <option value="name-asc">Tên A-Z</option>
+            <option value="name-desc">Tên Z-A</option>
+            <option value="best-selling">Bán chạy</option>
+          </select> */}
+
           <ProductList>
             {categories.map((category) => (
               <Product key={category.productId} data={category} />

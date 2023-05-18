@@ -20,13 +20,14 @@ const ShowTypeCategories = () => {
 
   const handlePageClick = (data) => {
     const selectedPage = data.selected + 1;
-    fetchProductTypeCategories(selectedPage);
     
     // update URL with page number
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set("page", selectedPage);
     const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
     window.history.pushState({ path: newUrl }, "", newUrl);
+    fetchProductTypeCategories(selectedPage);
+
   };
   
 

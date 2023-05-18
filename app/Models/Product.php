@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class Product extends Model
@@ -69,4 +70,43 @@ class Product extends Model
     {
         return $this->belongsTo(TypeCategories::class, 'typeCategoryId', 'typeCategoryId');
     }
+
+    public function scopeOrderByPrice($query, $direction = 'asc')
+    {
+        return $query->joinSub(
+                function ($query) {
+                    $query->select('productId', DB::raw('MIN(price) as min_price'))
+                        ->from('product_sizes')
+                        ->groupBy('productId');
+                },
+                'product_size_min',
+                function ($join) {
+                    $join->on('products.productId', '=', 'product_size_min.productId');
+                }
+            )
+            ->orderBy('min_price', $direction);
+    }
+    
+    
+    public function scopeFilterByPrice($query, $starPrice = '', $endPrice = '')
+    {
+        return $query->joinSub(
+                function ($query) {
+                    $query->select('productId', DB::raw('MIN(price) as min_price1'))
+                        ->from('product_sizes')
+                        ->groupBy('productId');
+                },
+                'product_size_min1',
+                function ($join) {
+                    $join->on('products.productId', '=', 'product_size_min1.productId');
+                }
+            )
+            // ->orderBy('min_price', $price);
+            ->whereBetween('min_price1', [$starPrice, $endPrice]);
+
+    }
+    
+
+
+
 }

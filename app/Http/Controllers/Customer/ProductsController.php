@@ -62,7 +62,52 @@ class ProductsController extends Controller
         $alias = $request->input('alias');
         $categoryId = DB::table('categories')->where('alias', $alias)->where('status', '=', 1)->pluck('categoryId');
         $typeCategoryId = DB::table('type_categories')->where('categoryId', $categoryId)->where('status', '=', 1)->pluck('typeCategoryId');
-        $data = Product::orderBy("productId", "desc")->whereIn('typeCategoryId', $typeCategoryId)->paginate(1);
+        $data = Product::orderBy("created_at", "desc")->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+
+        if ($request->input('sort') && $request->input('fillPrice')) {
+            $sort = $request->input('sort');
+            $fillPrice = $request->input('fillPrice');
+            $priceRange = [];
+            if ($fillPrice === 'nho') {
+                $priceRange = ['0', '1000000'];
+            } else if ($fillPrice === 'lon') {
+                $priceRange = ['1000000', '999999999'];
+            }
+            if ($sort === 'price-asc') {
+                $data = Product::orderByPrice('asc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'price-desc') {
+                $data = Product::orderByPrice('desc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'name-asc') {
+                $data = Product::orderBy("name", 'asc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'name-desc') {
+                $data = Product::orderBy("name", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'best-selling') {
+                $data = Product::orderBy("numberBuy", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            }
+        } else if ($request->input('sort')) {
+            $sort = $request->input('sort');
+            if ($sort === 'price-asc') {
+                $data = Product::orderByPrice('asc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'price-desc') {
+                $data = Product::orderByPrice('desc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'name-asc') {
+                $data = Product::orderBy("name", 'asc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'name-desc') {
+                $data = Product::orderBy("name", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'best-selling') {
+                $data = Product::orderBy("numberBuy", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            }
+        } else if ($request->input('fillPrice')) {
+            $fillPrice = $request->input('fillPrice');
+            if ($fillPrice === 'nho') {
+                $data = Product::filterByPrice('0', '1000000')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($fillPrice === 'lon') {
+                $data = Product::filterByPrice('1000000', '999999999')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            }
+        }
+
+
+
         return $data;
     }
 

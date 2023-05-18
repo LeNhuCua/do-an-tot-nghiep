@@ -311,6 +311,7 @@ const AppHeader = () => {
                       <ul className="absolute z-20 top-[48px] hidden group-hover:block top-bottom w-[280px] bg-white shadow-xl transition-all duration-300">
                         {category.type_category.map((type) => (
                           <CustomLink_Children
+                            key={type.typeCategoryId}
                             to={`danhmuccon/${type.alias}`}
                             // categoryId={category.categoryId}
                           >

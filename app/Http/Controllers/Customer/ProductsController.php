@@ -53,25 +53,21 @@ class ProductsController extends Controller
     {
         $alias = $request->input('alias');
         $typeCategoryId = DB::table('type_categories')->where('alias', $alias)->where('status', '=', 1)->pluck('typeCategoryId');
-        $data = Product::orderBy("productId", "desc")->where('typeCategoryId', $typeCategoryId)->paginate(1);;
-        return $data;
-    }
-
-    public function showCategories(Request $request)
-    {
-        $alias = $request->input('alias');
-        $categoryId = DB::table('categories')->where('alias', $alias)->where('status', '=', 1)->pluck('categoryId');
-        $typeCategoryId = DB::table('type_categories')->where('categoryId', $categoryId)->where('status', '=', 1)->pluck('typeCategoryId');
-        $data = Product::orderBy("created_at", "desc")->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
-
+        // $data = Product::orderBy("productId", "desc")->where('typeCategoryId', $typeCategoryId)->paginate(1);;
         if ($request->input('sort') && $request->input('fillPrice')) {
             $sort = $request->input('sort');
             $fillPrice = $request->input('fillPrice');
             $priceRange = [];
-            if ($fillPrice === 'nho') {
-                $priceRange = ['0', '1000000'];
-            } else if ($fillPrice === 'lon') {
-                $priceRange = ['1000000', '999999999'];
+            if ($fillPrice === 'lessTwo') {
+                $priceRange = ['0', '2000000'];
+            } else if ($fillPrice === 'betweenTwoAndSix') {
+                $priceRange = ['2000000', '6000000'];
+            } else if ($fillPrice === 'betweenSixAndTen') {
+                $priceRange = ['6000000', '10000000'];
+            } else if ($fillPrice === 'betweenTenAndTwenty') {
+                $priceRange = ['10000000', '20000000'];
+            } else if ($fillPrice === 'greaterTwenty') {
+                $priceRange = ['20000000', '999999999'];
             }
             if ($sort === 'price-asc') {
                 $data = Product::orderByPrice('asc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
@@ -99,9 +95,69 @@ class ProductsController extends Controller
             }
         } else if ($request->input('fillPrice')) {
             $fillPrice = $request->input('fillPrice');
-            if ($fillPrice === 'nho') {
+            if ($fillPrice === 'lessTwo') {
                 $data = Product::filterByPrice('0', '1000000')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
-            } else if ($fillPrice === 'lon') {
+            } else if ($fillPrice === 'betweenTwoAndSix') {
+                $data = Product::filterByPrice('1000000', '999999999')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            }
+        }
+
+
+
+        return $data;
+    }
+
+    public function showCategories(Request $request)
+    {
+        $alias = $request->input('alias');
+        $categoryId = DB::table('categories')->where('alias', $alias)->where('status', '=', 1)->pluck('categoryId');
+        $typeCategoryId = DB::table('type_categories')->where('categoryId', $categoryId)->where('status', '=', 1)->pluck('typeCategoryId');
+        // $data = Product::orderBy("created_at", "desc")->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+
+        if ($request->input('sort') && $request->input('fillPrice')) {
+            $sort = $request->input('sort');
+            $fillPrice = $request->input('fillPrice');
+            $priceRange = [];
+            if ($fillPrice === 'lessTwo') {
+                $priceRange = ['0', '2000000'];
+            } else if ($fillPrice === 'betweenTwoAndSix') {
+                $priceRange = ['2000000', '6000000'];
+            } else if ($fillPrice === 'betweenSixAndTen') {
+                $priceRange = ['6000000', '10000000'];
+            } else if ($fillPrice === 'betweenTenAndTwenty') {
+                $priceRange = ['10000000', '20000000'];
+            } else if ($fillPrice === 'greaterTwenty') {
+                $priceRange = ['20000000', '999999999'];
+            }
+            if ($sort === 'price-asc') {
+                $data = Product::orderByPrice('asc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'price-desc') {
+                $data = Product::orderByPrice('desc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'name-asc') {
+                $data = Product::orderBy("name", 'asc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'name-desc') {
+                $data = Product::orderBy("name", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'best-selling') {
+                $data = Product::orderBy("numberBuy", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            }
+        } else if ($request->input('sort')) {
+            $sort = $request->input('sort');
+            if ($sort === 'price-asc') {
+                $data = Product::orderByPrice('asc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'price-desc') {
+                $data = Product::orderByPrice('desc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'name-asc') {
+                $data = Product::orderBy("name", 'asc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'name-desc') {
+                $data = Product::orderBy("name", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($sort === 'best-selling') {
+                $data = Product::orderBy("numberBuy", 'desc')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            }
+        } else if ($request->input('fillPrice')) {
+            $fillPrice = $request->input('fillPrice');
+            if ($fillPrice === 'lessTwo') {
+                $data = Product::filterByPrice('0', '1000000')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
+            } else if ($fillPrice === 'betweenTwoAndSix') {
                 $data = Product::filterByPrice('1000000', '999999999')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
             }
         }

@@ -94,7 +94,7 @@ const ProductDetail = () => {
           // dispatch({ type: "ADD_PRODUCTS", payload: createProducts });
           Swal.fire({
             icon: "success",
-            title: "Thêm thành công!",
+            title: "Sản phẩm đã được thêm vào giỏ hàng!",
             showConfirmButton: false,
             timer: 1500,
           });

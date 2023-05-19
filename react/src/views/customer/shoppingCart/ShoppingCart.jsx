@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import UseTitle from "../../../hook/UseTitle";
 import { useStateContext } from "../../../context/ContextProvider";
 import axiosClient from "../../../axios-client-customer";
@@ -9,12 +9,19 @@ import Loading from "../../../components/Loading";
 import cartEmpty from "../../../assets/images/empty-cart.png";
 import Swal from "sweetalert2";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { DataContext } from "../../../context/DataContext";
+import { BsArrowBarRight } from "react-icons/bs";
 const ShoppingCart = () => {
   UseTitle("Giỏ hàng");
   const { tokenCustomer, user } = useStateContext();
+
   const [numberBuy, setNumberBuy] = useState([]);
+  const { state, dispatch } = useContext(DataContext);
+  const { checkoutProducts } = state;
+
   const [loading, setLoading] = useState(true);
+  const [selectedData, setSelectedData] = useState([]);
   const navigate = useNavigate();
 
   if (!tokenCustomer || !user) {
@@ -125,6 +132,53 @@ const ShoppingCart = () => {
       }
     });
   };
+  const handleSelectProduct = (e, id) => {
+    if (e.target.checked) {
+      setSelectedData([...selectedData, id]);
+    } else {
+      setSelectedData(selectedData.filter((cartId) => cartId !== id));
+    }
+  };
+  const handleSelectAllChange = (event) => {
+    const isChecked = event.target.checked;
+    if (isChecked) {
+      const allProductIds = carts.map((p) => p.cartId);
+      setSelectedData(allProductIds);
+    } else {
+      setSelectedData([]);
+    }
+  };
+
+  console.log(selectedData);
+  const [filteredCartProducts, setFilteredCartProducts] = useState([]);
+  // setSelectedData(selectedData.filter((cartId) => cartId !== id));
+  // const filteredCartProducts = carts.filter((item) =>
+  //   selectedData.includes(item.cartId)
+  // );
+  useEffect(() => {
+    setFilteredCartProducts(
+      carts.filter((item) => selectedData.includes(item.cartId))
+    );
+    dispatch({
+      type: "SET_CHECKOUT_PRODUCTS",
+      payload: carts.filter((item) => selectedData.includes(item.cartId)),
+    });
+  }, [selectedData, carts]);
+  console.log(checkoutProducts);
+  // dispatch({
+  //   type: "SET_CHECKOUT_PRODUCTS",
+  //   payload: filteredCartProducts,
+  // });
+  let totalAmount = 0;
+  filteredCartProducts.forEach(function (selected) {
+    totalAmount += selected.price * selected.quantity;
+  });
+
+  let totalQuantity = 0;
+  filteredCartProducts.forEach(function (selected) {
+    totalQuantity += selected.quantity;
+  });
+
   return (
     <div>
       {loading && tokenCustomer && <Loading />}
@@ -139,7 +193,7 @@ const ShoppingCart = () => {
           >
             <div className="flex lg:flex-row flex-col justify-center" id="cart">
               <div
-                className="lg:w-2/3 w-full lg:pl-10 pl-4 pr-10 lg:pr-4 lg:py-12 py-8 bg-white overflow-y-auto overflow-x-hidden h-screen"
+                className="w-full lg:pl-10 pl-4 pr-10 lg:pr-4  bg-white overflow-y-auto overflow-x-hidden h-screen"
                 id="scroll"
               >
                 <button
@@ -155,21 +209,43 @@ const ShoppingCart = () => {
                     Giỏ hàng
                   </p> */}
                 <div>
+                  <div className="py-2">
+                    <input
+                      id="checkAll"
+                      checked={selectedData.length === carts.length}
+                      className="w-7 h-7 text-green-600 cursor-pointer bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      type="checkbox"
+                      onChange={handleSelectAllChange}
+                    />
+                    <label className="ml-2 font-bold" htmlFor="checkAll">
+                      Tất cả
+                    </label>
+                  </div>
+
                   {carts.length > 0 && !loading ? (
                     carts.map((cart) => (
                       <div
                         key={cart.cartId}
-                        className="lg:flex items-center gap-4 mt-2  border-t border-gray-300"
+                        className="lg:flex items-center gap-4 py-2 border-t border-gray-300"
                       >
-                        <div className="w-2/4 lg:w-1/5">
+                        <div className="w-2/6 flex items-center gap-3 lg:w-1/6">
+                          <input
+                            checked={selectedData.includes(cart.cartId)}
+                            value={cart.cartId}
+                            onChange={(e) =>
+                              handleSelectProduct(e, cart.cartId)
+                            }
+                            type="checkbox"
+                            className="w-6 h-6 text-green-600 cursor-pointer bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
                           <img
                             src={`${API_IMAGES}/${cart.product.avatar}`}
                             alt={cart.product.name}
                             className="w-full h-full object-center object-cover"
                           />
                         </div>
-                        <div className="lg:pl-3 lg:w-3/4">
-                          <p className="text-xl leading-3 text-gray-800 lg:pt-0 pt-4">
+                        <div className="lg:pl-3 lg:w-3/4 lg:ml-4">
+                          <p className="text-xl  text-gray-800 lg:pt-0 pt-4">
                             {cart.product.productId}
                           </p>
                           <div className="flex items-center justify-between w-full pt-1">
@@ -201,20 +277,41 @@ const ShoppingCart = () => {
                               </button>
                             </div>
                           </div>
-                          <p className="text-xl leading-3 text-gray-600 pt-2">
-                            Trọng lượng: {cart.product.weight}{" "}
-                            {cart.product.unit.name}
-                          </p>
-                          <p className="text-xl leading-3 text-gray-600 py-4">
-                            Loại: {cart.product.product_type.name}
-                          </p>
-                          <p className="text-xl leading-3 text-gray-600 ">
-                            Đơn giá: {cart.price}
-                          </p>
-                          <p className="text-xl leading-3 text-gray-600 py-4">
-                            Kích thước: {cart.size.sizeValue}
-                          </p>
-                          <div className="flex items-center justify-between pt-5 pr-6">
+                          <div className="grid lg:grid-cols-2 grid-cols-1">
+                            <div className="">
+                              <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                                Trọng lượng:
+                                <span className="font-normal">
+                                  {" "}
+                                  {cart.product.weight} {cart.product.unit.name}
+                                </span>
+                              </h1>
+                              <h1 className="text-xl leading-3 text-gray-600 py-3">
+                                Loại:
+                                <span className="font-normal"> {" "}{cart.product.product_type.name}</span>
+                              </h1>
+                            </div>
+                            <div className="">
+                              <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                                Đơn giá:
+                                {" "}
+                                <span className="font-normal">
+                                {new Intl.NumberFormat({
+                                style: "currency",
+                                currency: "JPY",
+                              }).format(cart.price)}
+                              <span> VNĐ</span>
+                               
+                                </span>
+                              </h1>
+                              <h1 className="text-xl leading-3 text-gray-600 py-3">
+                                Kích thước:
+                                <span className="font-normal"> {cart.size.sizeValue}</span>
+                              </h1>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between pr-6">
                             <div
                               className="flex itemms-center"
                               onClick={() => deleteCart(cart.cartId)}
@@ -241,52 +338,51 @@ const ShoppingCart = () => {
                   )}
                 </div>
               </div>
-              <div className="xl:w-1/2 lg:w-1/3 xl:w-1/4 w-full bg-gray-100 h-full">
-                <div className="flex flex-col lg:h-screen px-14 py-20 justify-between overflow-y-auto">
+              <div className="lg:w-1/3 w-full bg-gray-100 h-full">
+                <div className="flex flex-col  px-14 py-20 justify-between overflow-y-auto">
                   <div>
                     <p className="text-4xl font-black leading-9 text-gray-800">
-                      Summary
+                      Chi tiết
                     </p>
-                    <div className="flex items-center justify-between pt-16">
+                    <div className="flex items-center justify-between pt-12">
                       <p className="text-base leading-none text-gray-800">
-                        Subtotal
+                        Số lượng sản phẩm
                       </p>
                       <p className="text-base leading-none text-gray-800">
-                        $9,000
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between pt-5">
-                      <p className="text-base leading-none text-gray-800">
-                        Shipping
-                      </p>
-                      <p className="text-base leading-none text-gray-800">
-                        $30
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between pt-5">
-                      <p className="text-base leading-none text-gray-800">
-                        Tax
-                      </p>
-                      <p className="text-base leading-none text-gray-800">
-                        $35
+                        {totalQuantity}
                       </p>
                     </div>
                   </div>
+
                   <div>
                     <div className="flex items-center pb-6 justify-between lg:pt-5 pt-20">
-                      <p className="text-2xl leading-normal text-gray-800">
-                        Total
-                      </p>
+                      <p className="text-2xl leading-normal text-gray-800">$</p>
                       <p className="text-2xl font-bold leading-normal text-right text-gray-800">
-                        $10,240
+                        {new Intl.NumberFormat({
+                          style: "currency",
+                          currency: "JPY",
+                        }).format(totalAmount)}
+                        <span> VNĐ</span>
                       </p>
                     </div>
-                    <button
-                      // onClick={() => setShow(!show)}
-                      className="text-base leading-none w-full py-5 bg-gray-800 border-gray-800 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white"
+
+                    <div
+                      className={`${
+                        checkoutProducts.length <= 0 ? "hidden" : ""
+                      }`}
                     >
-                      Checkout
-                    </button>
+                      <Link
+                        to="/dathang"
+                        // onClick={() => setShow(!show)}
+                        className="flex items-center group font-bold text-xl uppercase justify-center gap-2 leading-none w-full py-4 rounded-2xl bg-red-600 shadow-3xl border-gray-800 border hover:bg-gray-600 hover:text-yellow-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white"
+                      >
+                        <BsArrowBarRight className="group-hover:text-yellow-400 transition-all duration-500" />
+                        <span className="group-hover:text-yellow-400 transition-all duration-500">
+                          {" "}
+                          Mua hàng
+                        </span>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>

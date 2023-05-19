@@ -19,20 +19,22 @@ class CreateOrdersTable extends Migration
     public function up()
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->string('orderId')->primary();
-            $table->string('fullName');
-            $table->dateTime('address');
-            $table->string('phoneNumber');
+            $table->string('orderId', 20)->primary();
+
+            $table->float('totalAmount', 20, 6);
+
             $table->string('status');
-            $table->dateTime('orderDate');
+
             $table->dateTime('deliveryDate');
-            $table->float('price_ship_id');
 
-            $table->string('customerId',20);
-            $table->foreign('customerId')->references('customerId')->on('customers')->onUpdate('cascade')->onDelete('cascade');;
+            $table->string('userId', 20);
+            $table->foreign('userId')->references('userId')->on('users')->onUpdate('cascade')->onDelete('cascade');
 
-            $table->string('shipId',20);
-            $table->foreign('shipId')->references('shipId')->on('price_ships')->onUpdate('cascade')->onDelete('cascade');;
+            $table->string('paymentMethodId', 20);
+            $table->foreign('paymentMethodId')->references('paymentMethodId')->on('payment_methods')->onUpdate('cascade')->onDelete('cascade');
+
+            $table->string('shippingMethodId', 20);
+            $table->foreign('shippingMethodId')->references('shippingMethodId')->on('shipping_methods')->onUpdate('cascade')->onDelete('cascade');;
 
             $table->timestamps();
         });

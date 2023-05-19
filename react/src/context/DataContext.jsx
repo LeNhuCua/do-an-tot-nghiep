@@ -9,13 +9,23 @@ const initialState = {
   sizes: [],
   products: [],
   slides: [],
-  hotProducts: []
+  hotProducts: [],
+
+  //check out
+  checkoutProducts: [],
 };
 
 export const DataContext = createContext(initialState);
 
 const reducer = (state, action) => {
   switch (action.type) {
+    //đặt hàng
+    case "SET_CHECKOUT_PRODUCTS":
+      return {
+        ...state,
+        checkoutProducts: action.payload,
+      };
+
     case "FETCH_CATEGORIES":
       return {
         ...state,
@@ -205,8 +215,6 @@ const reducer = (state, action) => {
         sizes: action.payload,
       };
 
-
-
     //products
     case "FETCH_PRODUCTS":
       return {
@@ -248,8 +256,6 @@ const reducer = (state, action) => {
         products: remainingProduct,
       };
 
-
-
     //slides
     case "FETCH_SLIDES":
       return {
@@ -282,8 +288,6 @@ const reducer = (state, action) => {
         slides: updatedSlide,
       };
 
-
-
     case "FETCH_ADMINUSER":
       return {
         ...state,
@@ -295,26 +299,16 @@ const reducer = (state, action) => {
         adminUsers: action.payload,
       };
 
-
-
-      // khách hàng
-      case "FETCH_HOTPRODUCTS":
-        return {
-          ...state,
-          hotProducts: action.payload,
-        };
-
+    // khách hàng
+    case "FETCH_HOTPRODUCTS":
+      return {
+        ...state,
+        hotProducts: action.payload,
+      };
 
     default:
       return state;
   }
-
-
-
-
-
-
-
 };
 
 const DataProvider = ({ children }) => {

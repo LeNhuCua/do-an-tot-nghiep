@@ -79,7 +79,7 @@ const AppHeader = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   const fetchCategories = async () => {
-    await axios.get(`${API}/api/categories/`).then(({ data }) => {
+    await axios.get(`${API}/api/cus-products/categories/`).then(({ data }) => {
       dispatch({ type: "FETCH_CATEGORIES", payload: data });
       setLoading(false);
     });
@@ -268,7 +268,7 @@ const AppHeader = () => {
             </div>
 
             <Link
-              to="/shoppingCart"
+              to="/giohang"
               className="bg-gray-900 w-12 h-12 rounded-full flex items-center justify-center relative hover:bg-yellow-400 transition-all duration-300 hover:cursor-pointer"
             >
               <AiOutlineShoppingCart className="text-white text-3xl" />

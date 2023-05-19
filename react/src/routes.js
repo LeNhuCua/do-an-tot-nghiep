@@ -153,6 +153,7 @@ const RegisterAdmin = React.lazy(() =>
 const Home = React.lazy(() => import("./views/customer/home/Home"));
 const ShowCategories = React.lazy(() => import("./views/customer/categories/ShowCategories"));
 const ShowTypeCategories = React.lazy(() => import("./views/customer/categories/ShowTypeCategories"));
+const CheckOut = React.lazy(() => import("./views/customer/checkout/CheckOut"));
 
 
 const ProductDetail = React.lazy(() =>
@@ -278,9 +279,10 @@ const routes = [
   
   // { path: "/", name: "Trang chủ", element: Home },
   { path: "/sanpham/:alias", name: "Trang chủ", element: ProductDetail },
-  { path: "/shoppingCart", name: "Giỏ hàng", element: ShoppingCart },
+  { path: "/giohang", name: "Giỏ hàng", element: ShoppingCart },
+  { path: "/dathang", name: "Giỏ hàng", element: CheckOut },
 
-
+  
 
 
 

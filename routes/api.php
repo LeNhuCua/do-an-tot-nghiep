@@ -160,9 +160,9 @@ Route::group(['prefix' => 'users'], function () {
 
 //KHÁCH HÀNG
 
-//sản phẩm khách hàng
+//giao diện
 Route::group(['prefix' => 'cus-products'], function () {
-
+    Route::get('/categories', [CustomerProductsController::class, 'categories']);
     Route::get('/newProducts', [CustomerProductsController::class, 'newProducts']);
     Route::get('/hotProducts', [CustomerProductsController::class, 'hotProducts']);
     Route::get('/showDetail', [CustomerProductsController::class, 'showDetail']);

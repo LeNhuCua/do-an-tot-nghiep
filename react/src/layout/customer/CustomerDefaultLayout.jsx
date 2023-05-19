@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppSidebar, AppFooter, AppHeader, AppContent } from "./index";
 import { useStateContext } from "../../context/ContextProvider";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import { SidebarContext } from "../../context/customer/SideBarContext";
 
 const DefaultLayout = () => {
   UseTitle("Vàng bạc đá quý Kim Huy");
-  const { setUser,tokenCustomer } = useStateContext();
+  const { setUser, tokenCustomer } = useStateContext();
 
   useEffect(() => {
     if (tokenCustomer) {
@@ -20,7 +20,28 @@ const DefaultLayout = () => {
     }
   }, []);
   const { isOpenSidebar } = useContext(SidebarContext);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    // Loading function to load data or
+    // fake it using setTimeout;
+    const loadData = async () => {
+      // Wait for two second
+      await new Promise((r) => setTimeout(r, 3000));
+
+      // Toggle loading state
+      setLoading(!loading);
+    };
+
+    loadData();
+  }, []);
+  if (loading) {
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  }
   return (
     <div className="font-sans w-full">
       <div className={`relative`}>

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Province;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('districts', function (Blueprint $table) {
-            $table->string('districtId',20)->primary();
+        Schema::create('wards', function (Blueprint $table) {
+            $table->string('wardId', 20)->primary();
             $table->string('name');
-            $table->string('provinceId',20);
-            $table->foreign('provinceId')->references('provinceId')->on('provinces')->onUpdate('cascade')->onDelete('cascade');;
+            $table->string('districtId', 20);
+            $table->foreign('districtId')->references('districtId')->on('districts')->onUpdate('cascade')->onDelete('cascade');;
             $table->timestamps();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists('wards');
     }
 };

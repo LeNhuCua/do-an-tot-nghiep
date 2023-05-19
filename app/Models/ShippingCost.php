@@ -5,15 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Price_ship extends Model
+class ShippingCost extends Model
 {
     use HasFactory;
-    protected $table = 'price_ships';
+    protected $table = "shipping_costs";
+
     protected $fillable = [
-        'price',
-        'districtId'
+        'shippingCostId',
+        'provinceId',
+        'districtId',
+        'wardId',
+        'shippingCost',
     ];
-    protected $primaryKey = 'shipId';
+
+
+    public $incrementing = false;
+    protected $primaryKey = 'shippingCostId';
     /**
      * The attributes that should be hidden for serialization.
      *

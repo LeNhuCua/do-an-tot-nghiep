@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProductsController extends Controller
 {
+    //Trang chủ
     public function newProducts()
     {
         $posts = Product::where('created_at', '>=', Carbon::now()->subDays(30))->where('status', '=', 1)->orderBy("created_at", "desc")->paginate(2);
@@ -47,6 +48,18 @@ class ProductsController extends Controller
             'productDetail' => $productDetail
         ]);
     }
+
+    //danh mục
+    // hiển thị danh mục
+
+    public function categories()
+    {
+        $categories = Category::with('typeCategory')->orderBy("created_at", "desc")->get();
+
+        return $categories;
+    }
+
+
 
 
     public function showTypeCategories(Request $request)
@@ -101,9 +114,6 @@ class ProductsController extends Controller
                 $data = Product::filterByPrice('1000000', '999999999')->whereIn('typeCategoryId', $typeCategoryId)->paginate(2);
             }
         }
-
-
-
         return $data;
     }
 

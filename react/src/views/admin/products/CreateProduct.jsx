@@ -145,10 +145,6 @@ export default function CreateProduct() {
     );
   };
 
-
-
-
-  
   const panelFooterTemplate = () => {
     const length = selectedSizes ? selectedSizes.length : 0;
 
@@ -672,6 +668,7 @@ export default function CreateProduct() {
         </div>
         <div className="card flex justify-content-center">
           <MultiSelect
+            filter
             value={selectedSizes}
             options={sizes}
             onChange={(e) => setSelectedSizes(e.value)}

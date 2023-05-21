@@ -17,18 +17,20 @@ class Order extends Model
      * @var array<int, string>
      */
 
+    protected $table = 'order';
 
     protected $fillable = [
-        'fullName',
-        'address',
+        'orderId',
+        'totalAmount',
         'status',
-        'orderDate',
         'deliveryDate',
-        'phoneNumber',
-        'customerId',
-        'shipId',
+        'userId',
+        'paymentMethodId',
+        'shippingMethodId',
     ];
     protected $primaryKey = 'orderId';
+    public $incrementing = false;
+
     /**
      * The attributes that should be hidden for serialization.
      *

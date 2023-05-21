@@ -16,16 +16,25 @@ class Province extends Model
      *
      * @var array<int, string>
      */
+    protected $table = "provinces";
+
     protected $fillable = [
+        'provinceId',
         'name',
-        'type',
+        'districtId'
     ];
     protected $primaryKey = 'provinceId';
+    public $incrementing = false;
+
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
+    public function district()
+    {
+        return $this->hasMany(District::class, 'provinceId', 'provinceId');
+    }
     protected $hidden = [
         'create_at',
         'update_at'

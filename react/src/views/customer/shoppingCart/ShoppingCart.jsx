@@ -12,6 +12,7 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { DataContext } from "../../../context/DataContext";
 import { BsArrowBarRight } from "react-icons/bs";
+
 const ShoppingCart = () => {
   UseTitle("Giỏ hàng");
   const { tokenCustomer, user } = useStateContext();
@@ -24,25 +25,31 @@ const ShoppingCart = () => {
   const [selectedData, setSelectedData] = useState([]);
   const navigate = useNavigate();
 
-  if (!tokenCustomer || !user) {
-    // return <Navigate to="/quantri/dangnhap" />;
-    const isConfirm = Swal.fire({
-      title: `Bạn cần phải đăng nhập để sử dụng chức năng này ?`,
-      text: "Chuyển đến trang đăng nhập!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Xác nhận!",
-      cancelButtonText: "Huỷ bỏ!",
-    }).then((result) => {
-      return result.isConfirmed;
-    });
-    if (!isConfirm) {
-      return;
+  const checkLogin = async () => {
+    if (!tokenCustomer || !user) {
+      const isConfirm = await Swal.fire({
+        title: `Bạn cần phải đăng nhập để sử dụng chức năng này ?`,
+        text: "Chuyển đến trang đăng nhập!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Xác nhận!",
+        cancelButtonText: "Huỷ bỏ!",
+      }).then((result) => {
+        return result.isConfirmed;
+      });
+      if (!isConfirm) {
+        navigate("/");
+      } else {
+        navigate("/dangnhap");
+      }
     }
-    navigate("/dangnhap");
-  }
+  };
+  useEffect(() => {
+    checkLogin();
+  }, []);
+
   const [carts, setCarts] = useState([]);
   useEffect(() => {
     axiosClient.get("/cart").then((res) => {
@@ -181,7 +188,7 @@ const ShoppingCart = () => {
 
   return (
     <div>
-      {loading && tokenCustomer && <Loading />}
+      {loading && tokenCustomer && user && <Loading />}
       {!loading && (
         <div
           className=" w-full  bg-opacity-90 top-0 overflow-y-auto overflow-x-hidden  "
@@ -205,6 +212,7 @@ const ShoppingCart = () => {
                     Quay lại
                   </div>
                 </button>
+
                 {/* <p className="text-4xl font-black leading-10 text-gray-800 pt-3">
                     Giỏ hàng
                   </p> */}
@@ -238,11 +246,13 @@ const ShoppingCart = () => {
                             type="checkbox"
                             className="w-6 h-6 text-green-600 cursor-pointer bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                           />
-                          <img
-                            src={`${API_IMAGES}/${cart.product.avatar}`}
-                            alt={cart.product.name}
-                            className="w-full h-full object-center object-cover"
-                          />
+                          <Link to={`/sanpham/${cart.product.alias}`}>
+                            <img
+                              src={`${API_IMAGES}/${cart.product.avatar}`}
+                              alt={cart.product.name}
+                              className="w-full h-full object-center object-cover"
+                            />
+                          </Link>
                         </div>
                         <div className="lg:pl-3 lg:w-3/4 lg:ml-4">
                           <p className="text-xl  text-gray-800 lg:pt-0 pt-4">
@@ -288,25 +298,29 @@ const ShoppingCart = () => {
                               </h1>
                               <h1 className="text-xl leading-3 text-gray-600 py-3">
                                 Loại:
-                                <span className="font-normal"> {" "}{cart.product.product_type.name}</span>
+                                <span className="font-normal">
+                                  {" "}
+                                  {cart.product.product_type.name}
+                                </span>
                               </h1>
                             </div>
                             <div className="">
                               <h1 className="text-xl font-bold leading-3 text-gray-600 ">
-                                Đơn giá:
-                                {" "}
+                                Đơn giá:{" "}
                                 <span className="font-normal">
-                                {new Intl.NumberFormat({
-                                style: "currency",
-                                currency: "JPY",
-                              }).format(cart.price)}
-                              <span> VNĐ</span>
-                               
+                                  {new Intl.NumberFormat({
+                                    style: "currency",
+                                    currency: "JPY",
+                                  }).format(cart.price)}
+                                  <span> VNĐ</span>
                                 </span>
                               </h1>
                               <h1 className="text-xl leading-3 text-gray-600 py-3">
                                 Kích thước:
-                                <span className="font-normal"> {cart.size.sizeValue}</span>
+                                <span className="font-normal">
+                                  {" "}
+                                  {cart.size.sizeValue}
+                                </span>
                               </h1>
                             </div>
                           </div>

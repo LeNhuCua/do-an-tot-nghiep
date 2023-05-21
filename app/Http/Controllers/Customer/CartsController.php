@@ -20,20 +20,7 @@ class CartsController extends Controller
         $userId = Auth::user()->userId;
         $cart = Cart::orderBy("created_at", "desc")->where('userId', $userId)->get();
 
-
-
-        // $cart = DB::table('carts')
-        //     ->join('sizes', 'carts.sizeId', '=', 'sizes.sizeId')
-        //     ->join('products', 'carts.productId', '=', 'products.productId')
-        //     ->join('product_c', 'carts.productId', '=', 'products.productId')
-        //     ->orderBy("carts.created_at", "desc")
-        //     ->where('carts.userId', $userId)
-        //     // ->select('invoices.invoiceId', 'invoices.fullName', 'invoices.phoneNumber', DB::raw('sum(invoice_details.number) as total_quantity'), DB::raw('(invoices.totalAmount) as total_Amount'))
-        //     // ->whereDate('invoices.created_at', $date)
-        //     // ->groupBy('invoices.invoiceId', 'invoices.created_at')
-        //     ->get();
         return $cart;
-        // return Category::select('unitId', 'alias', 'name', 'status')->get();
     }
 
 

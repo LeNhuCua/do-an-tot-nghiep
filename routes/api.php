@@ -13,7 +13,13 @@ use App\Http\Controllers\Admin\SubCategoriesController;
 use App\Http\Controllers\Admin\TypeCategoriesController;
 use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Customer\CartsController;
+use App\Http\Controllers\Customer\CustomerAddressesController;
+use App\Http\Controllers\Customer\DistrictsController;
+use App\Http\Controllers\Customer\PaymentMethodsController;
 use App\Http\Controllers\Customer\ProductsController as CustomerProductsController;
+use App\Http\Controllers\Customer\ProvincesController;
+use App\Http\Controllers\Customer\ShippingCostsController;
+use App\Http\Controllers\Customer\WardsController;
 use App\Http\Middleware\CheckAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -168,7 +174,7 @@ Route::group(['prefix' => 'cus-products'], function () {
     Route::get('/showDetail', [CustomerProductsController::class, 'showDetail']);
     Route::get('/showTypeCategories', [CustomerProductsController::class, 'showTypeCategories']);
     Route::get('/showCategories', [CustomerProductsController::class, 'showCategories']);
-    
+
     // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
 });
 
@@ -177,22 +183,59 @@ Route::group(['prefix' => 'cus-products'], function () {
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::group(['prefix' => 'cart'], function () {
-
         Route::resource('/', CartsController::class);
         Route::put('/{id}/{scope}', [CartsController::class, 'update']);
         Route::delete('/{id}', [CartsController::class, 'destroy']);
         Route::get('/totalCart', [CartsController::class, 'totalCart']);
-
-
-        // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
-        // Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
-        // Route::get('/{id}', [ProductsController::class, 'show']);
-        // Route::post('/{id}', [ProductsController::class, 'update']);
-        // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
-
-        // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
     });
 });
+
+//đặt hàng
+
+//thêm địa chỉ giao hàng
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'customerAddresses'], function () {
+        Route::resource('/', CustomerAddressesController::class);
+        // Route::put('/{id}/{scope}', [CustomerAddressesController::class, 'update']);
+        // Route::delete('/{id}', [CustomerAddressesController::class, 'destroy']);
+        // Route::get('/totalCart', [CustomerAddressesController::class, 'totalCart']);
+    });
+});
+
+Route::group(['prefix' => 'provinces'], function () {
+    Route::resource('/', ProvincesController::class);
+    Route::get('/{id}/districts', [DistrictsController::class, 'index']);
+    // Route::get('/districts/{id}/wards', [WardsController::class, 'index']);
+
+});
+
+Route::group(['prefix' => 'districts'], function () {
+    // Route::resource('/', ProvincesController::class);
+    Route::get('/{id}/wards', [WardsController::class, 'index']);
+});
+
+//phí giao hàng
+Route::group(['prefix' => 'shippingCosts'], function () {
+    // Route::resource('/', ProvincesController::class);
+    Route::get('/{provinceId}/{districtId}/{wardId}', [ShippingCostsController::class, 'index']);
+});
+
+//phương thức thanh toán
+Route::group(['prefix' => 'cus-payment'], function () {
+    Route::get('/paymentMethod', [PaymentMethodsController::class,'paymentMethod']);
+    Route::get('/shippingMethods', [PaymentMethodsController::class,'shippingMethods']);
+    // Route::get('/{provinceId}/{districtId}/{wardId}', [ShippingCostsController::class, 'index']);
+});
+
+// Route::group(['prefix' => 'wards'], function () {
+//     // Route::resource('/', ProvincesController::class);
+//     Route::get('/districts/{id}/wards', [WardsController::class, 'index']);
+// });
+
+
+// // Route::get('/provinces', 'TinhController@index');
+// Route::get('/tinhs/{id}/huyens', 'HuyenController@index');
+// Route::get('/huyens/{id}/xas', 'XaController@index');
 
 
 

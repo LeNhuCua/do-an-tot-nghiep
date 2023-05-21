@@ -16,15 +16,18 @@ class OrderDetail extends Model
      *
      * @var array<int, string>
      */
+    protected $table = 'order_details';
+
     protected $fillable = [
+        'orderDetailId',
         'quantity',
         'price',
-    ];
-    
-    protected $primaryKey  = [
-        'orderId',
+        'sizeId',
         'productId'
     ];
+
+    protected $primaryKey = 'orderDetailId';
+    public $incrementing = false;
     /**
      * The attributes that should be hidden for serialization.
      *

@@ -13,6 +13,7 @@ const initialState = {
 
   //check out
   checkoutProducts: [],
+  customerAddresses: [],
 };
 
 export const DataContext = createContext(initialState);
@@ -304,6 +305,39 @@ const reducer = (state, action) => {
       return {
         ...state,
         hotProducts: action.payload,
+      };
+
+    // đại chỉ giao hàng
+    case "FETCH_CUSTOMER_ADDRESSES":
+      return {
+        ...state,
+        customerAddresses: action.payload,
+      };
+
+    case "SET_CUSTOMER_ADDRESSES":
+      return {
+        ...state,
+        customerAddresses: action.payload,
+      };
+
+    case "ADD_CUSTOMER_ADDRESS":
+      return {
+        ...state,
+        customerAddresses: [action.payload, ...state.customerAddresses],
+      };
+    case "UPDATE_SLIDE":
+      const updatedCustomerAddresses = state.customerAddresses.map(
+        (customerAddress) =>
+          customerAddress.addressId === action.payload.addressId
+            ? {
+                ...customerAddress,
+                ...action.payload,
+              }
+            : customerAddress
+      );
+      return {
+        ...state,
+        customerAddresses: updatedCustomerAddresses,
       };
 
     default:

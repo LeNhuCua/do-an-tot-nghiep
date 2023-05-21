@@ -17,7 +17,7 @@ class ComponentToPrint extends React.Component {
 
     // Kết hợp vào chuỗi
     const currentDate = `${date}/${month}/${year} ${hour}:${minute}:${second}`;
-
+   console.log(this.props.invoices);
     return (
       <div>
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -92,8 +92,8 @@ class ComponentToPrint extends React.Component {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    {this.props.bill &&
-                      this.props.bill.map((item, index) => (
+                    {this.props.invoices &&
+                      this.props.invoices.map((item, index) => (
                         <tr key={item.productId} className="whitespace-nowrap">
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {index + 1}
@@ -105,7 +105,7 @@ class ComponentToPrint extends React.Component {
                           </td>
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-900">
-                              {item.size}
+                              {item.sizeValue}
                             </div>
                           </td>
                           <td className="px-6 py-4">
@@ -118,7 +118,7 @@ class ComponentToPrint extends React.Component {
                               {new Intl.NumberFormat({
                                 style: "currency",
                                 currency: "JPY",
-                              }).format(item.price)}{" "}
+                              }).format(item.sizePrice)}{" "}
                               đồng
                             </div>
                           </td>
@@ -127,7 +127,7 @@ class ComponentToPrint extends React.Component {
                               {new Intl.NumberFormat({
                                 style: "currency",
                                 currency: "JPY",
-                              }).format(item.price * item.amount)}{" "}
+                              }).format(item.sizePrice * item.amount)}{" "}
                               đồng
                             </div>
                           </td>

@@ -50,6 +50,7 @@ const Product = (props) => {
             className="w-full h-full object-fill  "
             src={`${API_IMAGES}/${avatar}`}
             alt={name}
+            loading="lazy"
           />
         </div>
         <div className="flex flex-col gap-5 flex-1 px-3 mt-5">

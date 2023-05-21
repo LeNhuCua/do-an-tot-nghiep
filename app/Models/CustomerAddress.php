@@ -23,7 +23,20 @@ class CustomerAddress extends Model
     ];
     protected $primaryKey = 'customerId';
     public $incrementing = false;
-
+    protected $with = ['province','district','ward'];
+    
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'provinceId', 'provinceId');
+    }
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'districtId', 'districtId');
+    }
+    public function ward()
+    {
+        return $this->belongsTo(Ward::class, 'districtId', 'districtId');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -35,10 +48,3 @@ class CustomerAddress extends Model
         'password'
     ];
 }
-
-
-
-
-
-
-

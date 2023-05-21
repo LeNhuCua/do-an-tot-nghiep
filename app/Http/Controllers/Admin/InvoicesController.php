@@ -76,50 +76,50 @@ class InvoicesController extends Controller
             $invoice->userId  = $request->userId;
             $invoice->save();
             $invoiceDetails = collect();
-            // if ($request->invoices) {
+            if ($request->invoices) {
 
-            //     foreach ($request->invoices as $row) {
-            //         foreach ($row as $value) {
-            //             $invoiceItemObject = json_decode($value);
+                foreach ($request->invoices as $row) {
+                    foreach ($row as $value) {
+                        $invoiceItemObject = json_decode($value);
 
-            //             $product = Product::find($invoiceItemObject->productId);
-            //             $product->number -= $invoiceItemObject->amount;
-            //             $product->numberBuy += $invoiceItemObject->amount;
-            //             $product->save();
+                        $product = Product::find($invoiceItemObject->productId);
+                        $product->number -= $invoiceItemObject->amount;
+                        $product->numberBuy += $invoiceItemObject->amount;
+                        $product->save();
 
-            //             $invoiceDetail = new InvoiceDetail;
-            //             $invoiceDetail->number = $invoiceItemObject->amount;
-            //             $invoiceDetail->productId = $invoiceItemObject->productId;
-            //             $invoiceDetail->price = $invoiceItemObject->price;
-            //             $invoiceDetail->invoiceId = $invoice->invoiceId;
+                        $invoiceDetail = new InvoiceDetail;
+                        $invoiceDetail->number = $invoiceItemObject->amount;
+                        $invoiceDetail->productId = $invoiceItemObject->productId;
+                        $invoiceDetail->price = $invoiceItemObject->sizePrice;
+                        $invoiceDetail->invoiceId = $invoice->invoiceId;
 
-            //             $invoiceDetail->save();
-            //             $invoiceDetails->push($invoiceItemObject);
-            //         }
-            //     }
-            // }
-            if ($request->bills) {
-
-                foreach ($request->bills as $value) {
-
-                    $invoiceItemObject = json_decode($value);
-
-                    $product = Product::find($invoiceItemObject->productId);
-                    $product->number -= $invoiceItemObject->amount;
-                    $product->numberBuy += $invoiceItemObject->amount;
-                    $product->save();
-
-                    $invoiceDetail = new InvoiceDetail;
-                    $invoiceDetail->number = $invoiceItemObject->amount;
-                    $invoiceDetail->productId = $invoiceItemObject->productId;
-                    $invoiceDetail->price = $invoiceItemObject->price;
-                    $invoiceDetail->invoiceId = $invoice->invoiceId;
-                    $invoiceDetail->sizeId = $invoiceItemObject->sizeId;
-
-                    $invoiceDetail->save();
-                    $invoiceDetails->push($invoiceItemObject);
+                        $invoiceDetail->save();
+                        $invoiceDetails->push($invoiceItemObject);
+                    }
                 }
             }
+            // if ($request->bills) {
+
+            //     foreach ($request->bills as $value) {
+
+            //         $invoiceItemObject = json_decode($value);
+
+            //         $product = Product::find($invoiceItemObject->productId);
+            //         $product->number -= $invoiceItemObject->amount;
+            //         $product->numberBuy += $invoiceItemObject->amount;
+            //         $product->save();
+
+            //         $invoiceDetail = new InvoiceDetail;
+            //         $invoiceDetail->number = $invoiceItemObject->amount;
+            //         $invoiceDetail->productId = $invoiceItemObject->productId;
+            //         $invoiceDetail->price = $invoiceItemObject->price;
+            //         $invoiceDetail->invoiceId = $invoice->invoiceId;
+            //         $invoiceDetail->sizeId = $invoiceItemObject->sizeId;
+
+            //         $invoiceDetail->save();
+            //         $invoiceDetails->push($invoiceItemObject);
+            //     }
+            // }
 
 
             return response()->json([

@@ -18,15 +18,28 @@ class District extends Model
      */
     protected $table = 'districts';
     protected $fillable = [
+        'districtId',
         'name',
-        'type',
+        'provinceId',
     ];
     protected $primaryKey = 'districtId';
+    public $incrementing = false;
+
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'provinceId', 'provinceId');
+    }
+
+    public function ward()
+    {
+        return $this->hasMany(Ward::class, 'districtId', 'districtId');
+    }
     protected $hidden = [
         'create_at',
         'update_at'

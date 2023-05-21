@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { ScrollPanel } from "primereact/scrollpanel";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Fragment, useEffect } from "react";
 import { API_IMAGES } from "../../../API";
 import removeAccents from "../../../hook/admin/RemoAccents";
 
@@ -12,7 +12,12 @@ const SearchProducts = (props) => {
   const [searching, setSearching] = useState(false);
   const [focused, setFocused] = useState(false); // thêm state cho việc kiểm tra focus
   const inputRef = useRef(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const handleClick = (size) => {
+    setSelectedSize(size);
+  };
 
+  console.log(selectedSize);
   const filteredProducts = products.filter(
     (product) =>
       removeAccents(product.name.toLowerCase()).includes(
@@ -20,16 +25,11 @@ const SearchProducts = (props) => {
       ) ||
       removeAccents(product.productId.toLowerCase()).includes(
         removeAccents(searchTerm.toLowerCase())
-      ) ||
-      removeAccents(product.type_category.name.toLowerCase()).includes(
-        removeAccents(searchTerm.toLowerCase())
-      ) ||
-      removeAccents(product.unit.name.toLowerCase()).includes(
-        removeAccents(searchTerm.toLowerCase())
-      ) ||
-      removeAccents(product.product_type.name.toLowerCase()).includes(
-        removeAccents(searchTerm.toLowerCase())
       )
+  );
+
+  console.log(
+    filteredProducts ? filteredProducts.map((p) => p.product_size[0]) : ""
   );
 
   const handleSearch = (event) => {
@@ -52,12 +52,12 @@ const SearchProducts = (props) => {
   const handleBlur = () => {
     setFocused(false);
   };
-  console.log(products);
+
   return (
     <div>
       <div className="p-inputgroup relative">
         <InputText
-          placeholder={focused ? "" : "Nhập thông tin sản phẩm tìm kiếm "} // chỉ hiển thị placeholder khi ô input không được focus
+          placeholder={focused ? "" : "Nhập tên hoặc mã sản phẩm"} // chỉ hiển thị placeholder khi ô input không được focus
           value={searchTerm}
           onChange={handleSearch}
           onFocus={handleFocus}
@@ -90,37 +90,68 @@ const SearchProducts = (props) => {
               filteredProducts.map((product) => (
                 <div
                   key={product.productId}
-                  onClick={() => addToInvoice(product, product.productId)}
-                  className="grid lg:grid-cols-6 grid-cols-1  flex-wrap w-full  p-3 align-items-center gap-3 hover:cursor-pointer hover:bg-blue-100 rounded-lg"
+                  className="flex  flex-wrap w-full  p-3 align-items-center gap-3 hover:cursor-pointer hover:bg-blue-100 rounded-lg"
                 >
                   <img
-                    className="w-16 shadow-2 flex-shrink-0 border-round col-span-1 "
+                    className="w-16 shadow-2 flex-shrink-0 border-round"
                     src={`${API_IMAGES}/${product.avatar}`}
                     alt={product.name}
                   />
-                  <div className="flex-1 flex flex-column gap-2 xl:mr-8 col-span-1  lg:col-span-3 ">
+
+                  <div className="flex-1 flex flex-column gap-2 xl:mr-8">
                     <span className="font-bold">{product.name}</span>
                     <div className="flex align-items-center gap-2">
                       <i className="pi pi-tag text-sm"></i>
                       <span>{product.productId}</span>
                     </div>
+                    <div className="flex gap-3 border-t py-4">
+                      {product.product_size.map((size) => (
+                        <Fragment key={size.size[0].sizeValue}>
+                          <div className="flex gap-3">
+                            <button
+                              className={`px-4 font-bold shadow-2xl  border-2 rounded-lg h-12 relative ${
+                                selectedSize === size
+                                  ? "border-2 border-black"
+                                  : ""
+                              }`}
+                              onClick={() => {
+                                handleClick(size);
+                                addToInvoice(product, product.productId, size);
+                              }}
+                            >
+                              {size.size[0].sizeValue}
+                            </button>
+                          </div>
+                        </Fragment>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1 col-span-2 items-start lg:items-end">
-                    <span className="font-bold text-900">
-                      ${" "}
-                      {new Intl.NumberFormat({
-                        style: "currency",
-                        currency: "JPY",
-                      }).format(product.price)}{" "}
-                      VNĐ
-                    </span>
-                    <span className="text-900">
-                      {product.type_category.name}
-                    </span>
-                    <span className="font-bold text-900">
-                    {product.weight} {product.unit.name}
-                    </span>
+                  <div>
+                    <div className="flex ">
+                      {product.product_size.map((size) => (
+                        <div key={size.size[0].sizeValue}>
+                          {selectedSize === size && (
+                            <h2 className="text-red-500  text-xl font-bold">
+                              {new Intl.NumberFormat({
+                                style: "currency",
+                                currency: "JPY",
+                              }).format(size.price)}
+                              <span> VNĐ</span>
+                            </h2>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
+
+                  {/* <span className="font-bold text-900">
+                    ${" "}
+                    {new Intl.NumberFormat({
+                      style: "currency",
+                      currency: "JPY",
+                    }).format(product.price)}{" "}
+                    VNĐ
+                  </span> */}
                 </div>
               ))
             ) : (

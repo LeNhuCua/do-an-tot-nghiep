@@ -23,10 +23,13 @@ class Ward extends Model
      *
      * @var array<int, string>
      */
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'districtId', 'districtId');
+    }
     protected $hidden = [
         'create_at',
         'update_at'
 
     ];
 }
-

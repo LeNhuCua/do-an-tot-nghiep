@@ -31,6 +31,9 @@
     .top-bottom {
         animation: top-bottom ease-in-out 0.5s;
     }
+    .top-bottom1 {
+        animation: top-bottom1 ease-in-out 0.5s;
+    }
 
     .animate-aa {
         animation: animate-aa ease-in-out 0.5s;
@@ -98,6 +101,16 @@
 
     to {
         top: 48px;
+    }
+}
+
+@keyframes top-bottom1 {
+    from {
+        top: -10px;
+    }
+
+    to {
+        top: 0px;
     }
 }
 

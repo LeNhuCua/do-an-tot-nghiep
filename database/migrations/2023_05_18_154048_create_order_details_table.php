@@ -26,10 +26,9 @@ class CreateOrderDetailsTable extends Migration
 
             $table->float('price', 20, 6);
 
-            $table->string('sizeId', 20);
-            $table->foreign('sizeId')->references('sizeId')->on('sizes')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('sizeValue', 30);
 
-            $table->string('productId', 20);
+            $table->string('productId', 50);
             $table->foreign('productId')->references('productId')->on('products')->onUpdate('cascade')->onDelete('cascade');
 
 

@@ -19,7 +19,6 @@ class CreateProductsTable extends Migration
             $table->string('productId', 50)->primary();
             $table->string('name');
             $table->string('alias');
-            $table->float('price', 12, 2);
             $table->string('avatar')->nullable();
             $table->string('description', 2000)->nullable();
             $table->integer('number');

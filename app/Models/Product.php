@@ -47,7 +47,7 @@ class Product extends Model
         'update_at'
 
     ];
-    protected $with = ['productType','productImage','unit','typeCategory','productSize'];
+    protected $with = ['productType', 'productImage', 'unit', 'typeCategory', 'productSize'];
 
     public function productType()
     {
@@ -55,11 +55,11 @@ class Product extends Model
     }
     public function productImage()
     {
-        return $this->hasMany(ProductImage::class,'productId','productId');
+        return $this->hasMany(ProductImage::class, 'productId', 'productId');
     }
     public function productSize()
     {
-        return $this->hasMany(ProductSize::class,'productId','productId');
+        return $this->hasMany(ProductSize::class, 'productId', 'productId');
     }
     public function unit()
     {
@@ -73,39 +73,34 @@ class Product extends Model
     public function scopeOrderByPrice($query, $direction = 'asc')
     {
         return $query->joinSub(
-                function ($query) {
-                    $query->select('productId', DB::raw('MIN(price) as min_price'))
-                        ->from('product_sizes')
-                        ->groupBy('productId');
-                },
-                'product_size_min',
-                function ($join) {
-                    $join->on('products.productId', '=', 'product_size_min.productId');
-                }
-            )
+            function ($query) {
+                $query->select('productId', DB::raw('MIN(price) as min_price'))
+                    ->from('product_sizes')
+                    ->groupBy('productId');
+            },
+            'product_size_min',
+            function ($join) {
+                $join->on('products.productId', '=', 'product_size_min.productId');
+            }
+        )
             ->orderBy('min_price', $direction);
     }
-    
-    
+
+
     public function scopeFilterByPrice($query, $starPrice = '', $endPrice = '')
     {
         return $query->joinSub(
-                function ($query) {
-                    $query->select('productId', DB::raw('MIN(price) as min_price1'))
-                        ->from('product_sizes')
-                        ->groupBy('productId');
-                },
-                'product_size_min1',
-                function ($join) {
-                    $join->on('products.productId', '=', 'product_size_min1.productId');
-                }
-            )
+            function ($query) {
+                $query->select('productId', DB::raw('MIN(price) as min_price1'))
+                    ->from('product_sizes')
+                    ->groupBy('productId');
+            },
+            'product_size_min1',
+            function ($join) {
+                $join->on('products.productId', '=', 'product_size_min1.productId');
+            }
+        )
             // ->orderBy('min_price', $price);
             ->whereBetween('min_price1', [$starPrice, $endPrice]);
-
     }
-    
-
-
-
 }

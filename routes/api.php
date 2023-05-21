@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\UnitsController;
 use App\Http\Controllers\Customer\CartsController;
 use App\Http\Controllers\Customer\CustomerAddressesController;
 use App\Http\Controllers\Customer\DistrictsController;
+use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\PaymentMethodsController;
 use App\Http\Controllers\Customer\ProductsController as CustomerProductsController;
 use App\Http\Controllers\Customer\ProvincesController;
@@ -222,10 +223,20 @@ Route::group(['prefix' => 'shippingCosts'], function () {
 
 //phương thức thanh toán
 Route::group(['prefix' => 'cus-payment'], function () {
-    Route::get('/paymentMethod', [PaymentMethodsController::class,'paymentMethod']);
-    Route::get('/shippingMethods', [PaymentMethodsController::class,'shippingMethods']);
-    // Route::get('/{provinceId}/{districtId}/{wardId}', [ShippingCostsController::class, 'index']);
+    Route::get('/paymentMethod', [PaymentMethodsController::class, 'paymentMethod']);
+    Route::get('/shippingMethods', [PaymentMethodsController::class, 'shippingMethods']);
 });
+
+
+
+
+//Đặt hàng
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'cus-order'], function () {
+        Route::resource('/', OrderController::class);
+    });
+});
+
 
 // Route::group(['prefix' => 'wards'], function () {
 //     // Route::resource('/', ProvincesController::class);

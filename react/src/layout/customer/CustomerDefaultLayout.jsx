@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AppSidebar, AppFooter, AppHeader, AppContent } from "./index";
+import { AppSidebarBa, AppFooter, AppHeader, AppContent } from "./index";
 import { useStateContext } from "../../context/ContextProvider";
 import { Navigate, useNavigate } from "react-router-dom";
 import axiosClient from "../../axios-client-customer";
@@ -46,11 +46,16 @@ const DefaultLayout = () => {
     <div className="font-sans w-full">
       <div className={`relative`}>
         <div
-          className={`relative xl:left-0 ${
-            isOpenSidebar ? "-left-[250px]" : ""
-          }`}
+        // className={`relative xl:left-0 ${
+        //   isOpenSidebar ? "-left-[250px]" : ""
+        // }`}
         >
           <AppHeader />
+          <div>
+          <AppSidebarBa />
+
+          </div>
+
           <AppContent />
           <div className="mt-8">
             <AppFooter />
@@ -61,15 +66,14 @@ const DefaultLayout = () => {
             <CopyRight />
           </div> */}
         </div>
-
-        {isOpenSidebar ? <AppSidebar /> : ""}
+        {/* {isOpenSidebar ? <AppSidebar /> : ""}
         <div
           className={`absolute xl:w-0 xl:h-0 ${
             isOpenSidebar
               ? "absolute w-[calc(100%-250px)] top-0 h-full bg-[rgba(0,0,0,0.3)] z-50"
               : ""
           } `}
-        ></div>
+        ></div> */}
       </div>
       <ScrollButton />
     </div>

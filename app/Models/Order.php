@@ -17,12 +17,12 @@ class Order extends Model
      * @var array<int, string>
      */
 
-    protected $table = 'order';
+    protected $table = 'orders';
 
     protected $fillable = [
         'orderId',
         'totalAmount',
-        'status',
+        'orderStatusId',
         'deliveryDate',
         'userId',
         'paymentMethodId',

@@ -31,6 +31,10 @@ return new class extends Migration
             $table->string('wardId', 20);
             $table->foreign('wardId')->references('wardId')->on('wards')->onUpdate('cascade')->onDelete('cascade');
 
+            $table->string('recipientName', 50);
+            $table->string('recipientPhone', 10);
+
+
 
             $table->timestamps();
         });

@@ -4,6 +4,7 @@ import AppFooter from './AppFooter'
 import AppHeader from './AppHeader'
 import AppHeaderDropdown from './header/AppHeaderDropdown'
 import AppSidebar from './sidebar/AppSidebar'
+import AppSidebarBa from './sidebar/AppSidebarBa'
 
 
 export {
@@ -13,5 +14,6 @@ export {
   AppHeader,
   AppHeaderDropdown,
   AppSidebar,
+  AppSidebarBa,
 
 }

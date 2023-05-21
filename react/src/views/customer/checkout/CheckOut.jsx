@@ -63,6 +63,8 @@ const CheckOut = () => {
 
     loadData();
   }, []);
+
+  console.log(checkoutProducts);
   // if (checkoutProducts.length <= 0) {
   //   return <Navigate to="/giohang" />;
   // }
@@ -168,11 +170,64 @@ const CheckOut = () => {
       <small className="">&nbsp;</small>
     );
   };
-  const onSubmit = (data) => {
-    console.log(data.paymentMethodName);
 
-    reset();
+  const onSubmit = async (data) => {
+    const formData = new FormData();
+    console.log(checkoutProducts);
+    const total =
+      selectedShippingMethods &&
+      selectedShippingMethods.shippingMethodId === "PTVC002"
+        ? totalAmount - 0
+        : totalAmount + shippingCosts[0].shippingCost;
+    console.log(total);
+    //order
+    formData.append("totalAmount", total);
+    formData.append("paymentMethodId", data.paymentMethodName.paymentMethodId);
+    formData.append(
+      "shippingMethodId",
+      data.shippingMethodName.shippingMethodId
+    );
+
+    //orderDetail
+    for (let i = 0; i < checkoutProducts.length; i++) {
+      formData.append(`orderDetails[${i}]`, JSON.stringify(checkoutProducts[i]));
+    }
+    //ShippingFee
+    formData.append(
+      "shippingFeeAmount",
+      selectedShippingMethods.shippingMethodId === "PTVC002"
+        ? 0
+        : shippingCosts[0].shippingCost
+    );
+    //ShippingAddress
+    formData.append("recipientAddress", selectedAddress.recipientAddress);
+    formData.append("provinceId", selectedAddress.provinceId);
+    formData.append("districtId", selectedAddress.districtId);
+    formData.append("wardId", selectedAddress.wardId);
+    formData.append("recipientName", selectedAddress.recipientName);
+    formData.append("recipientPhone", selectedAddress.recipientPhone);
+    await axiosClient
+      .post(`${API}/api/cus-order`, formData)
+      .then((response) => {
+        if (response.data.status === 400) {
+          Swal.fire({
+            icon: "success",
+            title: "Thêm mới thành công!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          // navigate("/quantri/sanpham");
+        } else {
+          Swal.fire({
+            icon: "error",
+            text: "Vui lòng kiểm tra lại thông tin!",
+          });
+        }
+      });
+
+    // reset();
   };
+
   return (
     <div>
       <div>
@@ -525,7 +580,7 @@ const CheckOut = () => {
                               style: "currency",
                               currency: "JPY",
                             }).format(
-                              totalAmount -
+                              totalAmount +
                                 (shippingCosts.length > 0
                                   ? shippingCosts[0].shippingCost
                                   : 0)

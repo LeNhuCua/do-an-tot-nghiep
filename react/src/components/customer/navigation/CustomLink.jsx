@@ -14,6 +14,7 @@ function CustomLink({ children, to, categoryId }) {
         <li className="">
             <Link
                 onMouseEnter={() => setHoverIndex(categoryId)}
+                // onMouseEnter={() => setHoverIndex(categoryId)}
                 // onMouseLeave={() => setHoverIndex(null)}
                 to={to}
                 className={

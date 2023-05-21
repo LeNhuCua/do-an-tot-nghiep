@@ -380,17 +380,6 @@ export default function Invoices() {
               >
                 Hoá đơn {i + 1}
               </button>
-
-              // <button
-              //   className={`border p-2   ${
-              //     i + 1 === selectedTable
-              //       ? "bg-blue-500 text-white font-bold"
-              //       : ""
-              //   }  ${invoices[i + 1].length > 0 ? "bg-green-300" : ""}`}
-              //   onClick={() => setSelectedTable(i + 1)}
-              // >
-              //   Hoá đơn {i + 1}
-              // </button>
             ))}
           </div>
         </Fieldset>{" "}
@@ -417,9 +406,9 @@ export default function Invoices() {
                       />
                     ))
                   ) : (
-                    <h4>
-                      <ImFileEmpty /> Hoá đơn trống
-                    </h4>
+                    <div>
+                      <ImFileEmpty size={30}/> Hoá đơn trống
+                    </div>
                   )}
                   {totalAmount ? (
                     <div class="border-t border-gray-200 px-4 py-6 sm:px-6">

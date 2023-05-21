@@ -5,25 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ShippingAddress extends Model
+class OrderStatus extends Model
 {
     use HasFactory;
-    protected $table = "shipping_addresses";
+    protected $table = 'order_statuses';
 
     protected $fillable = [
-        'shippingAddressId',
-        'recipientAddress',
-        'orderId',
-        'provinceId',
-        'districtId',
-        'wardId',
-        'recipientName',
-        'recipientPhone'
+        'orderStatusId',
+        'name',
     ];
 
-
+    protected $primaryKey = 'orderStatusId';
     public $incrementing = false;
-    protected $primaryKey = 'shippingAddressId';
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -32,6 +25,7 @@ class ShippingAddress extends Model
     protected $hidden = [
         'create_at',
         'update_at'
-
     ];
 }
+
+

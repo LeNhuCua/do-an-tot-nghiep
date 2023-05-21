@@ -23,9 +23,11 @@ class CreateOrdersTable extends Migration
 
             $table->float('totalAmount', 20, 6);
 
-            $table->string('status');
+            $table->string('orderStatusId', 20);
+            $table->foreign('orderStatusId')->references('orderStatusId')->on('order_statuses')->onUpdate('cascade')->onDelete('cascade');
 
-            $table->dateTime('deliveryDate');
+
+            $table->dateTime('deliveryDate')->nullable();
 
             $table->string('userId', 20);
             $table->foreign('userId')->references('userId')->on('users')->onUpdate('cascade')->onDelete('cascade');

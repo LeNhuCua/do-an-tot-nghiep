@@ -103,4 +103,22 @@ class Product extends Model
             // ->orderBy('min_price', $price);
             ->whereBetween('min_price1', [$starPrice, $endPrice]);
     }
+
+
+    public function scopeSearchByPrice($query, $price = '')
+    {
+        return $query->joinSub(
+            function ($query) {
+                $query->select('productId', DB::raw('MIN(price) as min_price2'))
+                    ->from('product_sizes')
+                    ->groupBy('productId');
+            },
+            'product_size_min2',
+            function ($join) {
+                $join->on('products.productId', '=', 'product_size_min2.productId');
+            }
+        )
+            // ->orderBy('min_price', $price);
+            ->where('min_price2', 'like', '%' . $price . '%');
+    }
 }

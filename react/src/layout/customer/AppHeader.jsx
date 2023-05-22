@@ -13,7 +13,7 @@ import {
   AiOutlineShoppingCart,
 } from "react-icons/ai";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { useForm } from "react-hook-form";
 import { MenusContext } from "../../context/customer/MenuContext";
@@ -32,6 +32,7 @@ import { Menu, MenuItem } from "@mui/material";
 import { cilBell, cilLockLocked, cilUser } from "@coreui/icons";
 import axiosClient from "../../axios-client-customer";
 import CustomLink_Children from "../../components/customer/navigation/CustomLink_Children";
+import Search from "./Search";
 
 const AppHeader = () => {
   const {
@@ -179,6 +180,16 @@ const AppHeader = () => {
       </div>
     );
   }
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const navigate = useNavigate();
+  const searchSubmit = (event) => {
+    event.preventDefault();
+    // Thực hiện xử lý dữ liệu form tại đây (nếu cần)
+
+    // Chuyển hướng sang trang sản phẩm
+    navigate(`/timkiem/${searchTerm}`);
+  };
   return (
     <header className="w-full">
       <div className="cs-container py-2 border-b">
@@ -188,6 +199,7 @@ const AppHeader = () => {
           <li className=" border-r flex items-center  border-gray-500">
             {Author}
           </li>
+
           <li className=" px-2">
             <IoCall className="inline" />
             <span className="ml-1">Hotline:</span>
@@ -245,19 +257,9 @@ const AppHeader = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <form onSubmit={() => handleSubmit(searchItems(searchKey))}>
-              <div className="border rounded-full bg-gray-200  py-1 px-4 items-center hidden md:flex">
-                <input
-                  className="w-full  focus:ring-0 bg-transparent focus:outline-none outline-none active:border-red-700 border-none placeholder:text-black placeholder:text-xs "
-                  type="text"
-                  placeholder="Nhập từ cần tìm kiếm..."
-                />
-                <button type="button">
-                  <AiOutlineSearch
-                    type="submit"
-                    className="block text-3xl cs-hover focus:bg-red-400"
-                  />
-                </button>
+            <form className="" onSubmit={searchSubmit}>
+              <div className="">
+                <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
               </div>
             </form>
             <div className="p-2 md:hidden rounded-full bg-gray-200 text-yellow-400 flex justify-center items-center">

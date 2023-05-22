@@ -175,7 +175,7 @@ Route::group(['prefix' => 'cus-products'], function () {
     Route::get('/showDetail', [CustomerProductsController::class, 'showDetail']);
     Route::get('/showTypeCategories', [CustomerProductsController::class, 'showTypeCategories']);
     Route::get('/showCategories', [CustomerProductsController::class, 'showCategories']);
-
+    Route::get('/search', [CustomerProductsController::class, 'search']);
     // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
 });
 

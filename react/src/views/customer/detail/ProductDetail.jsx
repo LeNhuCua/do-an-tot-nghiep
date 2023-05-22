@@ -161,7 +161,7 @@ const ProductDetail = () => {
       }
     };
     fetchDetailProduct();
-  }, []);
+  }, [alias]);
 
   if (detailProduct.length <= 0) {
     return <Loading />;

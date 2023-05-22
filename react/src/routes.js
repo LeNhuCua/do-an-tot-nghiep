@@ -86,6 +86,9 @@ const ShowTypeCategories = React.lazy(() => import("./views/customer/categories/
 const CheckOut = React.lazy(() => import("./views/customer/checkout/CheckOut"));
 
 
+const SearchProducts = React.lazy(() =>
+  import("./views/customer/SearchProducts/SearchProducts")
+);
 const ProductDetail = React.lazy(() =>
   import("./views/customer/detail/ProductDetail")
 );
@@ -205,6 +208,7 @@ const routes = [
   
   // { path: "/", name: "Trang chủ", element: Home },
   { path: "/sanpham/:alias", name: "Trang chủ", element: ProductDetail },
+  { path: "/timkiem/:search", name: "Tìm kiếm", element: SearchProducts },
   { path: "/giohang", name: "Giỏ hàng", element: ShoppingCart },
   { path: "/dathang", name: "Giỏ hàng", element: CheckOut },
 

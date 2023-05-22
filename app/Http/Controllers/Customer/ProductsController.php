@@ -129,13 +129,13 @@ class ProductsController extends Controller
             $fillPrice = $request->input('fillPrice');
             $priceRange = [];
             if ($fillPrice === 'lessTwo') {
-                $priceRange = ['0', '2000000'];
+                $priceRange = ['0', '1999999'];
             } else if ($fillPrice === 'betweenTwoAndSix') {
-                $priceRange = ['2000000', '6000000'];
+                $priceRange = ['2000000', '5999999'];
             } else if ($fillPrice === 'betweenSixAndTen') {
-                $priceRange = ['6000000', '10000000'];
+                $priceRange = ['6000000', '9999999'];
             } else if ($fillPrice === 'betweenTenAndTwenty') {
-                $priceRange = ['10000000', '20000000'];
+                $priceRange = ['10000000', '19999999'];
             } else if ($fillPrice === 'greaterTwenty') {
                 $priceRange = ['20000000', '999999999'];
             }
@@ -177,6 +177,14 @@ class ProductsController extends Controller
         return $data;
     }
 
+
+    public function search(Request $request)
+    {
+        $term = $request->input('term');
+        $results = Product::searchByPrice($term)->orWhere('name', 'like', '%' . $term . '%')->get();
+
+        return response()->json(['results' => $results]);
+    }
 
 
     // public function index()

@@ -22,13 +22,13 @@ return new class extends Migration
             $table->string('recipientAddress', 100);
 
 
-            $table->string('provinceId', 20);
+            $table->string('provinceId', 5);
             $table->foreign('provinceId')->references('provinceId')->on('provinces')->onUpdate('cascade')->onDelete('cascade');
 
-            $table->string('districtId', 20);
+            $table->string('districtId', 5);
             $table->foreign('districtId')->references('districtId')->on('districts')->onUpdate('cascade')->onDelete('cascade');
 
-            $table->string('wardId', 20);
+            $table->string('wardId', 5);
             $table->foreign('wardId')->references('wardId')->on('wards')->onUpdate('cascade')->onDelete('cascade');
 
             $table->string('recipientName', 50);

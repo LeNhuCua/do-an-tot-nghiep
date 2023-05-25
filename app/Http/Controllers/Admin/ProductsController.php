@@ -378,8 +378,6 @@ class ProductsController extends Controller
                 ]);
             }
 
-
-
             $lastProductId = Product::selectRaw('SUBSTRING(productId, -5) AS productId')
                 ->orderBy('productId', 'desc')
                 ->value('productId');

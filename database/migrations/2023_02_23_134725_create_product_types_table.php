@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('product_types', function (Blueprint $table) {
-            $table->string('productTypeId',20)->primary();
+            $table->string('productTypeId',10)->primary();
             $table->string('name',50)->unique();
             $table->timestamps();
         });

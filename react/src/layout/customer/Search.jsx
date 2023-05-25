@@ -74,22 +74,13 @@ const Search = (props) => {
             <i className="pi pi-times" onClick={handleClearSearch}></i>
           </span>
         )}
-        <button onClick={handleSearch} type="button">
+        <button>
           <AiOutlineSearch
             type="submit"
             className="block text-3xl cs-hover focus:bg-red-400"
           />
         </button>
       </div>
-      {/* <InputText
-        placeholder={focused ? "" : "Nhập tên hoặc mã sản phẩm"}
-        value={searchTerm}
-        onChange={handleSearch}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        ref={inputRef}
-      />
-      <button onClick={handleSearch}>Search</button> */}
       {focused ? (
         <div className="absolute  w-full  z-[9999]  bg-white shadow-md ">
           {focused && searchTerm === "" && <small>Tìm kiếm thông tin</small>}
@@ -136,6 +127,16 @@ const Search = (props) => {
                       </div>
                     </Link>
                   ))}
+                {searchTerm && searchResults.length > 0 && (
+                  <div className="border-t text-right ">
+                    <Link
+                      className="no-underline italic font-semibold"
+                      to={`/timkiem/${searchTerm}`}
+                    >
+                      Xem tất cả
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 

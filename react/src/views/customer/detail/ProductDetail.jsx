@@ -19,8 +19,11 @@ import ProductSlide from "../../../components/customer/products/ProductSlide";
 import { useStateContext } from "../../../context/ContextProvider";
 import Swal from "sweetalert2";
 import axiosClient from "../../../axios-client-customer";
+import UseTitle from "../../../hook/UseTitle";
 
 const ProductDetail = () => {
+  const { alias } = useParams();
+
   const [numberBuy, setNumberBuy] = useState(1);
   const [voteRating, setVoteRating] = useState(5);
   const { tokenCustomer, user } = useStateContext();
@@ -42,19 +45,32 @@ const ProductDetail = () => {
   useEffect(() => {
     setSelectedSize(detailSizesProduct[0]);
   }, [detailSizesProduct]);
-  useEffect(() => {
-    if (hotProducts.length === 0) {
-      fetchHotProducts();
-    } else {
-      setLoading(false);
-    }
-  }, []);
-  const fetchHotProducts = async () => {
-    await axios.get(`${API}/api/cus-products/hotProducts`).then(({ data }) => {
-      dispatch({ type: "FETCH_HOTPRODUCTS", payload: data });
-      setLoading(false);
+
+  // const fetchHotProducts = async () => {
+  //   await axios.get(`${API}/api/cus-products/hotProducts`).then(({ data }) => {
+  //     dispatch({ type: "FETCH_HOTPRODUCTS", payload: data });
+  //     setLoading(false);
+  //   });
+  // };
+  const fetchTotalCart = async () => {
+    axiosClient.get(`${API}/api/cart/totalCart`).then((res) => {
+      dispatch({
+        type: "FETCH_TOTAL_CART",
+        payload: res.data[0].total_cart,
+      });
     });
   };
+  const relatedProducts = async () => {
+    await axios
+      .get(`${API}/api/cus-products/relatedProducts?alias=${alias}`)
+      .then(({ data }) => {
+        dispatch({ type: "FETCH_HOTPRODUCTS", payload: data.relatedProduct });
+        setLoading(false);
+      });
+  };
+  useEffect(() => {
+    relatedProducts();
+  }, [alias]);
 
   const addToCart = async () => {
     if (!tokenCustomer || !user) {
@@ -98,6 +114,8 @@ const ProductDetail = () => {
             showConfirmButton: false,
             timer: 1500,
           });
+
+          fetchTotalCart();
         } else {
           Swal.fire({
             icon: "error",
@@ -108,7 +126,6 @@ const ProductDetail = () => {
     }
   };
 
-  const { alias } = useParams();
   const responsiveOptions = [
     {
       breakpoint: "991px",
@@ -162,6 +179,10 @@ const ProductDetail = () => {
     };
     fetchDetailProduct();
   }, [alias]);
+
+  // if(detailProduct.length > 0) {
+  //   UseTitle(detailProduct[0].name);
+  // }
 
   if (detailProduct.length <= 0) {
     return <Loading />;

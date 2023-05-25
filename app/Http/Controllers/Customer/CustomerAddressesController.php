@@ -19,6 +19,15 @@ class CustomerAddressesController extends Controller
 
         return $cart;
     }
+
+    public function show($id)
+    {
+        $customerAddress = CustomerAddress::findOrFail($id);
+
+        return response()->json([
+            'customerAddress' => $customerAddress
+        ]);
+    }
     public function store(Request $request)
     {
         $messages = [

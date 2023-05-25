@@ -9,6 +9,7 @@ import { Button } from "primereact/button";
 import axiosClient from "../../../axios-client-customer";
 import { API } from "../../../API";
 import { DataContext } from "../../../context/DataContext";
+import IsName from "../../../hook/isName/IsName";
 
 const CreateCustomerAddress = (props) => {
   const { parentProvince, parentDistrict, parentWard,handleDataChange,setLoading,setAddAddress } = props;
@@ -26,20 +27,7 @@ const CreateCustomerAddress = (props) => {
   });
   const { dispatch } = useContext(DataContext);
 
-  function isName(str) {
-    // Tách chuỗi theo khoảng trắng và kiểm tra số lượng từ
-    const words = str.trim().split(/\s+/);
-    if (words.length < 2) return false;
 
-    // Kiểm tra từng từ xem có kí tự đặc biệt hay số không
-    const regex = /^[A-Za-zÀ-ÖØ-öø-ÿ']+$/; // Chuỗi chỉ cho phép kí tự chữ và dấu ngoặc đơn
-    for (const word of words) {
-      if (!regex.test(word)) {
-        return false;
-      }
-    }
-    return true;
-  }
   const CreateCustomerAddresses = async (data) => {
     setLoading(true);
     const formData = new FormData();
@@ -111,8 +99,8 @@ const CreateCustomerAddress = (props) => {
                 value: 50,
                 message: "Giới hạn chỉ 50 kí tự",
               },
-              validate: (value) =>
-                isName(value) || "Vui lòng nhập họ tên hợp lệ",
+              // validate: (value) =>
+              // IsName(value) || "Vui lòng nhập họ tên hợp lệ",
             })}
             onKeyUp={() => {
               trigger("recipientName");

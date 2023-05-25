@@ -21,7 +21,7 @@ class CustomerAddress extends Model
         'wardId',
         'userId',
     ];
-    protected $primaryKey = 'customerId';
+    protected $primaryKey = 'addressId';
     public $incrementing = false;
     protected $with = ['province','district','ward'];
     

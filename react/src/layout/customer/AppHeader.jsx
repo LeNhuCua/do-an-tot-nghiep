@@ -33,6 +33,9 @@ import { cilBell, cilLockLocked, cilUser } from "@coreui/icons";
 import axiosClient from "../../axios-client-customer";
 import CustomLink_Children from "../../components/customer/navigation/CustomLink_Children";
 import Search from "./Search";
+import convertNameWithoutAccents from "../../hook/admin/ConvertNameToAlias";
+import SearchMobile from "./header/SearchMobile";
+import { AppHeaderDropdown } from "./header/index";
 
 const AppHeader = () => {
   const {
@@ -65,9 +68,9 @@ const AppHeader = () => {
       : header.classList.remove("is-sticky");
   };
 
-  const { state, dispatch } = useContext(DataContext);
+  const { state, dispatch} = useContext(DataContext);
 
-  const { categories, subcategories } = state;
+  const { categories, subcategories ,totalCart} = state;
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -86,12 +89,10 @@ const AppHeader = () => {
     });
   };
 
-  const [totalCart, setTotalCart] = useState(null);
+  // const [totalCart, setTotalCart] = useState(null);
   useEffect(() => {
-    axiosClient.get("/cart/totalCart").then((res) => {
-      setTotalCart(res.data[0].total_cart);
-
-      console.log(res.data[0].total_cart);
+    axiosClient.get(`${API}/api/cart/totalCart`).then((res) => {
+      dispatch({ type: "FETCH_TOTAL_CART", payload: res.data[0].total_cart });
     });
   }, []);
 
@@ -122,70 +123,14 @@ const AppHeader = () => {
 
   let UserAuth = "";
   if (tokenCustomer) {
-    UserAuth = (
-      <div>
-        <div onClick={handleClick} className="hover:cursor-pointer">
-          <div className="flex items-center ">
-            <div className="text-sm">Xin chào</div>
-            <div className="text-sm  flex items-center font-bold uppercase text-gray-500 px-2 cs-hover">
-              <AiOutlineCaretDown className="inline-block" />
-              <span className="ml-1 inline-block ">
-                {" "}
-                {user ? user.account : ""}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            "aria-labelledby": "basic-button",
-          }}
-        >
-          <CDropdownHeader className="bg-light fw-semibold p-2 ">
-            Account
-          </CDropdownHeader>
-
-          <div className="hover:bg-gray-300 py-1 px-4">
-            <CDropdownItem href="11">
-              <CIcon icon={cilBell} className="me-2" />
-              Updates
-              <CBadge color="info" className="ms-2">
-                42
-              </CBadge>
-            </CDropdownItem>
-          </div>
-
-          <div className="hover:bg-gray-300 py-1 px-4">
-            <Link to="/quantri/thongtincanhan" className="no-underline">
-              <div>
-                <CIcon icon={cilBell} className="me-2" />
-                Thông tin cá nhân
-                <CBadge color="info" className="ms-2">
-                  42
-                </CBadge>
-              </div>
-            </Link>
-          </div>
-
-          <MenuItem className="border">
-            <CIcon icon={cilLockLocked} className="me-2" />
-            Đăng xuất
-          </MenuItem>
-        </Menu>
-      </div>
-    );
+    UserAuth = <AppHeaderDropdown />;
   }
   const [searchTerm, setSearchTerm] = useState("");
-
   const navigate = useNavigate();
   const searchSubmit = (event) => {
     event.preventDefault();
     // Thực hiện xử lý dữ liệu form tại đây (nếu cần)
+    const search = convertNameWithoutAccents(searchTerm);
 
     // Chuyển hướng sang trang sản phẩm
     navigate(`/timkiem/${searchTerm}`);
@@ -241,7 +186,19 @@ const AppHeader = () => {
               searchOpen ? "flex animation" : "hidden"
             }`}
           >
-            <form className="w-full absolute top-0 translate-y-3 left-0 ">
+            <form
+              className="w-full absolute top-0 translate-y-3 left-0"
+              onSubmit={searchSubmit}
+            >
+              <div className="">
+                <SearchMobile
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  Open={Open}
+                />
+              </div>
+            </form>
+            {/* <form className="w-full absolute top-0 translate-y-3 left-0 ">
               <div className="border rounded-xl bg-gray-200 px-2 items-center flex  w-full z-50">
                 <input
                   className="w-full border-none focus:ring-0 bg-transparent outline-none  placeholder:text-gray-950 placeholder:text-xs "
@@ -253,13 +210,13 @@ const AppHeader = () => {
                   onClick={Open}
                 />
               </div>
-            </form>
+            </form> */}
           </div>
 
           <div className="flex items-center gap-3">
             <form className="" onSubmit={searchSubmit}>
               <div className="">
-                <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+                <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
               </div>
             </form>
             <div className="p-2 md:hidden rounded-full bg-gray-200 text-yellow-400 flex justify-center items-center">

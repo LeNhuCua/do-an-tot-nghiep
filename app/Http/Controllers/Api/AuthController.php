@@ -107,20 +107,26 @@ class AuthController extends Controller
         }
         if (Auth::attempt($credentials)) {
             $admin = Auth::user();
-            $token = $admin->createToken('main')->plainTextToken;
 
-            $cookie = cookie('jwt', $token, 60 * 24); // 1 day
+            if ($admin->confirmed) {
+                // Người dùng đã được xác nhận
+                $token = $admin->createToken('main')->plainTextToken;
+                $cookie = cookie('jwt', $token, 60 * 24); // 1 day
 
-           
-            // Auth::login($admin->userId);
-            
-            return response()->json([
-                'status' => 200,
-                'username' => $admin->fullName,
-                'token' => $token,
-                'message' => 'Dang nhap thanh cong',
-                'user' => $request->user()
-            ])->withCookie($cookie);;
+                return response()->json([
+                    'status' => 200,
+                    'username' => $admin->fullName,
+                    'token' => $token,
+                    'message' => 'Đăng nhập thành công',
+                    'user' => $request->user()
+                ])->withCookie($cookie);
+            } else {
+                // Người dùng chưa được xác nhận
+                return response()->json([
+                    'status' => 401,
+                    'message' => "Vui lòng vào email để xác nhận",
+                ]);
+            }
         }
         // return new UserResource(auth()->user());
         return response()->json([

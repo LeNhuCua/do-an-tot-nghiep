@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('sizes', function (Blueprint $table) {
-            $table->string('sizeId', 20)->primary();
+            $table->string('sizeId', 10)->primary();
             $table->string('sizeValue', 30);
             $table->timestamps();
         });

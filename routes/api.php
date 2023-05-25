@@ -18,6 +18,7 @@ use App\Http\Controllers\Customer\DistrictsController;
 use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\PaymentMethodsController;
 use App\Http\Controllers\Customer\ProductsController as CustomerProductsController;
+use App\Http\Controllers\Customer\UsersController as CustomerUserController;
 use App\Http\Controllers\Customer\ProvincesController;
 use App\Http\Controllers\Customer\ShippingCostsController;
 use App\Http\Controllers\Customer\WardsController;
@@ -168,17 +169,29 @@ Route::group(['prefix' => 'users'], function () {
 //KHÁCH HÀNG
 
 //giao diện
+
+
+
+
+
 Route::group(['prefix' => 'cus-products'], function () {
     Route::get('/categories', [CustomerProductsController::class, 'categories']);
     Route::get('/newProducts', [CustomerProductsController::class, 'newProducts']);
     Route::get('/hotProducts', [CustomerProductsController::class, 'hotProducts']);
+    Route::get('/relatedProducts', [CustomerProductsController::class, 'relatedProducts']);
     Route::get('/showDetail', [CustomerProductsController::class, 'showDetail']);
     Route::get('/showTypeCategories', [CustomerProductsController::class, 'showTypeCategories']);
     Route::get('/showCategories', [CustomerProductsController::class, 'showCategories']);
     Route::get('/search', [CustomerProductsController::class, 'search']);
+    Route::get('/searchProducts', [CustomerProductsController::class, 'searchProducts']);
+
+    //đăng kí tài khoản
+    Route::post('/signupCus', [CustomerUserController::class, 'signupCus']);
     // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
 });
-
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/send-email', 'App\Http\Controllers\MailController@sendEmail');
+});
 
 //giỏ hàng// 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -197,6 +210,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'customerAddresses'], function () {
         Route::resource('/', CustomerAddressesController::class);
+        Route::get('/{id}', [CustomerAddressesController::class, 'show']);
+
         // Route::put('/{id}/{scope}', [CustomerAddressesController::class, 'update']);
         // Route::delete('/{id}', [CustomerAddressesController::class, 'destroy']);
         // Route::get('/totalCart', [CustomerAddressesController::class, 'totalCart']);
@@ -234,6 +249,11 @@ Route::group(['prefix' => 'cus-payment'], function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'cus-order'], function () {
         Route::resource('/', OrderController::class);
+        Route::get('/show', [OrderController::class, 'show']);
+        Route::put('/orderCancel', [OrderController::class, 'orderCancel']);
+
+
+        // Route::get('/index/{id}', [OrderController::class, 'index']);
     });
 });
 
@@ -266,11 +286,13 @@ Route::post('/signup', [UsersController::class, 'signup']);
 Route::post('/login', [AuthController::class, 'login']);
 
 
+Route::get('/confirm-account/{token}', [CustomerUserController::class, 'confirmAccount']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'logged_user']);
+
     // Route::get('/user', function (Request $request) {
     //     return $request->user();
     // });

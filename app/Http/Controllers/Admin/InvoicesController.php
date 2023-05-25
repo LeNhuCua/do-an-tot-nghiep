@@ -91,8 +91,10 @@ class InvoicesController extends Controller
                         $invoiceDetail->number = $invoiceItemObject->amount;
                         $invoiceDetail->productId = $invoiceItemObject->productId;
                         $invoiceDetail->price = $invoiceItemObject->sizePrice;
+                        $invoiceDetail->sizeValue = $invoiceItemObject->sizeValue;
                         $invoiceDetail->invoiceId = $invoice->invoiceId;
-
+                       
+                        
                         $invoiceDetail->save();
                         $invoiceDetails->push($invoiceItemObject);
                     }

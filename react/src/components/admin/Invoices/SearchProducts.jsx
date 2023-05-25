@@ -54,7 +54,7 @@ const SearchProducts = (props) => {
   };
 
   return (
-    <div>
+    <div className="w-full">
       <div className="p-inputgroup relative">
         <InputText
           placeholder={focused ? "" : "Nhập tên hoặc mã sản phẩm"} // chỉ hiển thị placeholder khi ô input không được focus

@@ -20,6 +20,9 @@ const Login = React.lazy(() => import("./views/admin/login/Login"));
 const Register = React.lazy(() => import("./views/admin/register/Register"));
 
 const LoginCustomer = React.lazy(() => import("./views/customer/login/Login"));
+const RegisterCustomer = React.lazy(() =>
+  import("./views/customer/register/Register")
+);
 
 const Page404 = React.lazy(() => import("./views/pages/page404/Page404"));
 const Page500 = React.lazy(() => import("./views/pages/page500/Page500"));
@@ -69,6 +72,19 @@ function App() {
               name="Login Page"
               element={<LoginCustomer />}
             />
+            <Route
+              exact
+              path="/dangky"
+              name="Đăng ký"
+              element={<RegisterCustomer />}
+            />
+            {/* <Route  path="*" element={<LoginCustomer />} /> */}
+            {/* <Route
+              exact
+              path=""
+              name="Login Page"
+              element={<LoginCustomer />}
+            /> */}
           </Routes>
         </ScrollToTop>
       </Suspense>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
+use App\Mail\AccountConfirmation;
 use App\Models\Admin;
 use App\Models\Customer;
 use App\Models\User;
@@ -11,7 +12,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Str;
 
 class UsersController extends Controller
 {
@@ -39,7 +42,7 @@ class UsersController extends Controller
         $validator = Validator::make($request->all(), [
             'fullName' => 'required',
             'email' => 'required',
-            'account' => 'required',
+            'account' => 'required|unique:users',
             'password' => 'required|min:3',
             'c_password' => 'required|same:password'
         ], $messages);
@@ -70,7 +73,11 @@ class UsersController extends Controller
                 'account' => $request->account,
                 'password' => Hash::make($request->password),
                 'role_id' => $request->role_id,
+                'confirmation_token' => Str::random(60),
+
             ]);
+            Mail::to($user->email)->send(new AccountConfirmation($user));
+
             // $token = $user->createToken('main')->plainTextToken;
             // return response(compact('user', 'token'));
             if ($user) { // check if user is created

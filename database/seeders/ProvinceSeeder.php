@@ -20,13 +20,13 @@ class ProvinceSeeder extends Seeder
 
 
             [
-                'provinceId' => "TINH001",
+                'provinceId' => "T001",
                 'name' => "An Giang",
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
-                'provinceId' => "TINH002",
+                'provinceId' => "T002",
                 'name' => "Khánh Hoà",
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()

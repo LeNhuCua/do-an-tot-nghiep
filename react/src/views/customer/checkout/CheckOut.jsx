@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../../context/DataContext";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { BsArrowBarRight } from "react-icons/bs";
 import Loading from "../../../components/Loading";
 import { API, API_IMAGES } from "../../../API";
@@ -21,7 +21,11 @@ import { RadioButton } from "primereact/radiobutton";
 import CreateCustomerAddress from "../../../components/customer/checkout/CreateCustomerAddress";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
-
+import SendEmail from "./SendEmail";
+import ReactDOMServer from "react-dom/server";
+import { useStateContext } from "../../../context/ContextProvider";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 const CheckOut = () => {
   UseTitle("Đặt hàng");
   const {
@@ -49,7 +53,7 @@ const CheckOut = () => {
   });
 
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Loading function to load data or
     // fake it using setTimeout;
@@ -170,8 +174,45 @@ const CheckOut = () => {
       <small className="">&nbsp;</small>
     );
   };
+  const { user } = useStateContext();
+  const weightTemplate = (cart) => {
+    return (
+      <span className="">
+        Trọng lượng:
+        <span className="font-normal">
+          {" "}
+          {cart.product.weight} {cart.product.unit.name}
+        </span>
+      </span>
+    );
+  };
+
+  const priceTemplate = (cart) => {
+    return (
+      <span className="font-normal">
+        {new Intl.NumberFormat({
+          style: "currency",
+          currency: "JPY",
+        }).format(cart.price)}
+        <span> VNĐ</span>
+      </span>
+    );
+  };
+
+  const toltalTemplate = (cart) => {
+    return (
+      <p className="">
+        {new Intl.NumberFormat({
+          style: "currency",
+          currency: "JPY",
+        }).format(cart.price * cart.quantity)}
+        <span> VNĐ</span>
+      </p>
+    );
+  };
 
   const onSubmit = async (data) => {
+    setLoading(true);
     const formData = new FormData();
     console.log(checkoutProducts);
     const total =
@@ -190,7 +231,10 @@ const CheckOut = () => {
 
     //orderDetail
     for (let i = 0; i < checkoutProducts.length; i++) {
-      formData.append(`orderDetails[${i}]`, JSON.stringify(checkoutProducts[i]));
+      formData.append(
+        `orderDetails[${i}]`,
+        JSON.stringify(checkoutProducts[i])
+      );
     }
     //ShippingFee
     formData.append(
@@ -210,13 +254,141 @@ const CheckOut = () => {
       .post(`${API}/api/cus-order`, formData)
       .then((response) => {
         if (response.data.status === 400) {
-          Swal.fire({
-            icon: "success",
-            title: "Thêm mới thành công!",
-            showConfirmButton: false,
-            timer: 1500,
-          });
           // navigate("/quantri/sanpham");
+          const emailData = new FormData();
+          // emailData.append("to", "cua.ln.61cntt@gmail.com");
+          emailData.append("subject", "Đặt hàng thành công tại Kim Huy");
+          const content = ReactDOMServer.renderToString(
+            <div>
+              <h1 className="font-bold text-xl">
+                Xin chào {user.fullName}, cảm ơn bạn đã đặt hàng!{" "}
+              </h1>
+              <div>
+                <div className="flex gap-2">
+                  <div className="flex gap-2">
+                    <h2>
+                      {" "}
+                      Bạn đã đặt {checkoutProducts.length} mặt với tổng số
+                      tiền phải trả là là:{" "}
+                      {selectedShippingMethods &&
+                      selectedShippingMethods.shippingMethodId !== "PTVC002" ? (
+                        <>
+                          {new Intl.NumberFormat({
+                            style: "currency",
+                            currency: "JPY",
+                          }).format(
+                            totalAmount +
+                              (shippingCosts.length > 0
+                                ? shippingCosts[0].shippingCost
+                                : 0)
+                          )}
+                          <span> VNĐ</span>
+                        </>
+                      ) : (
+                        <>
+                          {new Intl.NumberFormat({
+                            style: "currency",
+                            currency: "JPY",
+                          }).format(totalAmount)}
+                          <span> VNĐ</span>
+                        </>
+                      )}
+                      {" trong đó: "}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <h2>
+                  Tổng là:{" "}
+                  {new Intl.NumberFormat({
+                    style: "currency",
+                    currency: "JPY",
+                  }).format(totalAmount)}
+                  <span> VNĐ</span>{" "}
+                </h2>
+              </div>
+              <div>
+                <h2>
+                  Phí ship là{" "}
+                  {selectedShippingMethods &&
+                  selectedShippingMethods.shippingMethodId !== "PTVC002" ? (
+                    <>
+                      {new Intl.NumberFormat({
+                        style: "currency",
+                        currency: "JPY",
+                      }).format(
+                        shippingCosts.length > 0
+                          ? shippingCosts[0].shippingCost
+                          : "0"
+                      )}
+                      <span> VNĐ</span>
+                    </>
+                  ) : (
+                    <>
+                      {new Intl.NumberFormat({
+                        style: "currency",
+                        currency: "JPY",
+                      }).format(0)}
+                      <span> VNĐ</span>
+                    </>
+                  )}{" "}
+                </h2>
+              </div>
+
+              <h2>Chi tiết các sản phẩm như sau</h2>
+              <div className="card">
+                <DataTable
+                  value={checkoutProducts}
+                  tableStyle={{ minWidth: "50rem" }}
+                >
+                  <Column field="product.productId" header="Mã"></Column>
+                  <Column field="product.name" header="Sản phẩm"></Column>
+                  <Column field="quantity" header="Số lượng"></Column>
+                  <Column
+                    field="product.weight"
+                    header="Trọng lượng"
+                    body={weightTemplate}
+                  ></Column>
+                  <Column
+                    field="product.product_type.name"
+                    header="Loại"
+                  ></Column>
+                  <Column field="size.sizeValue" header="Kích thước"></Column>
+                  <Column
+                    field="price"
+                    header="Đơn giá"
+                    body={priceTemplate}
+                  ></Column>
+                  <Column
+                    field="total"
+                    header="Thành tiền"
+                    body={toltalTemplate}
+                  ></Column>
+                </DataTable>
+              </div>
+            </div>
+          );
+          emailData.append("body", content);
+          axiosClient
+            .post(`${API}/api/send-email`, emailData)
+            .then((response) => {
+              if (response.data.status === 400) {
+                setLoading(false);
+                Swal.fire({
+                  icon: "success",
+                  title: "Đặt hàng thành công!",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+                navigate("/dathangthanhcong");
+              } else {
+                Swal.fire({
+                  icon: "error",
+                  text: "Vui lòng kiểm tra lại thông tin!",
+                });
+              }
+            });
         } else {
           Swal.fire({
             icon: "error",
@@ -228,8 +400,36 @@ const CheckOut = () => {
     // reset();
   };
 
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [updateAddress, setUpdateAddress] = useState({});
+  const submitUpdateAddress = async (id) => {
+    await axiosClient
+      .get(`${API}/api/customerAddresses/${id}`)
+      .then(({ data }) => {
+        // dispatch({ type: "FETCH_HOTPRODUCTS", payload: data });
+        // setLoading(false);
+        setUpdateAddress(data.customerAddress);
+        console.log(data.customerAddress);
+      });
+    setOpenUpdate(true);
+  };
+  console.log(openUpdate);
   return (
     <div>
+      <div className="card flex justify-content-center">
+        <Dialog
+          header="Header"
+          visible={openUpdate}
+          style={{ width: "50vw" }}
+          onHide={() => setOpenUpdate(false)}
+        >
+          <div className="m-0">
+            {" "}
+            {updateAddress ? <h2>{updateAddress.recipientAddress}</h2> : ""}
+            <h1></h1>
+          </div>
+        </Dialog>
+      </div>
       <div>
         {loading && <Loading />}
         {!loading && (
@@ -318,9 +518,16 @@ const CheckOut = () => {
                               </span>
                             </div>
                             <div className="justify-end flex gap-2  cursor-pointer">
-                              <h6 className="text-blue-700">Cập nhật</h6>
+                              <h6
+                                className="text-blue-700"
+                                onClick={() =>
+                                  submitUpdateAddress(addAddress.addressId)
+                                }
+                              >
+                                Cập nhật
+                              </h6>
 
-                              <h6 className="text-red-600">Xoá</h6>
+                              {/* <h6 className="text-red-600">Xoá</h6> */}
                             </div>
                           </div>
                         ))

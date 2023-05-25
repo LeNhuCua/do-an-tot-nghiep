@@ -84,8 +84,7 @@ const Home = React.lazy(() => import("./views/customer/home/Home"));
 const ShowCategories = React.lazy(() => import("./views/customer/categories/ShowCategories"));
 const ShowTypeCategories = React.lazy(() => import("./views/customer/categories/ShowTypeCategories"));
 const CheckOut = React.lazy(() => import("./views/customer/checkout/CheckOut"));
-
-
+const CheckOutSuccess = React.lazy(() => import("./views/customer/checkout/CheckOutSuccess"));
 const SearchProducts = React.lazy(() =>
   import("./views/customer/SearchProducts/SearchProducts")
 );
@@ -205,13 +204,14 @@ const routes = [
   { path: "/danhmuc/:alias", name: "Danh mục", element: ShowCategories },
   { path: "/danhmuccon/:alias", name: "Danh mục", element: ShowTypeCategories },
 
-  
   // { path: "/", name: "Trang chủ", element: Home },
   { path: "/sanpham/:alias", name: "Trang chủ", element: ProductDetail },
   { path: "/timkiem/:search", name: "Tìm kiếm", element: SearchProducts },
   { path: "/giohang", name: "Giỏ hàng", element: ShoppingCart },
-  { path: "/dathang", name: "Giỏ hàng", element: CheckOut },
-
+  { path: "/dathang", name: "Đặt hàng", element: CheckOut },
+  { path: "/dathangthanhcong", name: "Đặt hàng thành công", element: CheckOutSuccess },
+  
+  
   
 ];
 

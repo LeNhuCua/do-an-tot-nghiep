@@ -23,7 +23,7 @@ class CreateOrdersTable extends Migration
 
             $table->float('totalAmount', 20, 6);
 
-            $table->string('orderStatusId', 20);
+            $table->string('orderStatusId', 5);
             $table->foreign('orderStatusId')->references('orderStatusId')->on('order_statuses')->onUpdate('cascade')->onDelete('cascade');
 
 

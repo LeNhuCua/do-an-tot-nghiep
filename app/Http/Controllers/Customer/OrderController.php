@@ -15,11 +15,16 @@ use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
-    public function index($id)
+    public function index(Request $request)
     {
-        $order = Order::where('userId', '=', $id)->get();
-        return response()->json($order);
+        $typeOrder = $request->input('typeOrder');
+        $userId = Auth::user()->userId;
+        $order = Order::orderBy("created_at", "desc")->where('userId', $userId)->where('orderStatusId', $typeOrder)->get();
+        return $order;
     }
+
+
+
     public function destroy($cartId)
     {
         $userId = Auth::user()->userId;
@@ -46,6 +51,40 @@ class OrderController extends Controller
         }
     }
 
+    public function show(Request $request)
+    {
+
+        $orderId = $request->input('orderId');
+
+
+
+
+        $orderDetail = OrderDetail::orderBy("created_at", "desc")->where('orderId', $orderId)->get();
+        return response()->json([
+            'orderDetail' => $orderDetail
+        ]);
+    }
+
+
+    public function orderCancel(Request $request)
+    {
+        $orderId = $request->input('orderId');
+        $userId = Auth::user()->userId;
+        $order = Order::where('orderId', $orderId)->where('userId', $userId)->first();
+        if ($order) {
+            $order->orderStatusId = "TT006";
+            $order->save();
+            return response()->json([
+                'status' => 200,
+                'order' => $order
+            ]);
+        } else {
+            // Xử lý khi không tìm thấy đơn hàng
+        }
+    }
+    
+
+
     public function store(Request $request)
     {
         $messages = [
@@ -71,7 +110,7 @@ class OrderController extends Controller
 
             try {
                 if (auth()->check()) {
-                $userId = Auth::user()->userId;
+                    $userId = Auth::user()->userId;
                     $days_now = Carbon::today();
                     $dateObj = $days_now->toDateString();
 
@@ -93,7 +132,7 @@ class OrderController extends Controller
 
                     $order->orderId  = $newOrderId;
                     $order->totalAmount  = $request->totalAmount;
-                    $order->orderStatusId  = "TT00001";
+                    $order->orderStatusId  = "TT001";
                     $order->deliveryDate  = null;
                     $order->userId  = $userId;
                     $order->paymentMethodId  = $request->paymentMethodId;
@@ -130,12 +169,12 @@ class OrderController extends Controller
 
                             //TRỪ GIỎ HÀNG
                             // $cart = Cart::find($sizeItemObject->productId)->where('sizeId', $sizeItemObject->sizeId)->where('userId', $userId);
-                            $cart = Cart::where('productId', $sizeItemObject->productId)->where('sizeId', $sizeItemObject->sizeId)->where('userId', $userId)->first();
-                            $cart->quantity -= $sizeItemObject->quantity;
-                            if ($cart->quantity === 0) {
-                                $this->destroy($cart->cartId);
-                            }
-                            $cart->save();
+                            // $cart = Cart::where('productId', $sizeItemObject->productId)->where('sizeId', $sizeItemObject->sizeId)->where('userId', $userId)->first();
+                            // $cart->quantity -= $sizeItemObject->quantity;
+                            // if ($cart->quantity === 0) {
+                            //     $this->destroy($cart->cartId);
+                            // }
+                            // $cart->save();
                         }
                     }
 
@@ -186,7 +225,7 @@ class OrderController extends Controller
                         'status' => 400,
                         'message' => 'order Created Successfully!!',
                         'order' => $order,
-                        '$cart' => $cart
+                        // '$cart' => $cart
 
 
                     ]);

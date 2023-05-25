@@ -1,5 +1,5 @@
 import React, { createRef, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import Swal from "sweetalert2";
@@ -144,10 +144,18 @@ const Login = () => {
                 <div className="flex items-center justify-end">
                   <a
                     href="#"
-                    className="text-sm font-medium text-yellow-400 hover:underline"
+                    className="text-sm font-medium text-yellow-600 hover:underline"
                   >
                     Quên mật khẩu?
                   </a>
+                </div>
+                <div className="flex items-center justify-end">
+                  <Link
+                    to="/dangky"
+                    className="text-sm font-medium text-yellow-600 hover:underline"
+                  >
+                    Đăng kí tài khoản
+                  </Link>
                 </div>
 
                 {/* <p className="text-sm font-light text-gray-500 dark:text-gray-400">

@@ -12,6 +12,7 @@ import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import "./style.css";
 import { Dropdown } from "primereact/dropdown";
 import { CCol } from "@coreui/react";
+import SendEmail from "../checkout/SendEmail";
 
 const ShowCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -78,6 +79,7 @@ const ShowCategories = () => {
 
   return (
     <div className="">
+      
       <div className="row container">
         <CCol xl={6}>
           <span>Sắp xếp theo</span>

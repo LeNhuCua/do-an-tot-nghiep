@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('type_categories', function (Blueprint $table) {
-            $table->string('typeCategoryId', 20)->primary();
+            $table->string('typeCategoryId', 10)->primary();
             $table->string('name',50)->unique();
-            $table->string('alias');
+            $table->string('alias',50);
             $table->boolean('status');
-            $table->string('categoryId',20);
+            $table->string('categoryId',10);
             $table->foreign('categoryId')->references('categoryId')->on('categories')->onUpdate('cascade')->onDelete('cascade');
             $table->timestamps();
         });

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AppSidebarBa, AppFooter, AppHeader, AppContent } from "./index";
+import { AppFooter, AppHeader, AppContent, AppSidebar } from "./index";
 import { useStateContext } from "../../context/ContextProvider";
 import { Navigate, useNavigate } from "react-router-dom";
 import axiosClient from "../../axios-client-customer";
@@ -52,11 +52,11 @@ const DefaultLayout = () => {
         >
           <AppHeader />
           <div>
-          <AppSidebarBa />
-
+            <AppSidebar />
           </div>
-
-          <AppContent />
+          <div className={`${isOpenSidebar ? "select-none" : ""}`}>
+            <AppContent />
+          </div>
           <div className="mt-8">
             <AppFooter />
           </div>

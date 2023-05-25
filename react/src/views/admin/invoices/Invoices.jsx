@@ -19,6 +19,7 @@ import { Fieldset } from "primereact/fieldset";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { AiOutlineClose, AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import Tippy from "@tippyjs/react";
+import { TabView, TabPanel } from "primereact/tabview";
 
 import { InputNumber } from "primereact/inputnumber";
 import SearchProducts from "../../../components/admin/Invoices/SearchProducts";
@@ -207,7 +208,7 @@ export default function Invoices() {
   );
   const removeFromInvoice = (id, selectedSize) => {
     const newInvoice = invoices[selectedTable].filter((item) => {
-      return (item.productId !== id || item.sizeId !== selectedSize);
+      return item.productId !== id || item.sizeId !== selectedSize;
     });
     setInvoices({ ...invoices, [selectedTable]: newInvoice });
   };
@@ -265,6 +266,8 @@ export default function Invoices() {
   //     [event.target.name]: event.target.value,
   //   });
   // };
+  console.log(invoices[selectedTable]);
+
   const CreateInvoice = async () => {
     const formData = new FormData();
     formData.append("totalAmount", totalAmount);
@@ -359,30 +362,36 @@ export default function Invoices() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-2">
       <ScrollPanel className="col-span-3 h-[100vh]">
-        <div className="relative">
-          <SearchProducts products={products} addToInvoice={addToInvoice} />
-        </div>
-        <Fieldset legend={legendTemplate} className="mt-4">
-          <div className="grid grid-cols-3 lg:grid-cols-4  gap-3">
-            {[...Array(tableCount)].map((_, i) => (
-              <button
-                key={i}
-                className={`border p-2   ${
-                  i + 1 === selectedTable && invoices[i + 1].length > 0
-                    ? "bg-blue-500 text-white font-bold"
-                    : i + 1 === selectedTable
-                    ? "bg-blue-500 text-white font-bold"
-                    : invoices[i + 1].length > 0
-                    ? "bg-green-300"
-                    : ""
-                }  `}
-                onClick={() => setSelectedTable(i + 1)}
-              >
-                Hoá đơn {i + 1}
-              </button>
-            ))}
-          </div>
-        </Fieldset>{" "}
+        <TabView>
+          <TabPanel header="Hoá đơn" leftIcon="pi pi-calendar mr-2">
+            <Fieldset legend={legendTemplate} className="mt-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-3">
+                {[...Array(tableCount)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={`border p-2   ${
+                      i + 1 === selectedTable && invoices[i + 1].length > 0
+                        ? "bg-blue-500 text-white font-bold"
+                        : i + 1 === selectedTable
+                        ? "bg-blue-500 text-white font-bold"
+                        : invoices[i + 1].length > 0
+                        ? "bg-green-300"
+                        : ""
+                    }  `}
+                    onClick={() => setSelectedTable(i + 1)}
+                  >
+                    Hoá đơn {i + 1}
+                  </button>
+                ))}
+              </div>
+            </Fieldset>{" "}
+          </TabPanel>
+          <TabPanel header="Sản phẩm" rightIcon="pi pi-credit-card ml-2">
+            <div className="relative">
+              <SearchProducts products={products} addToInvoice={addToInvoice} />
+            </div>
+          </TabPanel>
+        </TabView>
       </ScrollPanel>
 
       <ScrollPanel className="col-span-2 h-[100vh]">
@@ -407,7 +416,7 @@ export default function Invoices() {
                     ))
                   ) : (
                     <div>
-                      <ImFileEmpty size={30}/> Hoá đơn trống
+                      <ImFileEmpty size={30} /> Hoá đơn trống
                     </div>
                   )}
                   {totalAmount ? (

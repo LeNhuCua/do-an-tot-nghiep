@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('order_statuses', function (Blueprint $table) {
-            $table->string('orderStatusId', 20)->primary();
-            $table->string('name', 100);
+            $table->string('orderStatusId', 5)->primary();
+            $table->string('name', 50);
             $table->timestamps();
         });
     }

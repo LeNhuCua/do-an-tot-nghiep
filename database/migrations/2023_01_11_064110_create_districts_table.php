@@ -15,9 +15,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('districts', function (Blueprint $table) {
-            $table->string('districtId',20)->primary();
-            $table->string('name');
-            $table->string('provinceId',20);
+            $table->string('districtId',5)->primary();
+            $table->string('name',30);
+            $table->string('provinceId',5);
             $table->foreign('provinceId')->references('provinceId')->on('provinces')->onUpdate('cascade')->onDelete('cascade');;
             $table->timestamps();
         });

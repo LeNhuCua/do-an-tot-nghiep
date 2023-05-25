@@ -28,6 +28,12 @@ class OrderDetail extends Model
 
     protected $primaryKey = 'orderDetailId';
     public $incrementing = false;
+    protected $with = ['product'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'productId', 'productId');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

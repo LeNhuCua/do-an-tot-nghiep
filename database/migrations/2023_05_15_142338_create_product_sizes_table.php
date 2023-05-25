@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('productSizeId', 20)->primary();
             $table->float('price', 20, 6);
 
-            $table->string('sizeId', 20);
+            $table->string('sizeId', 10);
             $table->foreign('sizeId')->references('sizeId')->on('sizes')->onUpdate('cascade')->onDelete('cascade');
 
             $table->string('productId', 50);

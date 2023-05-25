@@ -14,14 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('invoice_details', function (Blueprint $table) {
-            
+
             $table->integer('number');
             $table->float('price', 20, 6);
+            $table->string('sizeValue', 30);
 
             $table->string('invoiceId', 20);
             $table->foreign('invoiceId')->references('invoiceId')->on('invoices')->onUpdate('cascade')->onDelete('cascade');;
 
-            $table->string('productId',50);
+            $table->string('productId', 50);
             $table->foreign('productId')->references('productId')->on('products')->onUpdate('cascade')->onDelete('cascade');;
 
             $table->timestamps();

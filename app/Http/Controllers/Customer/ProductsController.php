@@ -24,17 +24,25 @@ class ProductsController extends Controller
     {
         $posts = Product::where("rating", ">=", 4)->orderBy("rating", "desc")->where('status', '=', 1)->get();
         return $posts;
+    }
 
 
-        // return DB::table('products')
-        // ->select('name','alias', DB::raw('max(rating) as rating'))
-        // // ->where("rating", ">=", 4)
-        // ->groupBy('productId')
-        // ->orderBy('rating', 'desc')
-        // ->take(3) // chỉ lấy sản phẩm có số lượng lớn nhất
-        // ->get();
 
+    public function relatedProducts(Request $request)
+    {
+        $alias = $request->input('alias');
 
+        $productTypeId = Product::where('alias', $alias)
+            ->pluck('productTypeId');
+
+        $relatedProduct = Product::with('productImage')->where('productTypeId', $productTypeId)
+            ->inRandomOrder()
+            ->limit(8) // Đổi giá trị "5" thành số bản ghi bạn muốn lấy
+            ->get();
+
+        return response()->json([
+            'relatedProduct' => $relatedProduct
+        ]);
     }
 
     public function showDetail(Request $request)
@@ -181,15 +189,76 @@ class ProductsController extends Controller
     public function search(Request $request)
     {
         $term = $request->input('term');
-        $results = Product::searchByPrice($term)->orWhere('name', 'like', '%' . $term . '%')->get();
+        $results = Product::searchByPrice($term)->orWhere('name', 'like', '%' . $term . '%')->take(4)->get();
 
         return response()->json(['results' => $results]);
     }
 
 
+
+    public function searchProducts(Request $request)
+    {
+        $search = $request->input('search');
+        $data = Product::searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+
+        // $data = Product::orderBy("productId", "desc")->where('typeCategoryId', $typeCategoryId)->paginate(1);;
+        if ($request->input('sort') && $request->input('fillPrice')) {
+            $sort = $request->input('sort');
+            $fillPrice = $request->input('fillPrice');
+            $priceRange = [];
+            if ($fillPrice === 'lessTwo') {
+                $priceRange = ['0', '2000000'];
+            } else if ($fillPrice === 'betweenTwoAndSix') {
+                $priceRange = ['2000000', '6000000'];
+            } else if ($fillPrice === 'betweenSixAndTen') {
+                $priceRange = ['6000000', '10000000'];
+            } else if ($fillPrice === 'betweenTenAndTwenty') {
+                $priceRange = ['10000000', '20000000'];
+            } else if ($fillPrice === 'greaterTwenty') {
+                $priceRange = ['20000000', '999999999'];
+            }
+            if ($sort === 'price-asc') {
+                $data = Product::orderByPrice('asc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'price-desc') {
+                $data = Product::orderByPrice('desc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'name-asc') {
+                $data = Product::orderBy("name", 'asc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'name-desc') {
+                $data = Product::orderBy("name", 'desc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            } else if ($sort === 'best-selling') {
+                $data = Product::orderBy("numberBuy", 'desc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->filterByPrice($priceRange[0], $priceRange[1])->paginate(2);
+            }
+        } else if ($request->input('sort')) {
+            $sort = $request->input('sort');
+            if ($sort === 'price-asc') {
+                $data = Product::orderByPrice('asc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+            } else if ($sort === 'price-desc') {
+                $data = Product::orderByPrice('desc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+            } else if ($sort === 'name-asc') {
+                $data = Product::orderBy("name", 'asc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+            } else if ($sort === 'name-desc') {
+                $data = Product::orderBy("name", 'desc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+            } else if ($sort === 'best-selling') {
+                $data = Product::orderBy("numberBuy", 'desc')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+            }
+        } else if ($request->input('fillPrice')) {
+            $fillPrice = $request->input('fillPrice');
+            if ($fillPrice === 'lessTwo') {
+                $data = Product::filterByPrice('0', '1000000')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+            } else if ($fillPrice === 'betweenTwoAndSix') {
+                $data = Product::filterByPrice('1000000', '999999999')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(2);
+            }
+        }
+        return $data;
+    }
+
+
+
+
+
     // public function index()
     // {
-    //     $productDetail = Product::with('typeCategory')->where('alias', $alias)
+    //     $productDetail = Product::with('typeCategory')->where('search', $alias)
     //         ->get();
 
     //     return $productDetail;

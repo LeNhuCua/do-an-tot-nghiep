@@ -24,7 +24,7 @@ class CreateCartsTable extends Migration
             $table->foreign('userId')->references('userId')->on('users')->onUpdate('cascade')->onDelete('cascade');
 
 
-            $table->string('sizeId', 20);
+            $table->string('sizeId', 10);
             $table->foreign('sizeId')->references('sizeId')->on('sizes')->onUpdate('cascade')->onDelete('cascade');
 
             $table->string('productId', 50);

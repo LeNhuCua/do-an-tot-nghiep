@@ -27,6 +27,11 @@ class DatabaseSeeder extends Seeder
             TypeCategoriesSeeder::class,
             ProductsTypeSeeder::class,
             UnitsSeeder::class,
+            OrderStatusSeeder::class,
+            ShippingMethodsSeeder::class,
+            PaymentMethodsSeeder::class,
+            ShippingCostsSeeder::class,
+
             // ProductsSeeder::class,
         ]);
         // \App\Models\User::factory()->create([

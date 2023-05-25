@@ -10,42 +10,42 @@ const AppFooter = () => {
             <Link to="/">
               <img
                 className="h-full"
-                src="https://kingshoes.vn/data/upload/media/cu%CC%9B%CC%89a-ha%CC%80ng-gia%CC%80y-sneaker-chi%CC%81nh-ha%CC%80ng-uy-ti%CC%81n-nha%CC%82%CC%81t-de%CC%82%CC%81n-king-shoes-authenti-hcm-6.png"
+                src="https://vitejs.dev/logo-with-shadow.png"
                 alt="logo"
               />
             </Link>
             <p className="text-white">
-              KINGSHOES.VN Trang Thông Tin Chính Thức.
+              Kim huy.VN Trang Thông Tin Chính Thức.
             </p>
             <p className="text-white">
               ⛪ Địa chỉ: 192/2 Nguyễn Thái Bình, Phường 12, Quận Tân Bình,
               Thành phố Hồ Chí Minh
             </p>
-            <p className="text-white">Email : cskh.kingshoes.vn@gmail.com</p>
-            <p className="cs-hover text-yellow-50">https://kingshoes.vn/</p>
+            <p className="text-white">Email : cskh.Kim huy.vn@gmail.com</p>
+            <p className="cs-hover text-yellow-50">https://Kim huy.vn/</p>
             <p className="cs-hover text-white">
-              https://twitter.com/KingShoes_vn
+              https://twitter.com/Kim huy_vn
             </p>
             <p className="cs-hover text-white">
-              https://instagram.com/KingShoes.vn
+              https://instagram.com/Kim huy.vn
             </p>
             <p className="cs-hover text-white">
-              https://facebook.com/pg/www.KingShoes.vn
+              https://facebook.com/pg/www.Kim huy.vn
             </p>
             <p className="cs-hover text-white">
-              https://www.youtube.com/www.KingShoes.vn
+              https://www.youtube.com/www.Kim huy.vn
             </p>
-            <p className="cs-hover text-white">http://bit.ly/KINGSHOES_map</p>
+            <p className="cs-hover text-white">http://bit.ly/Kim huy_map</p>
 
-            <iframe
+            {/* <iframe
               width="100%"
               height="254"
               src="https://www.youtube.com/embed/epcfWIT_Ais"
-              title="Check-in Kingshoes.vn cửa hàng Sneaker chính hãng uy tín nhất tại HCM"
+              title="Check-in Kim huy.vn cửa hàng Sneaker chính hãng uy tín nhất tại HCM"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
-            ></iframe>
+            ></iframe> */}
           </div>
 
           <div className="flex flex-col gap-5 text-white">
@@ -88,7 +88,7 @@ const AppFooter = () => {
             </div>
             <p>
               Số ĐKKD: 41N8041309 cấp ngày 17/8/2018. Nơi cấp Ủy Ban Nhân Dân
-              Quận Tân Bình. Hộ Kinh Doanh: KINGSHOES. Hotline: 0909.300.746
+              Quận Tân Bình. Hộ Kinh Doanh: Kim huy. Hotline: 0909.300.746
             </p>
             <h1 className="text-2xl uppercase font-bold text-center">
               Chứng nhận
@@ -99,7 +99,7 @@ const AppFooter = () => {
             >
               <img
                 className="h-[6.5rem]"
-                src="https://kingshoes.vn/data/upload/media/logoSaleNoti.png"
+                src="https://Kim huy.vn/data/upload/media/logoSaleNoti.png"
                 alt=""
               />
             </a>

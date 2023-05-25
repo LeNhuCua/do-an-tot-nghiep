@@ -12,6 +12,7 @@ const initialState = {
   hotProducts: [],
 
   //check out
+  totalCart: null,
   checkoutProducts: [],
   customerAddresses: [],
 };
@@ -25,6 +26,12 @@ const reducer = (state, action) => {
       return {
         ...state,
         checkoutProducts: action.payload,
+      };
+
+    case "FETCH_TOTAL_CART":
+      return {
+        ...state,
+        totalCart: action.payload,
       };
 
     case "FETCH_CATEGORIES":

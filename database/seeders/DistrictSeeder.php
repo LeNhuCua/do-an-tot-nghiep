@@ -22,14 +22,14 @@ class DistrictSeeder extends Seeder
             [
                 'districtId' => "Q001",
                 'name' => "Thành Phố Nha Trang",
-                'provinceId' => "TINH002",
+                'provinceId' => "T002",
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],
             [
                 'districtId' => "Q002",
                 'name' => "Thị Xã Ninh Hoà",
-                'provinceId' => "TINH002",
+                'provinceId' => "T002",
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now()
             ],

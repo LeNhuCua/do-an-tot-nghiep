@@ -24,7 +24,14 @@ const ShoppingCart = () => {
   const [loading, setLoading] = useState(true);
   const [selectedData, setSelectedData] = useState([]);
   const navigate = useNavigate();
-
+  const fetchTotalCart = async () => {
+    axiosClient.get(`${API}/api/cart/totalCart`).then((res) => {
+      dispatch({
+        type: "FETCH_TOTAL_CART",
+        payload: res.data[0].total_cart,
+      });
+    });
+  };
   const checkLogin = async () => {
     if (!tokenCustomer || !user) {
       const isConfirm = await Swal.fire({
@@ -123,6 +130,7 @@ const ShoppingCart = () => {
         return;
       }
       removeFromCart(cartId);
+      fetchTotalCart();
     }
     updateQuantity(cartId, "dec");
   };
@@ -136,6 +144,7 @@ const ShoppingCart = () => {
   const removeCart = (cartId) => {
     axiosClient.delete(`${API}/api/cart/${cartId}`).then((res) => {
       if (res.data.status === 200) {
+        fetchTotalCart();
       }
     });
   };

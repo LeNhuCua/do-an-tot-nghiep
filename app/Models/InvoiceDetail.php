@@ -13,7 +13,8 @@ class InvoiceDetail extends Model
         'invoiceId',
         'productId',
         'number',
-        'price'
+        'price',
+        'sizeValue'
     ];
     public $incrementing = false;
 

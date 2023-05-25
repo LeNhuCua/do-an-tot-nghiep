@@ -30,7 +30,12 @@ class Order extends Model
     ];
     protected $primaryKey = 'orderId';
     public $incrementing = false;
+    protected $with = ['orderDetail'];
 
+    public function orderDetail()
+    {
+        return $this->hasMany(OrderDetail::class, 'orderId', 'orderId');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

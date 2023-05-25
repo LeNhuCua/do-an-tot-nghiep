@@ -1,5 +1,5 @@
 import React, { createRef, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import Swal from "sweetalert2";
@@ -7,66 +7,74 @@ import Swal from "sweetalert2";
 import UseTitle from "../../../hook/UseTitle";
 import { useStateContext } from "../../../context/ContextProvider";
 
+import axios from "axios";
+import { API } from "../../../API";
 import axiosClient from "../../../axios-client";
+import IsName from "../../../hook/isName/IsName";
+import { InputText } from "primereact/inputtext";
+import { CCol, CForm } from "@coreui/react";
 
-const Login = () => {
+const Register = () => {
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm();
 
-  UseTitle("Đăng nhập");
+  const [error, setError] = useState(null);
+  const { setUser, setToken } = useStateContext();
 
-  const { setUser, setToken, token } = useStateContext();
-
-  if (token) {
-    return <Navigate to="/quantri" />;
-  }
+  UseTitle("Đăng ký");
 
   const [message, setMessage] = useState([]);
   const navigate = useNavigate();
   const onSubmit = (data) => {
     const payload = {
       account: data.account,
+      fullName: data.name,
+      email: data.email,
       password: data.password,
+      c_password: data.passwordConfirmation,
+      // role_id: role.current.value,
+      // role_id: 1
     };
-
-    axiosClient.post(`/login`, payload).then((res) => {
-      if (res.data.status === 200) {
-        setToken(res.data.token);
-        setUser(res.data.username);
-        if (
-          res.data.user.original.user.role.name === "Admin" ||
-          res.data.user.original.user.role.name === "Manager"
-        ) {
-          navigate("/quantri");
+    axiosClient
+      .post(`/cus-products/signupCus`, payload)
+      .then(({ data }) => {
+        console.log(data);
+        if (data.status === 422) {
+          setError(data.validation_error);
+          console.log(data.validation_error);
         } else {
+          setUser(data.user);
+          setError(null);
+          // setToken(data.token);
           Swal.fire({
-            icon: "error",
-            text: "Bạn không có quyền truy cập vào trang này",
+            icon: "success",
+            text: "Đăng kí tài khoản thành công",
           });
+
+          reset();
+          navigate("/dangnhap");
         }
-      } else if (res.data.status === 401) {
-        setMessage([]);
-        Swal.fire({
-          icon: "error",
-          text: res.data.message,
-        });
-      } else {
-        setMessage(res.data.validation_error);
-        Swal.fire({
-          text: res.data.message,
-          icon: "error",
-        });
-      }
-    });
+
+        // navigate('/admin/home')
+      })
+      .catch((err) => {});
   };
 
   return (
     <>
       <section className="bg-gray-5 bg-green-200">
+        {/* {error && (
+          <div className="alert">
+            {Object.keys(error).map((key) => (
+              <p key={key}>{error[key][0]}</p>
+            ))}
+          </div>
+        )} */}
         <div className="flex gap-6 items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="hidden lg:block w-[18.75rem]">
             <img
@@ -88,74 +96,208 @@ const Login = () => {
 
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
               <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                Đăng nhập
+                Đăng kí tài khoản miễn phí
               </h1>
-              <form
+              <CForm
                 onSubmit={handleSubmit(onSubmit)}
-                className="space-y-4 md:space-y-6"
+                className="row space-y-4 md:space-y-6"
                 action="#"
               >
-                <div>
-                  <label
-                    htmlFor="account"
-                    className="block mb-2 text-sm font-medium text-gray-900 "
-                  >
-                    Tài khoản
-                  </label>
-                  <input
-                    type="text"
-                    id="account"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:border-yellow-400 block w-full p-2.5 "
-                    placeholder="Tài khoản"
-                    required=""
-                    {...register("account", {
-                      required: true,
-                    })}
-                  />
-                  {errors?.account?.type === "required" && (
+              
+                <CCol xl={6}>
+                  <span className="p-float-label">
+                    <InputText
+                      id="account"
+                      className={`w-full ${errors.account && "invalid"}`}
+                      {...register("account", {
+                        required: "Vui lòng nhập tài khoản ",
+                        maxLength: {
+                          value: 50,
+                          message: "Giới hạn chỉ 50 kí tự",
+                        },
+                      })}
+                      onKeyUp={() => {
+                        trigger("account");
+                      }}
+                      type="text"
+                      placeholder="Vd: an"
+                    />
+                    <label htmlFor="account">Tài khoản</label>
+                  </span>
+
+                  {errors.account && (
+                    <small className="cs-text-error">
+                      {errors.account.message}
+                    </small>
+                  )}
+
+                  {error && error.account ? (
                     <small className="text-danger before:content-['_⚠']">
-                      Vui lòng nhập tài khoản
+                      Tài khoản đã tồn tại, vui lòng chọn tài khoản khác
+                    </small>
+                  ) : (
+                    ""
+                  )}
+                </CCol>
+                <div>
+                  <span className="p-float-label ">
+                    <InputText
+                      id="name"
+                      className={`w-full ${errors.name && "invalid"}`}
+                      {...register("name", {
+                        required: "Vui lòng nhập họ và tên ",
+                        maxLength: {
+                          value: 50,
+                          message: "Giới hạn chỉ 50 kí tự",
+                        },
+                        validate: (value) =>
+                          IsName(value) || "Vui lòng nhập họ tên hợp lệ",
+                      })}
+                      onKeyUp={() => {
+                        trigger("name");
+                      }}
+                      type="text"
+                      placeholder="Vd: Nguyễn Văn An"
+                    />
+                    <label
+                      htmlFor="name"
+                      className="block mb-2 text-sm font-medium text-gray-900 "
+                    >
+                      Họ và tên
+                    </label>
+                  </span>
+
+                  {errors.name && (
+                    <small className="cs-text-error">
+                      {errors.name.message}
                     </small>
                   )}
                 </div>
                 <div>
-                  <label
-                    htmlFor="password"
-                    className="block mb-2 text-sm font-medium text-gray-900 "
-                  >
-                    Mật khẩu
-                  </label>
-                  <input
-                    type="password"
-                    autoComplete="on"
-                    id="password"
-                    placeholder="Mật khẩu"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:border-yellow-400 block w-full p-2.5 "
-                    {...register("password", {
-                      required: true,
-                    })}
-                  />
-                  {errors?.password?.type === "required" && (
-                    <small className="text-danger before:content-['_⚠']">
-                      Vui lòng nhập mật khẩu
+                  <span className="p-float-label ">
+                    <InputText
+                      id="email"
+                      className={`w-full ${errors.name && "invalid"}`}
+                      {...register("email", {
+                        required: "Vui lòng nhập email",
+                        maxLength: {
+                          value: 50,
+                          message: "Giới hạn chỉ 50 kí tự",
+                        },
+                      })}
+                      onKeyUp={() => {
+                        trigger("email");
+                      }}
+                      type="text"
+                      placeholder="Vd: an@gmail.com"
+                    />
+                    <label
+                      htmlFor="email"
+                      className="block mb-2 text-sm font-medium text-gray-900 "
+                    >
+                      Email
+                    </label>
+                  </span>
+
+                  {errors.email && (
+                    <small className="cs-text-error">
+                      {errors.email.message}
                     </small>
                   )}
                 </div>
+                <div>
+                  <div>
+                    <span className="p-float-label ">
+                      <InputText
+                        id="password"
+                        className={`w-full ${errors.name && "invalid"}`}
+                        {...register("password", {
+                          required: "Vui lòng nhập mật khẩu",
+                          maxLength: {
+                            value: 50,
+                            message: "Giới hạn chỉ 50 kí tự",
+                          },
+                        })}
+                        onKeyUp={() => {
+                          trigger("password");
+                        }}
+                        type="text"
+                        placeholder="* * * * * * *"
+                      />
+                      <label
+                        htmlFor="password"
+                        className="block mb-2 text-sm font-medium text-gray-900 "
+                      >
+                        Mật khẩu
+                      </label>
+                    </span>
+
+                    {errors.password && (
+                      <small className="cs-text-error">
+                        {errors.password.message}
+                      </small>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <span className="p-float-label ">
+                      <InputText
+                        id="passwordConfirmation"
+                        className={`w-full ${errors.name && "invalid"}`}
+                        {...register("passwordConfirmation", {
+                          required: "Vui lòng nhập xác nhận",
+                          maxLength: {
+                            value: 50,
+                            message: "Giới hạn chỉ 50 kí tự",
+                          },
+                        })}
+                        onKeyUp={() => {
+                          trigger("passwordConfirmation");
+                        }}
+                        type="text"
+                        placeholder="* * * * * * *"
+                      />
+                      <label
+                        htmlFor="passwordConfirmation"
+                        className="block mb-2 text-sm font-medium text-gray-900 "
+                      >
+                        Xác nhận
+                      </label>
+                    </span>
+
+                    {errors.passwordConfirmation && (
+                      <small className="cs-text-error">
+                        {errors.passwordConfirmation.message}
+                      </small>
+                    )}
+                  </div>
+
+                  {error && error.c_password ? (
+                    <small className="text-danger before:content-['_⚠']">
+                      Xác nhận mật khẩu không chính xác
+                    </small>
+                  ) : (
+                    ""
+                  )}
+                </div>
+
                 <div className="flex justify-center items-center  cursor-pointer  bg-yellow-400 rounded-2xl hover:text-yellow-400 hover:bg-gray-400 transition-all duration-300">
                   <button
                     className="p-3 w-full h-full uppercase text-xs font-bold"
                     type="submit"
                   >
-                    Đăng nhập
+                    Đăng ký
                   </button>
                 </div>
                 <div className="flex items-center justify-end">
-                  <a
-                    href="#"
+                  <span>Bạn đã có tài khoản</span>
+                  <Link
+                    to="/dangnhap"
                     className="text-sm font-medium text-yellow-400 hover:underline"
                   >
-                    Quên mật khẩu?
-                  </a>
+                    Đăng nhập
+                  </Link>
                 </div>
 
                 {/* <p className="text-sm font-light text-gray-500 dark:text-gray-400">
@@ -167,7 +309,7 @@ const Login = () => {
                     Sign up
                   </a>
                 </p> */}
-              </form>
+              </CForm>
             </div>
           </div>
         </div>
@@ -196,4 +338,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

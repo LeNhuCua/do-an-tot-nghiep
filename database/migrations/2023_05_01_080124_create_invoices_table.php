@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->string('invoiceId', 20)->primary();
-            $table->string('fullName');
-            $table->string('phoneNumber');
+            $table->string('fullName',50);
+            $table->string('phoneNumber',10);
             $table->float('totalAmount', 20, 6);
 
             $table->string('userId', 20);

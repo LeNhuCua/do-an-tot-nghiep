@@ -24,6 +24,21 @@ class ShippingAddress extends Model
 
     public $incrementing = false;
     protected $primaryKey = 'shippingAddressId';
+    protected $with = ['province','district','ward'];
+
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'provinceId', 'provinceId');
+    }
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'districtId', 'districtId');
+    }
+    public function ward()
+    {
+        return $this->belongsTo(Ward::class, 'wardId', 'wardId');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

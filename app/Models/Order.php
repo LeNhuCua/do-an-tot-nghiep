@@ -30,11 +30,31 @@ class Order extends Model
     ];
     protected $primaryKey = 'orderId';
     public $incrementing = false;
-    protected $with = ['orderDetail'];
+    protected $with = ['orderDetail','shippingMethod','paymentMethod','orderStatus','customer','customerAddress'];
 
     public function orderDetail()
     {
         return $this->hasMany(OrderDetail::class, 'orderId', 'orderId');
+    }
+    public function shippingMethod()
+    {
+        return $this->belongsTo(ShippingMethod::class, 'shippingMethodId', 'shippingMethodId');
+    }
+    public function paymentMethod()
+    {
+        return $this->belongsTo(paymentMethod::class, 'paymentMethodId', 'paymentMethodId');
+    }
+    public function orderStatus()
+    {
+        return $this->belongsTo(OrderStatus::class, 'orderStatusId', 'orderStatusId');
+    }
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'userId', 'userId');
+    }
+    public function customerAddress()
+    {
+        return $this->belongsTo(ShippingAddress::class, 'orderId', 'orderId');
     }
     /**
      * The attributes that should be hidden for serialization.

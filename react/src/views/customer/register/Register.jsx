@@ -79,7 +79,7 @@ const Register = () => {
           <div className="hidden lg:block w-[18.75rem]">
             <img
               className=""
-              src="https://kingshoes.vn/data/upload/media/CREP-PROTECT-CURE-B%E1%BB%99-kit-v%E1%BB%87-sinh-gi%C3%A0y-king-shoes-sneaker-authentic-4.jpg"
+              src="https://dean2020.edu.vn/wp-content/uploads/2021/04/hinh-anh-vang-bac-5.jpg"
               alt=""
             />
           </div>
@@ -104,7 +104,7 @@ const Register = () => {
                 action="#"
               >
               
-                <CCol xl={6}>
+                <CCol xl={12}>
                   <span className="p-float-label">
                     <InputText
                       id="account"
@@ -150,8 +150,8 @@ const Register = () => {
                           value: 50,
                           message: "Giới hạn chỉ 50 kí tự",
                         },
-                        validate: (value) =>
-                          IsName(value) || "Vui lòng nhập họ tên hợp lệ",
+                        // validate: (value) =>
+                        //   IsName(value) || "Vui lòng nhập họ tên hợp lệ",
                       })}
                       onKeyUp={() => {
                         trigger("name");

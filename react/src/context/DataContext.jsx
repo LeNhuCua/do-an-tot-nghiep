@@ -15,6 +15,9 @@ const initialState = {
   totalCart: null,
   checkoutProducts: [],
   customerAddresses: [],
+
+  //thanh toán đơn hàng
+  orderNews: [],
 };
 
 export const DataContext = createContext(initialState);
@@ -32,6 +35,17 @@ const reducer = (state, action) => {
       return {
         ...state,
         totalCart: action.payload,
+      };
+
+    case "FETCH_NEW_ORDER":
+      return {
+        ...state,
+        orderNews: action.payload,
+      };
+    case "ADD_NEW_ORDER":
+      return {
+        ...state,
+        orderNews: [action.payload, ...state.orderNews],
       };
 
     case "FETCH_CATEGORIES":

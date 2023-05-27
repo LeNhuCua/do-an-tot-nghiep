@@ -328,6 +328,25 @@ export default function CreateProduct() {
   const regexPattern =
     /^[^\s\u0103\u0105\u1EA1\u1EAD\u00E2\u00E0\u00E1\u1EA3\u1EA7\u1EA5\u1EAB\u1EA9\u0103\u0105\u1EA3\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E2\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E0\u00E1\u1EA1\u1EA3\u1EA5\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00EA\u00E8\u00E9\u1EC1\u1EBF\u1EC5\u1EC3\u1EC7\u00EA\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7\u00E8\u00E9\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7]+$/;
 
+  const [price1, setPrice1] = useState("");
+  const [weight1, setWeight1] = useState("");
+  const [dataWeight, setDataWeight] = useState([]);
+
+  const addDataWeight = () => {
+    const newTodo = dataWeight.concat({
+      price: price1,
+      unitId: selectedUnitItem,
+      weight: weight1,
+    });
+    if (price1 !== "" && weight1 !== "") {
+      setDataWeight(newTodo);
+      setPrice1("");
+      setWeight1("");
+    } else {
+      alert("Hay nhap cong viec");
+    }
+  };
+  console.log(dataWeight);
   return (
     <div className="container">
       <CForm
@@ -368,6 +387,70 @@ export default function CreateProduct() {
             <small className="cs-text-error">Mã sản phẩm đã tồn tại</small>
           )}
         </CCol> */}
+        <div>
+          {dataWeight.map((p) => (
+            <p>{p.weight}</p>
+          ))}
+          <CCol xl={6}>
+            <span className="p-float-label ">
+              <InputNumber
+                id="price"
+                suffix=" VNĐ"
+                value={price1}
+                onChange={(e) => setPrice1(e.value)}
+                type="text"
+                placeholder="Vd: 1200000"
+              />
+
+              <label htmlFor="price">Giá bán</label>
+            </span>
+          </CCol>
+          <CCol xl={6}>
+            <span className="p-float-label ">
+              <InputText
+                keyfilter="num"
+                id="price1"
+                value={weight1}
+                onChange={(e) => setWeight1(e.target.value)}
+                type="text"
+                placeholder="Vd: 1200000"
+              />
+              <label htmlFor="price1">Khối lượng</label>
+            </span>
+          </CCol>
+          <CCol xl={3}>
+            <Controller
+              name="unitId"
+              control={control}
+              rules={{ required: "Vui lòng chọn đơn vị tính trong danh sách" }}
+              defaultValue=""
+              render={({ field }) => (
+                <AutoComplete
+                  {...field}
+                  value={selectedUnitItem}
+                  suggestions={filteredUnitItems}
+                  completeMethod={searchUnitItems}
+                  field="name"
+                  dropdown
+                  onChange={(e) => {
+                    setSelectedUnitItem(e.value);
+                    setValue("unitId", e.value.unitId);
+                  }}
+                  placeholder="Chọn đơn vị tính"
+                  className={`w-full ${errors.unitId && "invalid"}`}
+                />
+              )}
+            />
+
+            {errors.unitId && (
+              <small className="cs-text-error">{errors.unitId.message}</small>
+            )}
+          </CCol>
+          <button type="button" onClick={addDataWeight}>
+            Thêm
+          </button>
+          {/* <input type="text" placeholder="khôi lượng" /> */}
+        </div>
 
         <CCol xl={6}>
           <span className="p-float-label ">

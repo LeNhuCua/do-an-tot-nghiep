@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\InvoicesController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Api\AuthController;
@@ -155,6 +156,23 @@ Route::group(['prefix' => 'statistical'], function () {
 
 Route::group(['prefix' => 'users'], function () {
     Route::resource('/', InvoicesController::class);
+    // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
+
+    // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
+    // Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
+    // Route::get('/{id}', [ProductsController::class, 'show']);
+    // Route::post('/{id}', [ProductsController::class, 'update']);
+    // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+});
+
+
+
+
+Route::group(['prefix' => 'orders'], function () {
+    Route::resource('/', AdminOrderController::class);
+    Route::put('/orderCheck', [AdminOrderController::class, 'orderCheck']);
+    Route::put('/orderCancel', [AdminOrderController::class, 'orderCancel']);
+    
     // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
 
     // Route::post('/importExcel', [ProductsController::class, 'importExcel']);

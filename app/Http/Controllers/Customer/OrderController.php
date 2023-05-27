@@ -82,7 +82,7 @@ class OrderController extends Controller
             // Xử lý khi không tìm thấy đơn hàng
         }
     }
-    
+
 
 
     public function store(Request $request)
@@ -139,6 +139,7 @@ class OrderController extends Controller
                     $order->shippingMethodId  = $request->shippingMethodId;
                     $order->save();
 
+                    $order_Details = collect();
 
                     if ($request->orderDetails) {
                         foreach ($request->orderDetails as $orderDetail) {
@@ -156,7 +157,6 @@ class OrderController extends Controller
                             } else {
                                 $newDetailOrderId = $dateObj . 'CTDH' . str_pad($newOrderDetailIdNumber, 5, '0', STR_PAD_LEFT);
                             }
-
                             $order_Detail = new OrderDetail;
                             $order_Detail->orderDetailId  = $newDetailOrderId;
                             $order_Detail->orderId = $order->orderId;
@@ -165,6 +165,7 @@ class OrderController extends Controller
                             $order_Detail->price = $sizeItemObject->price;
                             $order_Detail->productId = $sizeItemObject->productId;
                             $order_Detail->save();
+                            $order_Details->push($order_Detail);
 
 
                             //TRỪ GIỎ HÀNG
@@ -225,6 +226,9 @@ class OrderController extends Controller
                         'status' => 400,
                         'message' => 'order Created Successfully!!',
                         'order' => $order,
+                        'order_Details' => $order_Details,
+                        'shippingFee' => $shippingFee,
+                        'shippingAddress' => $shippingAddress,
                         // '$cart' => $cart
 
 

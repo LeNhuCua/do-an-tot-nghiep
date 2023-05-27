@@ -47,7 +47,7 @@ const Order = () => {
     {
       id: 2,
       textButton: "Đã xác nhận",
-      value: "TT003",
+      value: "TT002",
     },
     {
       id: 3,
@@ -62,7 +62,7 @@ const Order = () => {
     {
       id: 5,
       textButton: "Hoàn thành",
-      value: "TT006",
+      value: "TT005",
     },
     {
       id: 6,

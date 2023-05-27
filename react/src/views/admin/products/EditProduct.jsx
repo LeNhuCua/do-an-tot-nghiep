@@ -26,6 +26,7 @@ import { Editor } from "primereact/editor";
 
 import UploadAvatar from "../../../components/admin/products/UploadAvatar.jsx";
 import UploadImages from "../../../components/admin/products/UploadImages.jsx";
+import { MultiSelect } from "primereact/multiselect";
 // import UploadImages from "../../../components/admin/uploadimages/UploadImages";
 
 const EditProduct = () => {
@@ -62,7 +63,8 @@ const EditProduct = () => {
 
   const { state, dispatch } = useContext(DataContext);
 
-  const { categories, products, typeCategories, units, productsType } = state;
+  const { categories, products, typeCategories, units, productsType, sizes } =
+    state;
 
   const getID = useParams().id;
 
@@ -70,26 +72,39 @@ const EditProduct = () => {
 
   const [description, setDescription] = useState(null);
 
-  const [price, setPrice] = useState(null);
+  const [productSize, setProductSize] = useState([]);
+
   const [number, setNumber] = useState(null);
 
+  const fetchSizes = async () => {
+    await axios.get(`${API}/api/sizes/`).then(({ data }) => {
+      dispatch({ type: "FETCH_SIZES", payload: data });
+    });
+  };
+  useEffect(() => {
+    if (sizes.length === 0) {
+      fetchSizes();
+    }
+  }, []);
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const { data } = await axios.get(`${API}/api/products/${getID}`);
         setProduct(data.product);
-        setPrice(data.product.price);
+
         // setImages(data.product.product_image);
         setDescription(data.product.description);
         setNumber(data.product.number);
         setImageCurrent(data.product.avatar);
         setImagesCurrent(data.product.product_image);
+        setProductSize(data.product.product_size);
         setLoading(false);
+        console.log(data.product.product_size);
       } catch (error) {
         console.log(error);
       }
     };
-
+    console.log(productSize);
     const fetchtypeCategories = async () => {
       try {
         const { data } = await axios.get(`${API}/api/typeCategories/`);
@@ -147,6 +162,7 @@ const EditProduct = () => {
       dispatch({ type: "FETCH_PRODUCTS", payload: data });
     });
   };
+
   const [alreadyExistName, setAlreadyExistName] = useState(null);
   function getPrefix(str) {
     return str.substring(0, str.indexOf("-"));
@@ -168,11 +184,18 @@ const EditProduct = () => {
   }
   //tìm kiếm loại sản phẩm được chọn dựa vào bí danh và lấy lại dữ liệu nếu dữ liệu chưa tồn tại
   const updateData = async (data) => {
+    const sizeData = Object.keys(data).reduce((acc, key) => {
+      if (key.includes("size")) {
+        acc.push(data[key]);
+      }
+      return acc;
+    }, []);
+    console.log(sizeData);
     const newFormData = new FormData();
     newFormData.append("name", data.name);
     newFormData.append("number", data.number);
     newFormData.append("description", description);
-    newFormData.append("price", price);
+
     newFormData.append("weight", data.weight);
     newFormData.append("alias", convertNameWithoutAccents(data.name));
     newFormData.append("status", checked ? 1 : 0);
@@ -249,7 +272,7 @@ const EditProduct = () => {
           if (data.productId !== product.productId) {
             fetchProductsAll();
           }
-          navigate("/quantri/sanpham");
+          // navigate("/quantri/sanpham");
 
           Swal.fire({
             icon: "success",
@@ -362,10 +385,9 @@ const EditProduct = () => {
   }, [productsType, product ? product.product_type.productTypeId : ""]);
 
   useEffect(() => {
-    setValue("price", price);
     setValue("number", number);
     // Cập nhật giá trị mặc định cho ô input
-  }, [price, setValue, number]);
+  }, [setValue, number]);
 
   //dữ liệu hiên thị trong dropdown danh mục cha
   const categoryOptionTemplate = (option) => {
@@ -388,6 +410,52 @@ const EditProduct = () => {
     }
   };
 
+  const [selectedSizes, setSelectedSizes] = useState(null);
+  const countryTemplate = (option) => {
+    const handleInputChange = (event) => {
+      const value = event.value;
+      const updatedSizes = [...selectedSizes];
+      const index = updatedSizes.findIndex(
+        (country) => country.sizeId === option.sizeId
+      );
+      updatedSizes[index]["price"] = value;
+      setSelectedSizes(updatedSizes);
+    };
+
+    return (
+      <div className="flex gap-3 align-items-center">
+        <img
+          alt={option.sizeId}
+          src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png"
+          // className={`mr-2 flag flag-${option.code.toLowerCase()}`}
+          style={{ width: "18px" }}
+        />
+        <div>{option.sizeValue}</div>
+        {/* <input
+          type="text"
+          value={option.price || ""}
+          onChange={handleInputChange}
+        /> */}
+
+        <InputNumber
+          suffix=" VNĐ"
+          value={option.price || ""}
+          onChange={handleInputChange}
+          placeholder="Nhập giá tiền tương ứng size"
+        />
+      </div>
+    );
+  };
+
+  const panelFooterTemplate = () => {
+    const length = selectedSizes ? selectedSizes.length : 0;
+
+    return (
+      <div className="py-2 px-3">
+        <b>{length}</b> Size được chọn.
+      </div>
+    );
+  };
   return (
     <div className="container">
       {/* <div className="card flex justify-content-center">
@@ -424,8 +492,43 @@ const EditProduct = () => {
             />
           </div>
           {/* <input type="file" onChange={changeHandler} /> */}
-     
+          {productSize
+            ? productSize.map((size, index) => (
+                <div key={index} onClick={() => alert(size.productSizeId)}>
+                  <p>{size.size[0].sizeValue}</p>
+                  <InputText
+                    id={`size-${index}`}
+                    defaultValue={size.price}
+                    className={`w-full ${errors[`size${index}`] && "invalid"}`}
+                    {...register(`size${index}`, {
+                      required: "Vui lòng nhập tên sản phẩm",
+                      maxLength: {
+                        value: 50,
+                        message: "Giới hạn chỉ 50 kí tự",
+                      },
+                    })}
+                    onKeyUp={() => {
+                      trigger(`size${index}`);
+                    }}
+                  />
+                </div>
+              ))
+            : ""}
 
+          <div className="card flex justify-content-center">
+            <MultiSelect
+              filter
+              value={selectedSizes}
+              options={sizes}
+              onChange={(e) => setSelectedSizes(e.value)}
+              optionLabel="sizeValue"
+              placeholder="Chọn kích thước"
+              itemTemplate={countryTemplate}
+              panelFooterTemplate={panelFooterTemplate}
+              className="w-full md:w-20rem"
+              display="chip"
+            />
+          </div>
           <CCol md={6}>
             <span className="p-float-label ">
               <InputText

@@ -31,7 +31,9 @@ class User extends Authenticatable
         'gender',
         'role_id',
         'confirmation_token',
-        'confirmed'
+        'confirmed',
+        'remember_token',
+        'otp'
     ];
 
     protected $with = ['role'];

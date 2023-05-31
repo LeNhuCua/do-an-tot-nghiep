@@ -24,12 +24,12 @@ class UsersController extends Controller
         $user = User::where('confirmation_token', $token)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'Invalid token'], 404);
+            return response()->json(['message' => 'Xác nhận đã hết hạn'], 404);
         }
         $user->confirmed = true;
         $user->confirmation_token = null;
         $user->save();
-        return response()->json(['message' => 'Account confirmed successfully']);
+        return response()->json(['message' => 'Tài khoản của bạn đã được xác nhận thành công']);
     }
 
     public function signupCus(Request $request)

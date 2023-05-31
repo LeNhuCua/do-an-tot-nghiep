@@ -36,6 +36,7 @@ import Search from "./Search";
 import convertNameWithoutAccents from "../../hook/admin/ConvertNameToAlias";
 import SearchMobile from "./header/SearchMobile";
 import { AppHeaderDropdown } from "./header/index";
+import ForgotPassword from "../../views/resetpassword/ForgotPassword";
 
 const AppHeader = () => {
   const {
@@ -172,6 +173,7 @@ const AppHeader = () => {
               <li className="flex gap-1 items-center cs-hover font-[500]">
                 <AiFillStar /> Về chúng tôi
               </li>
+       
               <li className="flex gap-1 items-center cs-hover font-[500]">
                 <AiOutlineBarChart /> Giá vàng
               </li>

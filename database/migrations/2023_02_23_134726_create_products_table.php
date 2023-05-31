@@ -25,19 +25,12 @@ class CreateProductsTable extends Migration
             $table->integer('numberBuy')->nullable()->default(0);
             $table->boolean('status');
 
-            $table->decimal('weight', 12, 2);
-
             $table->integer('rating')->nullable()->default(0);
 
             $table->integer('numberRate')->nullable()->default(0);
 
             $table->string('productTypeId', 10);
             $table->foreign('productTypeId')->references('productTypeId')->on('product_types')->onUpdate('cascade')->onDelete('cascade');
-
-
-            $table->string('unitId', 10);
-            $table->foreign('unitId')->references('unitId')->on('units')->onUpdate('cascade')->onDelete('cascade');
-
 
             $table->string('typeCategoryId', 10);
             $table->foreign('typeCategoryId')->references('typeCategoryId')->on('type_categories')->onUpdate('cascade')->onDelete('cascade');

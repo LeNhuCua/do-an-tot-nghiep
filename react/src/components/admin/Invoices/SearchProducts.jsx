@@ -2,10 +2,11 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { ProgressSpinner } from "primereact/progressspinner";
 import { ScrollPanel } from "primereact/scrollpanel";
-import React, { useState, useRef, Fragment, useEffect } from "react";
+import React, { useState, useRef, Fragment, useEffect, useMemo } from "react";
 import { API_IMAGES } from "../../../API";
 import removeAccents from "../../../hook/admin/RemoAccents";
-
+import Pagination from "./Pagination";
+let PageSize = 10;
 const SearchProducts = (props) => {
   const { products, addToInvoice } = props;
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,7 +53,14 @@ const SearchProducts = (props) => {
   const handleBlur = () => {
     setFocused(false);
   };
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const currentTableData = useMemo(() => {
+    const firstPageIndex = (currentPage - 1) * PageSize;
+    const lastPageIndex = firstPageIndex + PageSize;
+    return products.slice(firstPageIndex, lastPageIndex);
+  }, [currentPage, products]);
+  console.log(products);
   return (
     <div className="w-full">
       <div className="p-inputgroup relative">
@@ -114,8 +122,8 @@ const SearchProducts = (props) => {
                                   ? "border-2 border-black"
                                   : ""
                               }`}
-                              onClick={() => {
-                                handleClick(size);
+                              onClick={() => handleClick(size)}
+                              onDoubleClick={() => {
                                 addToInvoice(product, product.productId, size);
                               }}
                             >
@@ -131,13 +139,20 @@ const SearchProducts = (props) => {
                       {product.product_size.map((size) => (
                         <div key={size.size[0].sizeValue}>
                           {selectedSize === size && (
-                            <h2 className="text-red-500  text-xl font-bold">
-                              {new Intl.NumberFormat({
-                                style: "currency",
-                                currency: "JPY",
-                              }).format(size.price)}
-                              <span> VNĐ</span>
-                            </h2>
+                            <div>
+                              <h2 className="text-red-500  text-xl font-bold">
+                                {new Intl.NumberFormat({
+                                  style: "currency",
+                                  currency: "JPY",
+                                }).format(size.price)}
+                                <span> VNĐ</span>
+                              </h2>
+                              <div>
+                                <span>Hàng tồn: {size.number}</span>
+                              </div>
+                              <span>{size.weight} </span>
+                              <span>{size.unit.name}</span>
+                            </div>
                           )}
                         </div>
                       ))}
@@ -161,6 +176,78 @@ const SearchProducts = (props) => {
             )}
           </ScrollPanel>
         )}
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-3 mt-2 gap-3">
+        {currentTableData.map((product) => (
+          <div
+            key={product.productId}
+            className="flex relative flex-col min-h-[15.75rem] border p-2 rounded-lg"
+          >
+            <div className="flex flex-col flex-1">
+              <div className="text-sm">
+                <p>{product.productId}</p>
+              </div>
+              <div className="flex-1 text-sm">
+                <p>{product.name}</p>
+              </div>
+              <div className="flex flex-col flex-1 mt-auto min-h-[6.25rem]">
+                <div className="flex gap-3 flex-1 border-t py-2">
+                  {product.product_size.map((size) => (
+                    <Fragment key={size.size[0].sizeValue}>
+                      <div className="flex gap-3">
+                        <button
+                          className={`px-2 font-bold shadow-2xl  border-2 rounded-lg h-8 relative ${
+                            selectedSize === size ? "border-2 border-black" : ""
+                          }`}
+                          onClick={() => handleClick(size)}
+                          onDoubleClick={() => {
+                            addToInvoice(product, product.productId, size);
+                          }}
+                        >
+                          {size.size[0].sizeValue}
+                        </button>
+                      </div>
+                    </Fragment>
+                  ))}
+                </div>
+                <div className="">
+                  <div className="flex flex-1 ">
+                    {product.product_size.map((size) => (
+                      <div key={size.size[0].sizeValue}>
+                        {selectedSize === size && (
+                          <div className="flex flex-col flex-1 absolute bottom-0 right-1">
+                            <h2 className="text-red-500 text-sm font-bold">
+                              {new Intl.NumberFormat({
+                                style: "currency",
+                                currency: "JPY",
+                              }).format(size.price)}
+                              <span> VNĐ</span>
+                            </h2>
+                            <div className="text-sm">
+                              <span>{size.weight} </span>
+                              <span>{size.unit.name}</span>
+                              {/* <span>{size.number}</span> */}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center mt-5">
+        <Pagination
+          className="pagination-bar"
+          currentPage={currentPage}
+          totalCount={products.length}
+          pageSize={PageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+        />
       </div>
     </div>
   );

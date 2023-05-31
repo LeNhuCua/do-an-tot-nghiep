@@ -10,17 +10,17 @@ class InvoiceDetail extends Model
     use HasFactory;
     protected $table = 'invoice_details';
     protected $fillable = [
+        'invoiceDetailId',
         'invoiceId',
         'productId',
         'number',
         'price',
-        'sizeValue'
+        'sizeValue',
+
     ];
     public $incrementing = false;
-
     protected $primaryKey  = [
-        'invoiceId',
-        'productId'
+        'invoiceDetailId'
     ];
     /**
      * The attributes that should be hidden for serialization.

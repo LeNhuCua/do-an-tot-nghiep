@@ -104,8 +104,6 @@ export default function CreateProduct() {
   const [images, setImages] = useState([]);
   const [validationError, setValidationError] = useState([]);
 
-  const [price, setPrice] = useState(null);
-  const [number, setNumber] = useState(null);
   const [selectedSizes, setSelectedSizes] = useState(null);
 
   console.log(selectedSizes);
@@ -173,102 +171,158 @@ export default function CreateProduct() {
       return `${p1}${p3}${p2}`;
     });
   }
+  const [price, setPrice] = useState("");
+  const [weight, setWeight] = useState("");
+  const [number, setNumber] = useState("");
+  const [dataWeight, setDataWeight] = useState([]);
 
-  const CreateProducts = async (data) => {
-    const formData = new FormData();
-    const alias =
-      convertNameWithoutAccents(data.name) +
-      "-" +
-      selectedTypeCategoryItem.typeCategoryId +
-      "-" +
-      selectedProductTypeItem.productTypeId +
-      "-" +
-      convertString(data.weight + " " + selectedUnitItem.unitId);
-
-    formData.append("name", data.name);
-    formData.append("alias", alias.toLowerCase());
-    formData.append("status", statusSelect ? statusSelect.code : 1);
-    formData.append("typeCategoryId", selectedTypeCategoryItem.typeCategoryId);
-    formData.append("productTypeId", selectedProductTypeItem.productTypeId);
-    formData.append("unitId", selectedUnitItem.unitId);
-    formData.append("avatar", image);
-    formData.append("description", description);
-    formData.append("number", number);
-
-    formData.append("weight", data.weight);
-
-    for (let i = 0; i < images.length; i++) {
-      formData.append(`images[${i}]`, images[i]);
-    }
-    for (let i = 0; i < selectedSizes.length; i++) {
-      formData.append(`sizes[${i}]`, JSON.stringify(selectedSizes[i]));
-    }
-    // JSON.stringify(invoices[selectedTable][i])
-    setSubmitted(true);
-    await axios.post(`${API}/api/products`, formData).then((response) => {
-      if (response.data.status === 400) {
-        const resData = response.data.product;
-        const resImages = response.data.productImages;
-        const resSizes = response.data.productSizes;
-        const resSizesValue = response.data.sizesValue;
-        console.log(resSizes);
-        const createProducts = {
-          productId: resData.productId,
-          name: resData.name,
-          alias: resData.alias,
-          status: statusSelect ? statusSelect.code : 1,
-          avatar: resData.avatar,
-          weight: resData.weight,
-          price: resData.price,
-          description: resData.description,
-          number: resData.number,
-          product_type: {
-            name: selectedProductTypeItem.name,
-          },
-          type_category: {
-            name: selectedTypeCategoryItem.name,
-          },
-          unit: {
-            name: selectedUnitItem.name,
-          },
-          product_image: resImages.map((image) => ({
-            name: image.productImageId,
-            image: image.image,
-            productId: image.productId,
-          })),
-          product_size: resSizes.map((size) => ({
-            sizeId: size.sizeId,
-            price: size.price,
-            // size: resSizesValue.map((size) => ({
-            //   sizeValue: size,
-            // })),
-            size: resSizesValue.forEach((value) => ({
-              sizeValue: value,
-            })),
-          })),
-        };
-
-        // Thêm loại sản phẩm mới vào danh sách loại sản phẩm trong context
-        dispatch({ type: "ADD_PRODUCTS", payload: createProducts });
+  const addDataWeight = () => {
+    if (
+      price !== "" &&
+      weight !== "" &&
+      selectedUnitItem !== null &&
+      selectedSizes !== null &&
+      number !== ""
+    ) {
+      const newTodo = dataWeight.concat({
+        price: Number(price),
+        unitId: selectedUnitItem.unitId,
+        unitName: selectedUnitItem.name,
+        weight: Number(weight),
+        sizeId: selectedSizes.sizeId,
+        sizeValue: selectedSizes.sizeValue,
+        number: Number(number),
+      });
+      const findSizeId = dataWeight.find(
+        (item) => selectedSizes.sizeId === item.sizeId
+      );
+      if (findSizeId) {
         Swal.fire({
-          icon: "success",
-          title: "Thêm mới thành công!",
+          icon: "error",
+          title: `Kích thước ${findSizeId.sizeValue} đã tồn tại, vui lòng chọn kích thước khác`,
           showConfirmButton: false,
           timer: 1500,
         });
-        // navigate("/quantri/sanpham");
-
-        // reset();
-        setImage(null);
-        setValidationError([]);
       } else {
-        setValidationError(response.data.validation_error);
-        Swal.fire({
-          icon: "error",
-          text: "Vui lòng kiểm tra lại thông tin!",
-        });
+        setDataWeight(newTodo);
       }
-    });
+
+      // setPrice("");
+      // setWeight("");
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Vui lòng điền đầy đủ các trường!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  };
+
+  const deleteWeight = (id) => {
+    const newTodo = dataWeight.filter((item) => id != item.sizeId);
+    setDataWeight(newTodo);
+  };
+
+  console.log(dataWeight);
+  const CreateProducts = async (data) => {
+    if (dataWeight.length > 0) {
+      const formData = new FormData();
+      const alias =
+        convertNameWithoutAccents(data.name) +
+        "-" +
+        selectedTypeCategoryItem.typeCategoryId +
+        "-" +
+        selectedProductTypeItem.productTypeId;
+      formData.append("name", data.name);
+      formData.append("alias", alias.toLowerCase());
+      formData.append("status", statusSelect ? statusSelect.code : 1);
+      formData.append(
+        "typeCategoryId",
+        selectedTypeCategoryItem.typeCategoryId
+      );
+      formData.append("productTypeId", selectedProductTypeItem.productTypeId);
+
+      formData.append("avatar", image);
+      formData.append("description", description);
+      formData.append("number", number);
+
+      for (let i = 0; i < images.length; i++) {
+        formData.append(`images[${i}]`, images[i]);
+      }
+      for (let i = 0; i < dataWeight.length; i++) {
+        formData.append(`sizes[${i}]`, JSON.stringify(dataWeight[i]));
+      }
+      // JSON.stringify(invoices[selectedTable][i])
+      setSubmitted(true);
+      await axios.post(`${API}/api/products`, formData).then((response) => {
+        if (response.data.status === 400) {
+          const resData = response.data.product;
+          const resImages = response.data.productImages;
+          const resSizes = response.data.productSizes;
+          const resSizesValue = response.data.sizesValue;
+          console.log(resSizes);
+          const createProducts = {
+            productId: resData.productId,
+            name: resData.name,
+            alias: resData.alias,
+            status: statusSelect ? statusSelect.code : 1,
+            avatar: resData.avatar,
+
+            price: resData.price,
+            description: resData.description,
+            number: resData.number,
+            product_type: {
+              name: selectedProductTypeItem.name,
+            },
+            type_category: {
+              name: selectedTypeCategoryItem.name,
+            },
+
+            product_image: resImages.map((image) => ({
+              name: image.productImageId,
+              image: image.image,
+              productId: image.productId,
+            })),
+            product_size: resSizes.map((size) => ({
+              sizeId: size.sizeId,
+              price: size.price,
+              // size: resSizesValue.map((size) => ({
+              //   sizeValue: size,
+              // })),
+              size: resSizesValue.forEach((value) => ({
+                sizeValue: value,
+              })),
+            })),
+          };
+
+          // Thêm loại sản phẩm mới vào danh sách loại sản phẩm trong context
+          dispatch({ type: "ADD_PRODUCTS", payload: createProducts });
+          Swal.fire({
+            icon: "success",
+            title: "Thêm mới thành công!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          // navigate("/quantri/sanpham");
+
+          // reset();
+          setImage(null);
+          setValidationError([]);
+        } else {
+          setValidationError(response.data.validation_error);
+          Swal.fire({
+            icon: "error",
+            text: "Vui lòng kiểm tra lại thông tin!",
+          });
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        text: "Bạn cần ít nhất 1 trường về thông tin về khối lượng và kích cỡ!",
+      });
+    }
   };
   const [statusSelect, setStatusSelect] = useState(null);
   const [visible, setVisible] = useState(false);
@@ -328,25 +382,6 @@ export default function CreateProduct() {
   const regexPattern =
     /^[^\s\u0103\u0105\u1EA1\u1EAD\u00E2\u00E0\u00E1\u1EA3\u1EA7\u1EA5\u1EAB\u1EA9\u0103\u0105\u1EA3\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E2\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E0\u00E1\u1EA1\u1EA3\u1EA5\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00EA\u00E8\u00E9\u1EC1\u1EBF\u1EC5\u1EC3\u1EC7\u00EA\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7\u00E8\u00E9\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7]+$/;
 
-  const [price1, setPrice1] = useState("");
-  const [weight1, setWeight1] = useState("");
-  const [dataWeight, setDataWeight] = useState([]);
-
-  const addDataWeight = () => {
-    const newTodo = dataWeight.concat({
-      price: price1,
-      unitId: selectedUnitItem,
-      weight: weight1,
-    });
-    if (price1 !== "" && weight1 !== "") {
-      setDataWeight(newTodo);
-      setPrice1("");
-      setWeight1("");
-    } else {
-      alert("Hay nhap cong viec");
-    }
-  };
-  console.log(dataWeight);
   return (
     <div className="container">
       <CForm
@@ -354,104 +389,6 @@ export default function CreateProduct() {
         onSubmit={handleSubmit(CreateProducts)}
         className="row g-4 relative"
       >
-        {/* <CCol xl={6}>
-          <span className="p-float-label ">
-            <InputText
-              id="productId"
-              className={`w-full ${errors.productId && "invalid"}`}
-              {...register("productId", {
-                required: "Vui lòng nhập mã sản phẩm",
-                maxLength: {
-                  value: 20,
-                  message: "Giới hạn chỉ 20 kí tự",
-                },
-                pattern: {
-                  value: regexPattern,
-                  message:
-                    "Vui lòng không nhập kí tự khoảng trắng hoặc kí tự có dấu",
-                },
-              })}
-              onKeyUp={() => {
-                trigger("productId");
-              }}
-              type="text"
-              placeholder="Vd: VTN"
-            />
-            <label htmlFor="productId">Mã sản phẩm</label>
-          </span>
-
-          {errors.productId && (
-            <small className="cs-text-error">{errors.productId.message}</small>
-          )}
-          {validationError.productId && (
-            <small className="cs-text-error">Mã sản phẩm đã tồn tại</small>
-          )}
-        </CCol> */}
-        <div>
-          {dataWeight.map((p) => (
-            <p>{p.weight}</p>
-          ))}
-          <CCol xl={6}>
-            <span className="p-float-label ">
-              <InputNumber
-                id="price"
-                suffix=" VNĐ"
-                value={price1}
-                onChange={(e) => setPrice1(e.value)}
-                type="text"
-                placeholder="Vd: 1200000"
-              />
-
-              <label htmlFor="price">Giá bán</label>
-            </span>
-          </CCol>
-          <CCol xl={6}>
-            <span className="p-float-label ">
-              <InputText
-                keyfilter="num"
-                id="price1"
-                value={weight1}
-                onChange={(e) => setWeight1(e.target.value)}
-                type="text"
-                placeholder="Vd: 1200000"
-              />
-              <label htmlFor="price1">Khối lượng</label>
-            </span>
-          </CCol>
-          <CCol xl={3}>
-            <Controller
-              name="unitId"
-              control={control}
-              rules={{ required: "Vui lòng chọn đơn vị tính trong danh sách" }}
-              defaultValue=""
-              render={({ field }) => (
-                <AutoComplete
-                  {...field}
-                  value={selectedUnitItem}
-                  suggestions={filteredUnitItems}
-                  completeMethod={searchUnitItems}
-                  field="name"
-                  dropdown
-                  onChange={(e) => {
-                    setSelectedUnitItem(e.value);
-                    setValue("unitId", e.value.unitId);
-                  }}
-                  placeholder="Chọn đơn vị tính"
-                  className={`w-full ${errors.unitId && "invalid"}`}
-                />
-              )}
-            />
-
-            {errors.unitId && (
-              <small className="cs-text-error">{errors.unitId.message}</small>
-            )}
-          </CCol>
-          <button type="button" onClick={addDataWeight}>
-            Thêm
-          </button>
-          {/* <input type="text" placeholder="khôi lượng" /> */}
-        </div>
-
         <CCol xl={6}>
           <span className="p-float-label ">
             <InputText
@@ -547,7 +484,7 @@ export default function CreateProduct() {
             )}
           />
         </CCol> */}
-
+        {/* 
         <CCol xl={3}>
           <Controller
             name="number"
@@ -582,7 +519,7 @@ export default function CreateProduct() {
               </>
             )}
           />
-        </CCol>
+        </CCol> */}
 
         {/* <CCol xl={6}>
           <Controller
@@ -662,7 +599,7 @@ export default function CreateProduct() {
             )}
           </div>
         </CCol>
-        <CCol xl={3}>
+        {/* <CCol xl={3}>
           <span className="p-float-label ">
             <InputText
               keyfilter="num"
@@ -683,35 +620,7 @@ export default function CreateProduct() {
           {errors.weight && (
             <small className="cs-text-error">{errors.weight.message}</small>
           )}
-        </CCol>
-        <CCol xl={3}>
-          <Controller
-            name="unitId"
-            control={control}
-            rules={{ required: "Vui lòng chọn đơn vị tính trong danh sách" }}
-            defaultValue=""
-            render={({ field }) => (
-              <AutoComplete
-                {...field}
-                value={selectedUnitItem}
-                suggestions={filteredUnitItems}
-                completeMethod={searchUnitItems}
-                field="name"
-                dropdown
-                onChange={(e) => {
-                  setSelectedUnitItem(e.value);
-                  setValue("unitId", e.value.unitId);
-                }}
-                placeholder="Chọn đơn vị tính"
-                className={`w-full ${errors.unitId && "invalid"}`}
-              />
-            )}
-          />
-
-          {errors.unitId && (
-            <small className="cs-text-error">{errors.unitId.message}</small>
-          )}
-        </CCol>
+        </CCol> */}
 
         <CCol xl={4}>
           <Dropdown
@@ -749,20 +658,121 @@ export default function CreateProduct() {
           <h6>Ảnh liên quan</h6>
           <UploadImages images={images} setImages={setImages} />
         </div>
-        <div className="card flex justify-content-center">
-          <MultiSelect
-            filter
-            value={selectedSizes}
-            options={sizes}
-            onChange={(e) => setSelectedSizes(e.value)}
-            optionLabel="sizeValue"
-            placeholder="Chọn kích thước"
-            itemTemplate={countryTemplate}
-            panelFooterTemplate={panelFooterTemplate}
-            className="w-full md:w-20rem"
-            display="chip"
-          />
+        <h6>Thông tin về khối lượng và kích cỡ</h6>
+        <div className="border py-4 grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-3 items-center">
+          <div>
+            <Dropdown
+              value={selectedSizes}
+              onChange={(e) => setSelectedSizes(e.value)}
+              options={sizes}
+              optionLabel="sizeValue"
+              placeholder="Chọn kích cỡ"
+              filter
+              showClear
+              className="w-full md:w-14rem"
+            />
+          </div>
+
+          <div>
+            <span className="p-float-label ">
+              <InputNumber
+                id="price"
+                suffix=" VNĐ"
+                value={price}
+                onChange={(e) => setPrice(e.value)}
+                type="text"
+                placeholder="Vd: 1200000"
+                className="w-full md:w-14rem"
+              />
+
+              <label htmlFor="price">Giá bán</label>
+            </span>
+          </div>
+          <div>
+            <span className="p-float-label ">
+              <InputNumber
+                id="number"
+                // suffix=" VNĐ"
+                value={number}
+                onChange={(e) => setNumber(e.value)}
+                type="text"
+                placeholder="Vd: 12"
+                className="w-full md:w-14rem"
+              />
+
+              <label htmlFor="number">Số lượng nhập</label>
+            </span>
+          </div>
+          <div>
+            <span className="p-float-label ">
+              <InputText
+                keyfilter="num"
+                id="price1"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                type="text"
+                placeholder="Vd: 1.200.000"
+                className="w-full md:w-14rem"
+              />
+              <label htmlFor="price1">Trọng lượng / Chiều dài</label>
+            </span>
+          </div>
+          <div>
+            <Dropdown
+              value={selectedUnitItem}
+              onChange={(e) => setSelectedUnitItem(e.value)}
+              options={units}
+              optionLabel="name"
+              placeholder="Chọn đơn vị tính"
+              filter
+              showClear
+              className="w-full md:w-14rem"
+            />
+          </div>
+
+          <div>
+            <Button
+              type="button"
+              severity="success"
+              onClick={addDataWeight}
+              className="youtube p-0 w-full justify-center"
+            >
+              <i className="pi pi-plus"></i>
+              <span className="p-3">Thêm mới</span>
+            </Button>
+            {/* <button type="button" className="w-full" onClick={addDataWeight}>
+              Thêm
+            </button> */}
+          </div>
         </div>
+        <div className="grid gap-2 grid-cols-3  lg:grid-cols-3">
+          {dataWeight.map((data) => (
+            <div className="border p-2 rounded-md relative" key={data.sizeId}>
+              <button
+                type="button"
+                className="absolute top-1 right-1 text-red-600"
+                onClick={() => deleteWeight(data.sizeId)}
+              >
+                Xoá
+              </button>
+              <h6>Kích thước: {data.sizeValue}</h6>
+              {/* <h6>Giá: {data.price}</h6> */}
+              <h6 className="">
+                Giá:{" "}
+                {new Intl.NumberFormat({
+                  style: "currency",
+                  currency: "JPY",
+                }).format(data.price)}
+                <span> VNĐ</span>
+              </h6>
+              <h6>Số lượng: {data.number}</h6>
+              <h6>
+                Trọng lượng: {data.weight} {data.unitName}
+              </h6>
+            </div>
+          ))}
+        </div>
+
         <CCol xs={12}>
           <Button className="youtube p-0 w-full justify-center">
             <i className="pi pi-check"></i>

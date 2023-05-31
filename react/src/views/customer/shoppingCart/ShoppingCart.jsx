@@ -302,7 +302,7 @@ const ShoppingCart = () => {
                                 Trọng lượng:
                                 <span className="font-normal">
                                   {" "}
-                                  {cart.product.weight} {cart.product.unit.name}
+                                  {cart.product.product_size[0].weight} {cart.product.product_size[0].unit.name}
                                 </span>
                               </h1>
                               <h1 className="text-xl leading-3 text-gray-600 py-3">

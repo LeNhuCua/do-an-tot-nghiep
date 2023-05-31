@@ -237,33 +237,46 @@ const ProductDetail = () => {
                 giá)
               </span>
             </div>
-            <div className="flex gap-3 border-t py-4">
-              {detailSizesProduct.map((size) => (
-                <Fragment key={size.size[0].sizeValue}>
-                  <div className="flex gap-3">
-                    <button
-                      className={`px-4 font-bold shadow-2xl  border-2 rounded-lg h-12 relative ${
-                        selectedSize === size ? "border-2 border-black" : ""
-                      }`}
-                      onClick={() => handleClick(size)}
-                    >
-                      {size.size[0].sizeValue}
-                    </button>
-                  </div>
-                </Fragment>
-              ))}
+            <div className="border-t  py-4">
+              <span className="block mb-2">  Kích thước</span>
+            
+              <div className="flex gap-3 ">
+                {detailSizesProduct.map((size) => (
+                  <Fragment key={size.size[0].sizeValue}>
+                    <div className="flex gap-3">
+                      <button
+                        className={`px-4 font-bold shadow-2xl  border-2 rounded-lg h-12 relative ${
+                          selectedSize === size ? "border-2 border-black" : ""
+                        }`}
+                        onClick={() => handleClick(size)}
+                      >
+                        {size.size[0].sizeValue}
+                      </button>
+                    </div>
+                  </Fragment>
+                ))}
+              </div>
             </div>
+
             <div className="flex ">
               {detailSizesProduct.map((size) => (
                 <div key={size.size[0].sizeValue}>
                   {selectedSize === size && (
-                    <h2 className="text-red-500  text-3xl font-bold">
-                      {new Intl.NumberFormat({
-                        style: "currency",
-                        currency: "JPY",
-                      }).format(size.price)}
-                      <span> VNĐ</span>
-                    </h2>
+                    <>
+                      <h2 className="text-red-500  text-3xl font-bold">
+                        {new Intl.NumberFormat({
+                          style: "currency",
+                          currency: "JPY",
+                        }).format(size.price)}
+                        <span> VNĐ</span>
+                      </h2>
+                      <h3 className="text-red-600 text-lg">
+                        Trọng lượng tham khảo:{" "}
+                        <span className="text-gray-400">
+                          {size.weight} {size.unit.name}
+                        </span>
+                      </h3>
+                    </>
                   )}
                 </div>
               ))}
@@ -281,14 +294,14 @@ const ProductDetail = () => {
           <div className="flex  items-center border-t border-b py-2">
             <ol className="flex flex-col gap-3 list-decimal">
               <li className="text-lg px-2 py-1   ">
-                Giá sản phẩm thay đổi tuỳ trọng lượng vàng và đá quý
+                Giá sản phẩm thay đổi tuỳ theo đá quý
               </li>
               <li className="text-lg px-2 py-1   ">
                 Hỗ trợ trả góp 0% qua thẻ tín dụng
               </li>{" "}
               <li className="text-lg px-2 py-1   ">
-                Hỗ trợ đổi sản phẩm trong 24h tại cửa hàng Kim Huy ( sản phẩm
-                sai ni , size ).
+                Hỗ trợ đổi sản phẩm trong 24h tại cửa hàng Kim Huy (sản phẩm
+                sai, size).
               </li>{" "}
               <li className="text-lg px-2 py-1   ">
                 Giao nhanh nội thành Nha Trang trong 3h
@@ -352,12 +365,12 @@ const ProductDetail = () => {
                       Thông số và mô tả sản phẩm
                     </h2>
                     <div className="border-b-2">
-                      <h3 className="text-red-600 text-lg">
+                      {/* <h3 className="text-red-600 text-lg">
                         Trọng lượng tham khảo:{" "}
                         <span className="text-gray-400">
                           {detailProduct[0].weight} {detailProduct[0].unit.name}
                         </span>
-                      </h3>
+                      </h3> */}
                       <h3 className="text-red-600 text-lg">
                         Loại vàng:{" "}
                         <span className="text-gray-400">

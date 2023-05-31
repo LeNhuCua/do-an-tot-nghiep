@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('avatar', 100)->nullable();
             $table->string('phoneNumber', 10)->nullable();
             $table->boolean('gender')->nullable();
+            $table->string('otp', 45)->nullable();
+
+            
             $table->unsignedBigInteger('role_id');
             $table->foreign('role_id')->references('id')->on('roles')->onUpdate('cascade')->onDelete('cascade');;
             // $table->timestamp('email_verified_at')->nullable();

@@ -125,7 +125,7 @@ const DetailProducts = (props) => {
                     chiếc
                   </p>{" "}
                 </div>
-                <div>
+                {/* <div>
                   <Divider align="left">
                     <div className="inline-flex align-items-center">
                       <i className="pi pi-stop mr-2"></i>
@@ -136,7 +136,7 @@ const DetailProducts = (props) => {
                     {detailFind && detailFind.weight}{" "}
                     {detailFind && detailFind.unit.name}
                   </p>{" "}
-                </div>
+                </div> */}
                 <div>
                   <Divider align="left">
                     <div className="inline-flex align-items-center">

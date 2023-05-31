@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('invoice_details', function (Blueprint $table) {
 
+            
+            $table->string('invoiceDetailId',20);
+
             $table->integer('number');
             $table->float('price', 20, 6);
             $table->string('sizeValue', 30);

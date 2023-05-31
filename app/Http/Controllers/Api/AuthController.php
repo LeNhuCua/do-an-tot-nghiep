@@ -16,9 +16,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PHPExcel_Cell;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Password;
 use Maatwebsite\Excel\Facades\Excel;
 // use Maatwebsite\Excel\Facades\Excel;
 // use Maatwebsite\Excel\Facades\Excel;
@@ -28,6 +30,77 @@ class AuthController extends Controller
 {
 
     use AuthorizesRequests, ValidatesRequests;
+
+
+    
+
+
+
+    public function  edit_user(Request $request)
+    {
+
+        $userId = Auth::user()->userId;
+        $messages = [
+            'required' => 'Trường :attribute phải nhập',
+            'unique' => 'Trường :attribute đã tồn tại'
+
+        ];
+        $validator = Validator::make($request->all(), [], $messages);
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_error' => $validator->errors(),
+                'message' => 'Kiểm tra lại thông tin',
+
+            ]);
+        } else {
+            try {
+
+                $product = User::findOrFail($userId);
+                $product->fullName  = $request->fullName;
+                $product->email  = $request->email;
+                $product->birthday  = $request->birthday;
+                $product->phoneNumber  = $request->phoneNumber;
+                $product->gender  = $request->gender;
+                $product->save();
+
+
+                if ($request->hasFile('avatar')) {
+                    if ($product->avatar) {
+                        $exists = Storage::disk('public')->exists("product/image/{$product->avatar}");
+                        if ($exists) {
+                            Storage::disk('public')->delete("product/image/{$product->avatar}");
+                        }
+                    }
+                    $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
+                    $request->file('avatar')->storeAs('product/image', $imageName, 'public');
+                    $product->avatar = $imageName;
+                }
+                $product->save();
+
+
+     
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Product Updated Successfully!!',
+                    'product' => $product,
+     
+
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 201,
+                    'message' => 'Failed to update product: ' . $e->getMessage()
+                ]);
+            }
+        }
+    }
+
+
+
+
+
+
+
 
     public function signup(Request $request)
     {

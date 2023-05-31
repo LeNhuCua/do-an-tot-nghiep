@@ -106,18 +106,13 @@ export default function Invoices() {
       sizeId: selectedSize.sizeId,
       sizeValue: selectedSize.size[0].sizeValue,
       sizePrice: selectedSize.price,
+      weight: selectedSize.weight,
+      unitId: selectedSize.unitId,
+      unitName: selectedSize.unit.name,
     };
     const invoiceItem = invoices[selectedTable].find((item) => {
       return item.productId === id && item.sizeId === selectedSize.sizeId;
     });
-
-    // if (productId1) {
-    //    invoiceItem = productId1.product_size.find((size) => {
-    //     return size.sizeId === sizeId;
-    //   });
-    // }
-
-    console.log("xinchao", invoiceItem);
 
     //nếu đã tồn tại
     if (invoiceItem) {
@@ -443,6 +438,13 @@ export default function Invoices() {
                           control={control}
                           rules={{
                             required: "Vui lòng nhập tiền nhận",
+                            validate: {
+                              greaterThanOrEqualTo1: (value) =>
+                                value >= 1 || "Vui lòng nhập tiền nhận >= 1",
+                              lessThanOrEqualTo1Billion: (value) =>
+                                value <= 1000000000 ||
+                                "Vui lòng nhập tiền nhận <= 1 tỷ",
+                            },
                             validate: (value) =>
                               value >= totalAmount ||
                               "Vui lòng nhập tiền nhận >= tổng tiền đơn hàng!",
@@ -471,6 +473,12 @@ export default function Invoices() {
                               </div>
 
                               {getFormErrorMessage(field.name)}
+
+                              {/* {fieldState.error && (
+                                <div className="p-error">
+                                  {fieldState.error.greaterThanOrEqualTo1}
+                                </div>
+                              )} */}
                             </div>
                           )}
                         />
@@ -485,7 +493,6 @@ export default function Invoices() {
                       {totalAmount && tableData[selectedTable]?.inputValue ? (
                         <div class="flex justify-between text-base font-medium text-gray-900">
                           <p>Tiền thừa</p>
-
                           <p>
                             {new Intl.NumberFormat({
                               style: "currency",
@@ -683,10 +690,10 @@ export default function Invoices() {
                         inputStyle={{ textAlign: "right" }}
                       /> */}
                     </div>
-                    {totalAmount && tableData[selectedTable]?.inputValue ? (
+                    {totalAmount &&
+                    tableData[selectedTable]?.inputValue >= totalAmount ? (
                       <div class="flex justify-between text-base font-medium text-gray-900">
                         <p>Tiền thừa</p>
-
                         <p>
                           {new Intl.NumberFormat({
                             style: "currency",

@@ -96,7 +96,9 @@ const OrderDetail = () => {
                   <h1 className="text-xl font-bold leading-3 text-gray-600 ">
                     Trọng lượng:{" "}
                     <span className="font-normal">
-                      {order.product.weight} {order.product.unit.name}
+                      {order.product.product_size[0].weight}{" "}
+                      {order.product.product_size[0].unit.name}
+                      {/* {order.product.weight} {order.product.unit.name} */}
                     </span>
                   </h1>
                   <h1 className="text-xl font-bold leading-3  text-gray-600 ">

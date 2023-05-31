@@ -87,14 +87,30 @@ class InvoicesController extends Controller
                         $product->numberBuy += $invoiceItemObject->amount;
                         $product->save();
 
+
+
                         $invoiceDetail = new InvoiceDetail;
+                        $lastInvoiceDetailId = InvoiceDetail::selectRaw('SUBSTRING(invoiceDetailId, -5) AS invoiceDetailId')
+                            ->whereDate('created_at', $days_now)
+                            ->orderBy('invoiceDetailId', 'desc')
+                            ->value('invoiceDetailId');
+                        if ($lastInvoiceDetailId) {
+                            $newInvoiceDetailIdNumber = substr($lastInvoiceDetailId, -0) + 1;
+                        }
+                        if ($lastInvoiceDetailId == null) {
+                            $newInvoiceDetailId = $dateObj . 'CTHD00001';
+                        } else {
+
+                            $newInvoiceDetailId = $dateObj . 'CTHD' . str_pad($newInvoiceDetailIdNumber, 5, '0', STR_PAD_LEFT);
+                        }
+                        $invoiceDetail->invoiceDetailId = $newInvoiceDetailId;
                         $invoiceDetail->number = $invoiceItemObject->amount;
                         $invoiceDetail->productId = $invoiceItemObject->productId;
                         $invoiceDetail->price = $invoiceItemObject->sizePrice;
                         $invoiceDetail->sizeValue = $invoiceItemObject->sizeValue;
                         $invoiceDetail->invoiceId = $invoice->invoiceId;
-                       
-                        
+
+
                         $invoiceDetail->save();
                         $invoiceDetails->push($invoiceItemObject);
                     }

@@ -74,9 +74,7 @@ class ProductsController extends Controller
             'name' => 'required|unique:products',
             'avatar' => 'required',
             'number' => 'required',
-            'weight' => 'required',
             'productTypeId' => 'required',
-            'unitId' => 'required',
             'typeCategoryId' => 'required',
             'status' => 'required',
         ], $messages);
@@ -96,9 +94,9 @@ class ProductsController extends Controller
                 }
 
                 if ($lastProductId == null) {
-                    $newProductId = $request->typeCategoryId . "-" . $request->productTypeId . "-" . $this->convertString($request->weight . $request->unitId) . "-" . 'SP00001';
+                    $newProductId = $request->typeCategoryId . "-" . $request->productTypeId . "-" . 'SP00001';
                 } else {
-                    $newProductId =  $request->typeCategoryId . "-" . $request->productTypeId . "-" . $this->convertString($request->weight . $request->unitId) . "-"  . 'SP' . str_pad($newProductIdNumber, 5, '0', STR_PAD_LEFT);
+                    $newProductId =  $request->typeCategoryId . "-" . $request->productTypeId . "-"  . 'SP' . str_pad($newProductIdNumber, 5, '0', STR_PAD_LEFT);
                 }
                 $product = new Product;
                 $product->productId  = $newProductId;
@@ -107,10 +105,10 @@ class ProductsController extends Controller
                 $product->status  = $request->status;
                 $product->productTypeId  = $request->productTypeId;
                 $product->typeCategoryId  = $request->typeCategoryId;
-                $product->unitId  = $request->unitId;
+
                 $product->description  = $request->description;
                 $product->number  = $request->number;
-                $product->weight  = $request->weight;
+
                 if ($request->has('avatar')) {
                     $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
                     $request->file('avatar')->storeAs('product/image', $imageName, 'public');
@@ -158,7 +156,10 @@ class ProductsController extends Controller
                         $productSize = new ProductSize;
                         $productSize->productSizeId  = $newProductSizeId;
                         $productSize->sizeId  = $sizeItemObject->sizeId;
+                        $productSize->unitId  = $sizeItemObject->unitId;
                         $productSize->price  = $sizeItemObject->price;
+                        $productSize->weight  = $sizeItemObject->weight;
+                        $productSize->number  = $sizeItemObject->number;
                         $productSize->productId  = $product->productId;
                         $productSize->save();
                         $productSizes->push($productSize);
@@ -213,7 +214,7 @@ class ProductsController extends Controller
 
             'alias' => 'required',
             'name' => 'required',
-    
+
             // 'avatar' => 'required',
             'number' => 'required',
             'weight' => 'required',
@@ -243,7 +244,7 @@ class ProductsController extends Controller
                 $product->unitId  = $request->unitId;
                 $product->description  = $request->description;
                 $product->number  = $request->number;
-   
+
                 $product->weight  = $request->weight;
 
 

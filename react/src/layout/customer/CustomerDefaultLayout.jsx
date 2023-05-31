@@ -7,6 +7,8 @@ import Loading from "../../components/Loading";
 import UseTitle from "../../hook/UseTitle";
 import ScrollButton from "../../components/scrollbutton/ScrollButton";
 import { SidebarContext } from "../../context/customer/SideBarContext";
+import ForgotPassword from "../../views/resetpassword/ForgotPassword";
+import ResetPasswordPage from "../../views/resetpassword/ResetPasswordPage ";
 
 const DefaultLayout = () => {
   UseTitle("Vàng bạc đá quý Kim Huy");
@@ -55,6 +57,8 @@ const DefaultLayout = () => {
             <AppSidebar />
           </div>
           <div className={`${isOpenSidebar ? "select-none" : ""}`}>
+   
+           
             <AppContent />
           </div>
           <div className="mt-8">

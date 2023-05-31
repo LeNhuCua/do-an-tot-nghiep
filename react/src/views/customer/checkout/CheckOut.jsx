@@ -180,7 +180,8 @@ const CheckOut = () => {
         Trọng lượng:
         <span className="font-normal">
           {" "}
-          {cart.product.weight} {cart.product.unit.name}
+          {cart.product.product_size[0].weight}{" "}
+          {cart.product.product_size[0].unit.name}
         </span>
       </span>
     );
@@ -253,57 +254,57 @@ const CheckOut = () => {
       .post(`${API}/api/cus-order`, formData)
       .then((response) => {
         if (response.data.status === 400) {
-          const resData = response.data.order;
-          const order_Details = response.data.order_Details;
-          const shippingFee = response.data.shippingFee;
-          const shippingAddress = response.data.shippingAddress;
-          const orderNew = {
-            orderId: resData.orderId,
-            totalAmount: resData.totalAmount,
-            orderStatusId: resData.orderStatusId,
-            deliveryDate: resData.deliveryDate,
-            paymentMethodId: resData.paymentMethodId,
-            shippingMethodId: resData.shippingMethodId,
-            created_at: resData.created_at,
-            customer_address: {
-              recipientAddress: shippingAddress.recipientAddress,
-              recipientName: shippingAddress.recipientName,
-              recipientPhone: shippingAddress.recipientPhone,
-              shippingAddressId: shippingAddress.shippingAddressId,
-              province: {
-                provinceId: shippingAddress.provinceId,
-                name: selectedAddress.province.name,
-              },
-              district: {
-                districtId: shippingAddress.districtId,
-                name: selectedAddress.district.name,
-              },
-              ward: {
-                wardId: shippingAddress.wardId,
-                name: selectedAddress.ward.name,
-              },
-            },
-            order_detail: order_Details.map((order_Detail) => ({
-              orderDetailId: order_Detail.orderDetailId,
-              price: order_Detail.price,
-              quantity: order_Detail.quantity,
-              sizeValue: order_Detail.sizeValue,
-            })),
-          };
-          // dispatch({ type: "ADD_NEW_ORDER", payload: orderNew });
+          // const resData = response.data.order;
+          // const order_Details = response.data.order_Details;
+          // const shippingFee = response.data.shippingFee;
+          // const shippingAddress = response.data.shippingAddress;
+          // const orderNew = {
+          //   orderId: resData.orderId,
+          //   totalAmount: resData.totalAmount,
+          //   orderStatusId: resData.orderStatusId,
+          //   deliveryDate: resData.deliveryDate,
+          //   paymentMethodId: resData.paymentMethodId,
+          //   shippingMethodId: resData.shippingMethodId,
+          //   created_at: resData.created_at,
+          //   customer_address: {
+          //     recipientAddress: shippingAddress.recipientAddress,
+          //     recipientName: shippingAddress.recipientName,
+          //     recipientPhone: shippingAddress.recipientPhone,
+          //     shippingAddressId: shippingAddress.shippingAddressId,
+          //     province: {
+          //       provinceId: shippingAddress.provinceId,
+          //       name: selectedAddress.province.name,
+          //     },
+          //     district: {
+          //       districtId: shippingAddress.districtId,
+          //       name: selectedAddress.district.name,
+          //     },
+          //     ward: {
+          //       wardId: shippingAddress.wardId,
+          //       name: selectedAddress.ward.name,
+          //     },
+          //   },
+          //   order_detail: order_Details.map((order_Detail) => ({
+          //     orderDetailId: order_Detail.orderDetailId,
+          //     price: order_Detail.price,
+          //     quantity: order_Detail.quantity,
+          //     sizeValue: order_Detail.sizeValue,
+          //   })),
+          // };
+          // // dispatch({ type: "ADD_NEW_ORDER", payload: orderNew });
 
-          console.log(dispatch({ type: "ADD_NEW_ORDER", payload: orderNew }))
+          // console.log(dispatch({ type: "ADD_NEW_ORDER", payload: orderNew }))
           const emailData = new FormData();
           emailData.append("subject", "Đặt hàng thành công tại Kim Huy");
           const content = ReactDOMServer.renderToString(
             <div>
-              <h1 className="font-bold text-xl">
+              <h1 className="font-bold text-sm">
                 Xin chào {user.fullName}, cảm ơn bạn đã đặt hàng!{" "}
               </h1>
               <div>
                 <div className="flex gap-2">
                   <div className="flex gap-2">
-                    <h2>
+                    <h3>
                       {" "}
                       Bạn đã đặt {checkoutProducts.length} mặt với tổng số tiền
                       phải trả là là:{" "}
@@ -331,22 +332,22 @@ const CheckOut = () => {
                         </>
                       )}
                       {" trong đó: "}
-                    </h2>
+                    </h3>
                   </div>
                 </div>
               </div>
               <div className="flex gap-2">
-                <h2>
+                <span>
                   Tổng là:{" "}
                   {new Intl.NumberFormat({
                     style: "currency",
                     currency: "JPY",
                   }).format(totalAmount)}
                   <span> VNĐ</span>{" "}
-                </h2>
+                </span>
               </div>
               <div>
-                <h2>
+                <span>
                   Phí ship là{" "}
                   {selectedShippingMethods &&
                   selectedShippingMethods.shippingMethodId !== "PTVC002" ? (
@@ -370,10 +371,10 @@ const CheckOut = () => {
                       <span> VNĐ</span>
                     </>
                   )}{" "}
-                </h2>
+                </span>
               </div>
 
-              <h2>Chi tiết các sản phẩm như sau</h2>
+              <h3>Chi tiết các sản phẩm như sau</h3>
               <div className="card">
                 <DataTable
                   value={checkoutProducts}
@@ -647,8 +648,8 @@ const CheckOut = () => {
                                   Trọng lượng:
                                   <span className="font-normal">
                                     {" "}
-                                    {cart.product.weight}{" "}
-                                    {cart.product.unit.name}
+                                    {cart.product.product_size[0].weight}{" "}
+                                    {cart.product.product_size[0].unit.name}
                                   </span>
                                 </h1>
                                 <h1 className="text-xl leading-3 text-gray-600 py-3">

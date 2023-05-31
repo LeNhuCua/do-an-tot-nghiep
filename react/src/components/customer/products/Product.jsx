@@ -6,15 +6,7 @@ import { differenceInDays, parseISO } from "date-fns";
 import { Rating } from "primereact/rating";
 
 const Product = (props) => {
-  const {
-    alias,
-    name,
-    avatar,
-    numberBuy,
-    created_at,
-    rating,
-    product_size,
-  } = props.data;
+  const { alias, name, avatar, numberBuy, created_at, rating, product_size } =props.data;
 
   function isNew(created_at) {
     const diffInDays = differenceInDays(new Date(), parseISO(created_at));

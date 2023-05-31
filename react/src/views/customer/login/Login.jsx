@@ -142,12 +142,12 @@ const Login = () => {
                   </button>
                 </div>
                 <div className="flex items-center justify-end">
-                  <a
-                    href="#"
+                  <Link
+                    to="/forgot-password"
                     className="text-sm font-medium text-yellow-600 hover:underline"
                   >
                     Quên mật khẩu?
-                  </a>
+                  </Link>
                 </div>
                 <div className="flex items-center justify-end">
                   <Link

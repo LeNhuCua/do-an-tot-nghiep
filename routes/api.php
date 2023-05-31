@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\StatisticalController;
 use App\Http\Controllers\Admin\SubCategoriesController;
 use App\Http\Controllers\Admin\TypeCategoriesController;
 use App\Http\Controllers\Admin\UnitsController;
+use App\Http\Controllers\Api\ForgotPasswordController;
+use App\Http\Controllers\Api\ResetPasswordController;
 use App\Http\Controllers\Customer\CartsController;
 use App\Http\Controllers\Customer\CustomerAddressesController;
 use App\Http\Controllers\Customer\DistrictsController;
@@ -310,6 +312,7 @@ Route::get('/confirm-account/{token}', [CustomerUserController::class, 'confirmA
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'logged_user']);
+    Route::post('/edit-user', [AuthController::class, 'edit_user']);
 
     // Route::get('/user', function (Request $request) {
     //     return $request->user();
@@ -317,6 +320,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
+// Route::post('forgot-password', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+// Route::post('reset-password', 'Auth\ResetPasswordController@reset');
+// Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotPassword']);
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOTP']);
+Route::post('/reset-password',[ForgotPasswordController::class, 'resetPassword']);
+
+// Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
+
+// Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword']);
 
 // Route::middleware(['auth:sanctum'])->group(function(){
 //     Route::post('/logout', [UserController::class, 'logout']);

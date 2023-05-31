@@ -105,7 +105,8 @@ class ComponentToPrint extends React.Component {
                           </td>
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-900">
-                              {item.sizeValue}
+                              {item.weight}
+                        
                             </div>
                           </td>
                           <td className="px-6 py-4">

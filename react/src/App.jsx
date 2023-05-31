@@ -5,6 +5,8 @@ import "./index.css";
 import "tippy.js/dist/tippy.css"; // optional
 import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./hook/autoscrolltotop/ScrollToTop";
+import ForgotPassword from "./views/resetpassword/ForgotPassword";
+import ResetPasswordPage from "./views/resetpassword/ResetPasswordPage ";
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -78,6 +80,18 @@ function App() {
               name="Đăng ký"
               element={<RegisterCustomer />}
             />
+
+            <Route
+              exact
+              path="/forgot-password"
+              element={<ForgotPassword/>}
+            />
+            <Route
+              exact
+              path="/reset-password/:account"
+              element={<ResetPasswordPage />}
+            />
+
             {/* <Route  path="*" element={<LoginCustomer />} /> */}
             {/* <Route
               exact

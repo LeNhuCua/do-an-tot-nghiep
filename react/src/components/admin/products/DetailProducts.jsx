@@ -36,10 +36,29 @@ const DetailProducts = (props) => {
       <Divider align="left">
         <div className="inline-flex align-items-center">
           <i className="pi pi-info-circle mr-2"></i>
-          <b>Size: {size.size ? size.size[0].sizeValue : "2424324234"}</b>
+          <b>Size: {size.size ? size.size[0].sizeValue : ""}</b>
         </div>
       </Divider>
-      <p className="pl-16">Giá: {size.price}</p>
+
+      <p className="pl-16">
+          {"Giá: "}
+          {new Intl.NumberFormat({
+            style: "currency",
+            currency: "JPY",
+          }).format(size.price)}{" "}
+          VNĐ
+        </p>{" "}
+      <p className="pl-16">Trọng lượng: {size.weight} {size.unit.name} </p>
+      <div>
+        <p className="pl-16">
+          {"Số lượng tồn: "}
+          {new Intl.NumberFormat({
+            style: "currency",
+            currency: "JPY",
+          }).format(size.size ? size.number : "")}{" "}
+          chiếc
+        </p>{" "}
+      </div>
     </div>
   ));
   return (
@@ -93,38 +112,7 @@ const DetailProducts = (props) => {
                   </Divider>
                   <p className="pl-16">{detailFind && detailFind.alias}</p>{" "}
                 </div>
-                <div>
-                  <Divider align="left">
-                    <div className="inline-flex align-items-center">
-                      <i className="pi pi-dollar mr-2"></i>
-                      <b>Giá</b>
-                    </div>
-                  </Divider>
-                  <p className="pl-16">
-                    {" "}
-                    {new Intl.NumberFormat({
-                      style: "currency",
-                      currency: "JPY",
-                    }).format(detailFind && detailFind.price)}{" "}
-                    đ
-                  </p>{" "}
-                </div>
-                <div>
-                  <Divider align="left">
-                    <div className="inline-flex align-items-center">
-                      <i className="pi pi-shield mr-2"></i>
-                      <b>Số lượng tồn</b>
-                    </div>
-                  </Divider>
-                  <p className="pl-16">
-                    {" "}
-                    {new Intl.NumberFormat({
-                      style: "currency",
-                      currency: "JPY",
-                    }).format(detailFind && detailFind.number)}{" "}
-                    chiếc
-                  </p>{" "}
-                </div>
+
                 {/* <div>
                   <Divider align="left">
                     <div className="inline-flex align-items-center">

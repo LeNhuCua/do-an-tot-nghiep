@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Reset Password OTP</title>
+    <title>Quên mật khẩu</title>
 </head>
 
 <body>

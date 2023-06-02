@@ -118,6 +118,7 @@ export default function CreateProduct() {
       setSelectedSizes(updatedSizes);
     };
 
+
     return (
       <div className="flex gap-3 align-items-center">
         <img
@@ -141,6 +142,13 @@ export default function CreateProduct() {
         />
       </div>
     );
+  };
+
+  const fetchProducts = async () => {
+    await axios.get(`${API}/api/products/`).then(({ data }) => {
+      dispatch({ type: "FETCH_PRODUCTS", payload: data });
+      // setLoading(false);
+    });
   };
 
   const panelFooterTemplate = () => {
@@ -257,53 +265,60 @@ export default function CreateProduct() {
       setSubmitted(true);
       await axios.post(`${API}/api/products`, formData).then((response) => {
         if (response.data.status === 400) {
-          const resData = response.data.product;
-          const resImages = response.data.productImages;
-          const resSizes = response.data.productSizes;
-          const resSizesValue = response.data.sizesValue;
-          console.log(resSizes);
-          const createProducts = {
-            productId: resData.productId,
-            name: resData.name,
-            alias: resData.alias,
-            status: statusSelect ? statusSelect.code : 1,
-            avatar: resData.avatar,
+          // const resData = response.data.product;
+          // const resImages = response.data.productImages;
+          // const resSizes = response.data.productSizes;
+          // const resSizesValue = response.data.sizesValue;
+          // console.log(resSizes);
+          // const createProducts = {
+          //   productId: resData.productId,
+          //   name: resData.name,
+          //   alias: resData.alias,
+          //   status: statusSelect ? statusSelect.code : 1,
+          //   avatar: resData.avatar,
+          //   description: resData.description,
+          //   product_type: {
+          //     productTypeId: selectedProductTypeItem.productTypeId,
+          //     name: selectedProductTypeItem.name,
+          //   },
+          //   type_category: {
+          //     typeCategoryId: selectedTypeCategoryItem.typeCategoryId,
+          //     name: selectedTypeCategoryItem.name,
+          //   },
 
-            price: resData.price,
-            description: resData.description,
-            number: resData.number,
-            product_type: {
-              name: selectedProductTypeItem.name,
-            },
-            type_category: {
-              name: selectedTypeCategoryItem.name,
-            },
+          //   product_image: resImages.map((image) => ({
+          //     name: image.productImageId,
+          //     image: image.image,
+          //     productId: image.productId,
+          //   })),
+          //   product_size: resSizes.map((size) => ({
+          //     productSizeId: size.productSizeId,
+          //     sizeId: size.sizeId,
+          //     price: size.price,
+          //     weight: size.weight,
+          //     number: size.number,
+          //     unitId: size.unitId,
+          //     // size: resSizesValue.map((size) => ({
+          //     //   sizeValue: size,
+          //     // })),
+          //     size: resSizesValue.forEach((value) => ({
+          //       sizeValue: value,
+          //     })),
+          //     unit: resSizesValue.forEach((value) => ({
+          //       name: value.unitName,
+          //     })),
+          //   })),
+          // };
 
-            product_image: resImages.map((image) => ({
-              name: image.productImageId,
-              image: image.image,
-              productId: image.productId,
-            })),
-            product_size: resSizes.map((size) => ({
-              sizeId: size.sizeId,
-              price: size.price,
-              // size: resSizesValue.map((size) => ({
-              //   sizeValue: size,
-              // })),
-              size: resSizesValue.forEach((value) => ({
-                sizeValue: value,
-              })),
-            })),
-          };
-
-          // Thêm loại sản phẩm mới vào danh sách loại sản phẩm trong context
-          dispatch({ type: "ADD_PRODUCTS", payload: createProducts });
+          // // Thêm loại sản phẩm mới vào danh sách loại sản phẩm trong context
+          // dispatch({ type: "ADD_PRODUCTS", payload: createProducts });
           Swal.fire({
             icon: "success",
             title: "Thêm mới thành công!",
             showConfirmButton: false,
             timer: 1500,
           });
+          fetchProducts()
           // navigate("/quantri/sanpham");
 
           // reset();

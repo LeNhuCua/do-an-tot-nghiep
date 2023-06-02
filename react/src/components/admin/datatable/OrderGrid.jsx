@@ -62,17 +62,7 @@ export default function OrderGrid(props) {
   const renderHeader = () => {
     return (
       <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-        <Tippy content="Xuất excel">
-          <Button
-            color="success"
-            onClick={exportCSV}
-            endIcon={<RiFileExcel2Fill />}
-            variant="contained"
-            component="label"
-          >
-            Export
-          </Button>
-        </Tippy>
+
 
         <span className="p-input-icon-left">
           <i className="pi pi-search" />

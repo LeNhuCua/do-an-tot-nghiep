@@ -38,7 +38,7 @@ const StatisticalByDay = () => {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
   const [selected, setSelected] = useState("today");
-
+  console.log(date);
   const [detailData, setDetailData] = useState([]);
   const [bestSellProduct, setBestSellProduct] = useState([]);
 

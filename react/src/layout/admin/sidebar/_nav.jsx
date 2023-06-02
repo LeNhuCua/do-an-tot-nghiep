@@ -18,7 +18,7 @@ import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
 const _nav = [
   {
     component: CNavItem,
-    name: "Dashboard",
+    name: "Tổng quan",
     to: "/quantri/dashboard",
     icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
     badge: {
@@ -55,7 +55,7 @@ const _nav = [
   {
     component: CNavGroup,
     name: "Thông tin liên quan ",
-    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
@@ -77,7 +77,7 @@ const _nav = [
   {
     component: CNavGroup,
     name: "Giới thiệu ",
-    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,

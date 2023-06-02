@@ -24,7 +24,6 @@ class Product extends Model
         'alias',
         'avatar',
         'description',
-        'number',
         'numberBuy',
         'status',
         'productTypeId',

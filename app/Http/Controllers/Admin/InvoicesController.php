@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Invoice;
 use App\Models\InvoiceDetail;
 use App\Models\Product;
+use App\Models\ProductSize;
 use App\Models\ProductType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -83,9 +84,14 @@ class InvoicesController extends Controller
                         $invoiceItemObject = json_decode($value);
 
                         $product = Product::find($invoiceItemObject->productId);
-                        $product->number -= $invoiceItemObject->amount;
                         $product->numberBuy += $invoiceItemObject->amount;
                         $product->save();
+
+                        $productSize = ProductSize::where('sizeId', '=', $invoiceItemObject->sizeId)->where('productId' , '=', $invoiceItemObject->productId)->first();
+                        $productSize->number -= $invoiceItemObject->amount;
+                        $productSize->save();
+
+
 
 
 
@@ -145,7 +151,7 @@ class InvoicesController extends Controller
                 'message' => 'Product Created Successfully!!',
                 'product' => $invoice,
                 'invoiceDetails' => $invoiceDetails,
-
+                'productSize', $productSize
             ]);
         }
     }

@@ -107,7 +107,6 @@ class ProductsController extends Controller
                 $product->typeCategoryId  = $request->typeCategoryId;
 
                 $product->description  = $request->description;
-                $product->number  = $request->number;
 
                 if ($request->has('avatar')) {
                     $imageName = Str::random() . '.' . $request->avatar->getClientOriginalExtension();
@@ -131,6 +130,7 @@ class ProductsController extends Controller
                 }
                 $productSizes = collect();
                 $sizesValue = collect();
+                $units = collect();
 
                 if ($request->sizes) {
                     $a = "có";
@@ -164,6 +164,7 @@ class ProductsController extends Controller
                         $productSize->save();
                         $productSizes->push($productSize);
                         $sizesValue->push($sizeItemObject->sizeValue);
+                        $units->push($sizeItemObject->sizeValue);
                     }
                 } else {
                     $a = "ko";
@@ -215,11 +216,9 @@ class ProductsController extends Controller
             'alias' => 'required',
             'name' => 'required',
 
-            // 'avatar' => 'required',
-            'number' => 'required',
-            'weight' => 'required',
+
             'productTypeId' => 'required',
-            'unitId' => 'required',
+
             'typeCategoryId' => 'required',
             'status' => 'required',
         ], $messages);
@@ -233,7 +232,7 @@ class ProductsController extends Controller
             try {
 
                 $newProductIdNumber = substr($id, -7);
-                $newProductId =  $request->typeCategoryId . "-" . $request->productTypeId . "-" . $this->convertString($request->weight . $request->unitId) . "-"  . $newProductIdNumber;
+                $newProductId =  $request->typeCategoryId . "-" . $request->productTypeId . "-"   . $newProductIdNumber;
                 $product = Product::findOrFail($id);
                 $product->productId  = $newProductId;
                 $product->name  = $request->name;
@@ -241,13 +240,7 @@ class ProductsController extends Controller
                 $product->status  = $request->status;
                 $product->productTypeId  = $request->productTypeId;
                 $product->typeCategoryId  = $request->typeCategoryId;
-                $product->unitId  = $request->unitId;
                 $product->description  = $request->description;
-                $product->number  = $request->number;
-
-                $product->weight  = $request->weight;
-
-
 
                 if ($request->hasFile('avatar')) {
                     if ($product->avatar) {
@@ -277,11 +270,56 @@ class ProductsController extends Controller
                     }
                 }
 
+
+                if ($request->sizes) {
+
+                    foreach ($request->sizes as $size) {
+                        $sizeItemObject = json_decode($size);
+                        $days_now = Carbon::today();
+                        $dateObj = $days_now->toDateString();
+
+                        $lastProductSizeId = ProductSize::selectRaw('SUBSTRING(productSizeId, -5) AS productSizeId')
+                            ->whereDate('created_at', $days_now)
+                            ->orderBy('productSizeId', 'desc')
+                            ->value('productSizeId');
+                        if ($lastProductSizeId) {
+                            $newProductSizeIdNumber = substr($lastProductSizeId, -0) + 1;
+                        }
+                        if ($lastProductSizeId == null) {
+                            $newProductSizeId = $dateObj . 'SP_S00001';
+                        } else {
+                            $newProductSizeId = $dateObj . 'SP_S' . str_pad($newProductSizeIdNumber, 5, '0', STR_PAD_LEFT);
+                        }
+
+                        $alreadyExistSize = ProductSize::where('productID', '=', $product->productId)->where('sizeId', '=', $sizeItemObject->sizeId)->first();
+                        if ($alreadyExistSize) {
+
+                            return response()->json([
+                                'status' => 401,
+                                'alreadyExistSize' =>  $alreadyExistSize
+                            ]);
+                        } else {
+                            $productSize = new ProductSize;
+                            $productSize->productSizeId  = $newProductSizeId;
+                            $productSize->sizeId  = $sizeItemObject->sizeId;
+                            $productSize->unitId  = $sizeItemObject->unitId;
+                            $productSize->price  = $sizeItemObject->price;
+                            $productSize->weight  = $sizeItemObject->weight;
+                            $productSize->number  = $sizeItemObject->number;
+                            $productSize->productId  = $product->productId;
+                            $productSize->save();
+                        }
+                    }
+                } else {
+                }
+
+
                 return response()->json([
                     'status' => 400,
                     'message' => 'Product Updated Successfully!!',
                     'product' => $product,
-                    'productImages' => $productImages
+                    'productImages' => $productImages,
+               
 
                 ]);
             } catch (\Exception $e) {
@@ -363,13 +401,33 @@ class ProductsController extends Controller
     }
 
 
+    function convertToLaravelArray($input)
+    {
+        $array = explode(',', $input);
+
+        $resultArray = [];
+
+        foreach ($array as $item) {
+            $trimmedItem = trim($item);
+
+            // Kiểm tra xem chuỗi có bắt đầu bằng "SIZE" hay "SanPham" hay không
+            if (strpos($trimmedItem, 'SIZE') === 0) {
+                $resultArray[] = ['name' => 'SIZE', 'value' => $trimmedItem];
+            } elseif (strpos($trimmedItem, 'SanPham') === 0) {
+                $resultArray[] = ['name' => 'SanPham', 'value' => $trimmedItem];
+            }
+        }
+
+        return $resultArray;
+    }
+
     public function importExcel(Request $request)
     {
         try {
             $file = $request->file('file');
             $reader = IOFactory::createReaderForFile($file->getPathname());
             $spreadsheet = $reader->load($file->getPathname());
-            $worksheet = $spreadsheet->getActiveSheet();
+            $worksheet = $spreadsheet->getSheet(0);
             $rows = $worksheet->toArray();
 
             if (count($rows) <= 1) {
@@ -383,14 +441,17 @@ class ProductsController extends Controller
                 ->orderBy('productId', 'desc')
                 ->value('productId');
 
-            $newProductIdNumber = substr($lastProductId, -0) + 1;
+            if ($lastProductId) {
+                $newProductIdNumber = substr($lastProductId, -0) + 1;
+            }
+
 
             foreach ($rows as $index => $row) {
                 if ($index === 0) { // Skip header row
                     continue;
                 }
 
-                $newProductId =  ($row[6] . "-" . $row[4] . "-" . $this->convertString($row[3] . $row[5])) . "-" . 'SP' . str_pad($newProductIdNumber, 5, '0', STR_PAD_LEFT);
+                $newProductId =  ($row[2] . "-" . $row[1]) . "-" . 'SP' . str_pad($newProductIdNumber, 5, '0', STR_PAD_LEFT);
                 $product = Product::where('name', $row[0])->first(); // Kiểm tra xem productId đã tồn tại trong db hay chưa
                 if ($product) { // Nếu đã tồn tại thì báo lỗi
 
@@ -405,18 +466,66 @@ class ProductsController extends Controller
                     $product = new Product;
                     $product->productId =  $newProductId;
                     $product->name = $row[0];
-                    $product->price = $row[1];
-                    $product->number = $row[2];
-                    $product->weight = $row[3];
-                    $product->productTypeId = $row[4];
-                    $product->unitId = $row[5];
-                    $product->typeCategoryId = $row[6];
+                    $product->productTypeId = $row[1];
+                    $product->typeCategoryId = $row[2];
                     $product->status = 1;
-                    $product->alias = $this->convertNameWithoutAccents($row[0] . "-" . $row[6] . "-" . $row[4]) . "-" . $this->convertString(strtolower($row[3] . $row[5]));
+                    $product->alias = $this->convertNameWithoutAccents($row[0] . "-" . $row[2] . "-" . $row[1]);
                     $product->created_at =  Carbon::now();
                     $product->updated_at = Carbon::now();
-
                     $product->save();
+
+
+
+                    $sizeId = explode(";", $row[3]);
+                    $unitId = explode(";", $row[6]);
+                    $price = explode(";", $row[4]);
+                    $weight = explode(";", $row[5]);
+                    $number = explode(";", $row[7]);
+
+                    // $unitId = $this->convertToLaravelArray($row[6]);
+
+                    $collection = collect($sizeId)->map(function ($sizeId, $index) use ($unitId, $price, $weight, $number) {
+                        return ['sizeId' => $sizeId, 'unitId' => $unitId[$index], 'price' => $price[$index], 'weight' => $weight[$index], 'number' => $number[$index]];
+                    });
+
+                    $objectsArray = $collection->toArray();
+
+
+
+
+
+                    foreach ($objectsArray as $index => $r) {
+
+                        $days_now = Carbon::today();
+                        $dateObj = $days_now->toDateString();
+                        $lastProductSizeId = ProductSize::selectRaw('SUBSTRING(productSizeId, -5) AS productSizeId')
+                            ->whereDate('created_at', $days_now)
+                            ->orderBy('productSizeId', 'desc')
+                            ->value('productSizeId');
+                        if ($lastProductSizeId) {
+                            $newProductSizeIdNumber = substr($lastProductSizeId, -0) + 1;
+                        }
+                        if ($lastProductSizeId == null) {
+                            $newProductSizeId = $dateObj . 'SP_S00001';
+                        } else {
+
+                            $newProductSizeId = $dateObj . 'SP_S' . str_pad($newProductSizeIdNumber, 5, '0', STR_PAD_LEFT);
+                        }
+
+                        $productSize = new ProductSize;
+                        $productSize->productSizeId  = $newProductSizeId;
+                        $productSize->sizeId  = $r['sizeId'];
+                        $productSize->unitId  = $r['unitId'];
+                        $productSize->price  = $r['price'];
+                        $productSize->weight  = $r['weight'];
+                        $productSize->number  = $r['number'];
+                        $productSize->productId  = $product->productId;
+                        $productSize->save();
+                    }
+
+
+
+
                     $newProductIdNumber++; // Increment the productId number
                 }
             }
@@ -425,6 +534,7 @@ class ProductsController extends Controller
             return response()->json([
                 'status' => 200,
                 'message' => 'Thành công',
+                'ahiahi' => $objectsArray
             ]);
         } catch (\Exception $e) {
             // Handle errors

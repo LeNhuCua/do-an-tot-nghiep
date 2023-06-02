@@ -27,6 +27,7 @@ import { Editor } from "primereact/editor";
 import UploadAvatar from "../../../components/admin/products/UploadAvatar.jsx";
 import UploadImages from "../../../components/admin/products/UploadImages.jsx";
 import { MultiSelect } from "primereact/multiselect";
+import { Accordion, AccordionTab } from "primereact/accordion";
 // import UploadImages from "../../../components/admin/uploadimages/UploadImages";
 
 const EditProduct = () => {
@@ -75,7 +76,7 @@ const EditProduct = () => {
   const [productSize, setProductSize] = useState([]);
 
   const [number, setNumber] = useState(null);
-
+  const [dataWeight, setDataWeight] = useState([]);
   const fetchSizes = async () => {
     await axios.get(`${API}/api/sizes/`).then(({ data }) => {
       dispatch({ type: "FETCH_SIZES", payload: data });
@@ -94,7 +95,7 @@ const EditProduct = () => {
 
         // setImages(data.product.product_image);
         setDescription(data.product.description);
-        setNumber(data.product.number);
+
         setImageCurrent(data.product.avatar);
         setImagesCurrent(data.product.product_image);
         setProductSize(data.product.product_size);
@@ -104,7 +105,7 @@ const EditProduct = () => {
         console.log(error);
       }
     };
-    console.log(productSize);
+
     const fetchtypeCategories = async () => {
       try {
         const { data } = await axios.get(`${API}/api/typeCategories/`);
@@ -184,19 +185,18 @@ const EditProduct = () => {
   }
   //tìm kiếm loại sản phẩm được chọn dựa vào bí danh và lấy lại dữ liệu nếu dữ liệu chưa tồn tại
   const updateData = async (data) => {
-    const sizeData = Object.keys(data).reduce((acc, key) => {
-      if (key.includes("size")) {
-        acc.push(data[key]);
-      }
-      return acc;
-    }, []);
-    console.log(sizeData);
+    // const sizeData = Object.keys(data).reduce((acc, key) => {
+    //   if (key.includes("size")) {
+    //     acc.push(data[key]);
+    //   }
+    //   return acc;
+    // }, []);
+    // console.log(sizeData);
     const newFormData = new FormData();
     newFormData.append("name", data.name);
-    newFormData.append("number", data.number);
+
     newFormData.append("description", description);
 
-    newFormData.append("weight", data.weight);
     newFormData.append("alias", convertNameWithoutAccents(data.name));
     newFormData.append("status", checked ? 1 : 0);
     newFormData.append("avatar", image);
@@ -223,6 +223,9 @@ const EditProduct = () => {
     for (let i = 0; i < images.length; i++) {
       newFormData.append(`images[${i}]`, images[i]);
     }
+    for (let i = 0; i < dataWeight.length; i++) {
+      newFormData.append(`sizes[${i}]`, JSON.stringify(dataWeight[i]));
+    }
     setSubmitted(true);
     await axios
       .post(`${API}/api/products/${getID}`, newFormData)
@@ -233,42 +236,6 @@ const EditProduct = () => {
           );
           if (alreadyExist) setAlreadyExistName("Tên sản phẩm đã tồn tại");
         } else if (response.data.status === 400) {
-          const resData = response.data.product;
-          const resImages = response.data.productImages;
-          const product_image = resImages.map((image) => ({
-            productImageId: image.productImageId,
-            image: image.image,
-            productId: image.productId,
-          }));
-          const allProductImage = product_image.concat(resData.product_image);
-
-          const updatedProducts = {
-            productId: resData.productId,
-            name: resData.name,
-            alias: resData.alias,
-            status: checked ? 1 : 0,
-            avatar: resData.avatar,
-            weight: resData.weight,
-            description: resData.description,
-            number: resData.number,
-            product_type: {
-              name: selectedType ? selectedType.name : product.name,
-            },
-            type_category: {
-              name: selectedTypeCategory
-                ? selectedTypeCategory.name
-                : product.name,
-            },
-            unit: {
-              name: selectedUnit ? selectedUnit.name : product.name,
-            },
-            product_image: allProductImage,
-          };
-
-          dispatch({
-            type: "UPDATE_PRODUCT",
-            payload: updatedProducts,
-          });
           if (data.productId !== product.productId) {
             fetchProductsAll();
           }
@@ -281,6 +248,12 @@ const EditProduct = () => {
             timer: 1500,
           });
           setValidationError([]);
+        } else if (response.data.status === 401) {
+          Swal.fire({
+            icon: "error",
+            title: `Kích cỡ là ${response.data.alreadyExistSize.size[0].sizeValue} đã tồn tại`,
+            timer: 1500,
+          });
         } else {
           setValidationError(response.data.validation_error);
           Swal.fire({
@@ -366,15 +339,6 @@ const EditProduct = () => {
     );
   }, [typeCategories, product ? product.type_category.typeCategoryId : ""]);
 
-  const filteredUnits = useMemo(() => {
-    return getFilteredData(
-      units,
-      product ? product.unit.unitId : "",
-      "unitId",
-      "name"
-    );
-  }, [units, product ? product.unit.unitId : ""]);
-
   const filteredType = useMemo(() => {
     return getFilteredData(
       productsType,
@@ -383,11 +347,6 @@ const EditProduct = () => {
       "name"
     );
   }, [productsType, product ? product.product_type.productTypeId : ""]);
-
-  useEffect(() => {
-    setValue("number", number);
-    // Cập nhật giá trị mặc định cho ô input
-  }, [setValue, number]);
 
   //dữ liệu hiên thị trong dropdown danh mục cha
   const categoryOptionTemplate = (option) => {
@@ -410,43 +369,6 @@ const EditProduct = () => {
     }
   };
 
-  const [selectedSizes, setSelectedSizes] = useState(null);
-  const countryTemplate = (option) => {
-    const handleInputChange = (event) => {
-      const value = event.value;
-      const updatedSizes = [...selectedSizes];
-      const index = updatedSizes.findIndex(
-        (country) => country.sizeId === option.sizeId
-      );
-      updatedSizes[index]["price"] = value;
-      setSelectedSizes(updatedSizes);
-    };
-
-    return (
-      <div className="flex gap-3 align-items-center">
-        <img
-          alt={option.sizeId}
-          src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png"
-          // className={`mr-2 flag flag-${option.code.toLowerCase()}`}
-          style={{ width: "18px" }}
-        />
-        <div>{option.sizeValue}</div>
-        {/* <input
-          type="text"
-          value={option.price || ""}
-          onChange={handleInputChange}
-        /> */}
-
-        <InputNumber
-          suffix=" VNĐ"
-          value={option.price || ""}
-          onChange={handleInputChange}
-          placeholder="Nhập giá tiền tương ứng size"
-        />
-      </div>
-    );
-  };
-
   const panelFooterTemplate = () => {
     const length = selectedSizes ? selectedSizes.length : 0;
 
@@ -456,6 +378,99 @@ const EditProduct = () => {
       </div>
     );
   };
+  const [selectedSizes, setSelectedSizes] = useState(null);
+  const [selectedUnitItem, setSelectedUnitItem] = useState(null);
+
+  const [price, setPrice] = useState("");
+  const [weight, setWeight] = useState("");
+
+  const addDataWeight = () => {
+    if (
+      price !== "" &&
+      weight !== "" &&
+      selectedUnitItem !== null &&
+      selectedSizes !== null &&
+      number !== ""
+    ) {
+      const newTodo = dataWeight.concat({
+        price: Number(price),
+        unitId: selectedUnitItem.unitId,
+        unitName: selectedUnitItem.name,
+        weight: Number(weight),
+        sizeId: selectedSizes.sizeId,
+        sizeValue: selectedSizes.sizeValue,
+        number: Number(number),
+      });
+      const findSizeId = dataWeight.find(
+        (item) => selectedSizes.sizeId === item.sizeId
+      );
+      if (findSizeId) {
+        Swal.fire({
+          icon: "error",
+          title: `Kích thước ${findSizeId.sizeValue} đã tồn tại, vui lòng chọn kích thước khác`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        setDataWeight(newTodo);
+      }
+
+      // setPrice("");
+      // setWeight("");
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Vui lòng điền đầy đủ các trường!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  };
+
+  const deleteWeight = (id) => {
+    const newTodo = dataWeight.filter((item) => id != item.sizeId);
+    setDataWeight(newTodo);
+  };
+
+  const deleteSize = async (id) => {
+    const isConfirm = await Swal.fire({
+      title: "Bạn có chắc muốn xoá ảnh này?",
+      text: "Không thể hoàn tác!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      return result.isConfirmed;
+    });
+
+    if (!isConfirm) {
+      return;
+    }
+
+    await axios
+      .delete(`http://localhost:8000/api/productsSize/${id}`)
+      .then(({ data }) => {
+        Swal.fire({
+          icon: "success",
+          text: data.message,
+        });
+
+        const img = productSize.filter(
+          (productSize) => productSize.productSizeId !== id
+        );
+        setProductSize(img);
+        // fetchProducts();
+      })
+      .catch(({ response: { data } }) => {
+        Swal.fire({
+          text: data.message,
+          icon: "error",
+        });
+      });
+  };
+
   return (
     <div className="container">
       {/* <div className="card flex justify-content-center">
@@ -492,43 +507,7 @@ const EditProduct = () => {
             />
           </div>
           {/* <input type="file" onChange={changeHandler} /> */}
-          {productSize
-            ? productSize.map((size, index) => (
-                <div key={index} onClick={() => alert(size.productSizeId)}>
-                  <p>{size.size[0].sizeValue}</p>
-                  <InputText
-                    id={`size-${index}`}
-                    defaultValue={size.price}
-                    className={`w-full ${errors[`size${index}`] && "invalid"}`}
-                    {...register(`size${index}`, {
-                      required: "Vui lòng nhập tên sản phẩm",
-                      maxLength: {
-                        value: 50,
-                        message: "Giới hạn chỉ 50 kí tự",
-                      },
-                    })}
-                    onKeyUp={() => {
-                      trigger(`size${index}`);
-                    }}
-                  />
-                </div>
-              ))
-            : ""}
 
-          <div className="card flex justify-content-center">
-            <MultiSelect
-              filter
-              value={selectedSizes}
-              options={sizes}
-              onChange={(e) => setSelectedSizes(e.value)}
-              optionLabel="sizeValue"
-              placeholder="Chọn kích thước"
-              itemTemplate={countryTemplate}
-              panelFooterTemplate={panelFooterTemplate}
-              className="w-full md:w-20rem"
-              display="chip"
-            />
-          </div>
           <CCol md={6}>
             <span className="p-float-label ">
               <InputText
@@ -615,7 +594,7 @@ const EditProduct = () => {
             />
           </CCol> */}
 
-          <CCol xl={3}>
+          {/* <CCol xl={3}>
             <Controller
               name="number"
               control={control}
@@ -649,7 +628,7 @@ const EditProduct = () => {
                 </>
               )}
             />
-          </CCol>
+          </CCol> */}
 
           {/* <CCol xl={6} className="relative">
             <label
@@ -693,50 +672,6 @@ const EditProduct = () => {
             </div>
           </CCol>
 
-          <CCol xl={3}>
-            <span className="p-float-label ">
-              <InputText
-                defaultValue={product ? product.weight : null}
-                keyfilter="num"
-                id="weight"
-                className={`w-full ${errors.name && "invalid"}`}
-                {...register("weight", {
-                  required: "Vui lòng nhập trọng lượng",
-                })}
-                onKeyUp={() => {
-                  trigger("weight");
-                }}
-                type="text"
-                placeholder="Vd: 1.3"
-              />
-              <label htmlFor="weight">Trọng lượng</label>
-            </span>
-
-            {errors.weight && (
-              <small className="cs-text-error">{errors.weight.message}</small>
-            )}
-          </CCol>
-          <CCol xl={3} className="relative">
-            <label
-              className="absolute text-[0.75rem] -top-5 left-6 select-none z-50 text-[#6c757d]"
-              htmlFor="unit"
-            >
-              Đơn vị tính
-            </label>
-
-            <div className=" flex justify-content-center">
-              <Dropdown
-                value={selectedUnit}
-                onChange={(e) => setSelectedUnit(e.value)}
-                options={units}
-                optionLabel="name"
-                placeholder={product ? product.unit.name : null}
-                filter
-                itemTemplate={categoryOptionTemplate}
-                className="w-full md:w-14rem"
-              />
-            </div>
-          </CCol>
           <div>
             <h6>Ảnh bìa</h6>
             <Button
@@ -789,6 +724,169 @@ const EditProduct = () => {
               style={{ height: "320px" }}
             />
           </CCol>
+          <div className="card py-2">
+            <h6>Kích thước và trọng lượng</h6>
+            <Accordion>
+              <AccordionTab
+                header={
+                  <div className="flex align-items-center">
+                    <i className="pi pi-credit-card mr-2"></i>
+                    <span className="vertical-align-middle">
+                      Kích thước và trọng lượng hiện tại
+                    </span>
+                  </div>
+                }
+              >
+                <div className="grid gap-2 grid-cols-3  lg:grid-cols-3">
+                  {productSize && productSize.map((size, index) => (
+                    <div
+                      className="border p-2 rounded-md relative"
+                      key={size.productSizeId}
+                    >
+                      <button
+                        type="button"
+                        className="absolute top-1 right-1 text-red-600"
+                        onClick={() => deleteSize(size.productSizeId)}
+                      >
+                        Xoá
+                      </button>
+                      <h6>Kích thước: {size.size[0].sizeValue}</h6>
+                      {/* <h6>Giá: {data.price}</h6> */}
+                      <h6 className="">
+                        Giá:{" "}
+                        {new Intl.NumberFormat({
+                          style: "currency",
+                          currency: "JPY",
+                        }).format(size.price)}
+                        <span> VNĐ</span>
+                      </h6>
+                      <h6>Số lượng: {size.number}</h6>
+                      <h6>
+                        Trọng lượng: {size.weight} {size.unitName}
+                      </h6>
+                    </div>
+                  ))}
+                </div>
+              
+              </AccordionTab>
+            </Accordion>
+            <div className="my-2 p-2">
+              <div className=" py-4 grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3 gap-3 items-center">
+                <div>
+                  <Dropdown
+                    value={selectedSizes}
+                    onChange={(e) => setSelectedSizes(e.value)}
+                    options={sizes}
+                    optionLabel="sizeValue"
+                    placeholder="Chọn kích cỡ"
+                    filter
+                    showClear
+                    className="w-full md:w-14rem"
+                  />
+                </div>
+
+                <div>
+                  <span className="p-float-label ">
+                    <InputNumber
+                      id="price"
+                      suffix=" VNĐ"
+                      value={price}
+                      onChange={(e) => setPrice(e.value)}
+                      type="text"
+                      placeholder="Vd: 1200000"
+                      className="w-full md:w-14rem"
+                    />
+
+                    <label htmlFor="price">Giá bán</label>
+                  </span>
+                </div>
+                <div>
+                  <span className="p-float-label ">
+                    <InputNumber
+                      id="number"
+                      // suffix=" VNĐ"
+                      value={number}
+                      onChange={(e) => setNumber(e.value)}
+                      type="text"
+                      placeholder="Vd: 12"
+                      className="w-full md:w-14rem"
+                    />
+
+                    <label htmlFor="number">Số lượng nhập</label>
+                  </span>
+                </div>
+                <div>
+                  <span className="p-float-label ">
+                    <InputText
+                      keyfilter="num"
+                      id="price1"
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      type="text"
+                      placeholder="Vd: 1.200.000"
+                      className="w-full md:w-14rem"
+                    />
+                    <label htmlFor="price1">Trọng lượng / Chiều dài</label>
+                  </span>
+                </div>
+                <div>
+                  <Dropdown
+                    value={selectedUnitItem}
+                    onChange={(e) => setSelectedUnitItem(e.value)}
+                    options={units}
+                    optionLabel="name"
+                    placeholder="Chọn đơn vị tính"
+                    filter
+                    showClear
+                    className="w-full md:w-14rem"
+                  />
+                </div>
+
+                <div>
+                  <Button
+                    type="button"
+                    severity="success"
+                    onClick={addDataWeight}
+                    className="youtube p-0 w-full justify-center"
+                  >
+                    <i className="pi pi-plus"></i>
+                    <span className="p-3">Thêm mới</span>
+                  </Button>
+                  {/* <button type="button" className="w-full" onClick={addDataWeight}>
+              Thêm
+            </button> */}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-2 grid-cols-3  lg:grid-cols-3">
+            {dataWeight.map((data) => (
+              <div className="border p-2 rounded-md relative" key={data.sizeId}>
+                <button
+                  type="button"
+                  className="absolute top-1 right-1 text-red-600"
+                  onClick={() => deleteWeight(data.sizeId)}
+                >
+                  Xoá
+                </button>
+                <h6>Kích thước: {data.sizeValue}</h6>
+                {/* <h6>Giá: {data.price}</h6> */}
+                <h6 className="">
+                  Giá:{" "}
+                  {new Intl.NumberFormat({
+                    style: "currency",
+                    currency: "JPY",
+                  }).format(data.price)}
+                  <span> VNĐ</span>
+                </h6>
+                <h6>Số lượng: {data.number}</h6>
+                <h6>
+                  Trọng lượng: {data.weight} {data.unitName}
+                </h6>
+              </div>
+            ))}
+          </div>
           <CCol xl={12}>
             <h6>Ảnh liên quan</h6>
             <UploadImages

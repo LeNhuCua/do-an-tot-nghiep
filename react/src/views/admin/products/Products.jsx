@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { AiFillEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
+import { AiFillEdit, AiOutlineDelete, AiOutlineDownload, AiOutlinePlus } from "react-icons/ai";
 import { DataContext } from "../../../context/DataContext";
 import axios from "axios";
 
@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 
 import UploadExcelForm from "../../../components/admin/uploadexcel/UploadExcelForm";
 
-import {API} from "../../../API.js";
+import { API } from "../../../API.js";
 
 import { Fab, IconButton } from "@mui/material";
 
@@ -33,7 +33,7 @@ const Products = () => {
 
   const { products } = state;
   const [loading, setLoading] = useState(true);
-
+  console.log(products);
   useEffect(() => {
     if (products.length === 0) {
       fetchProducts();
@@ -69,13 +69,14 @@ const Products = () => {
   const [selectedData, setSelectedData] = useState([]);
 
   const avatar = (rowData) => {
-    return (
-      rowData.avatar ? 
+    return rowData.avatar ? (
       <img
         className="w-20 border"
         src={`http://localhost:8000/product/image/${rowData.avatar}`}
         alt={rowData.name}
-      /> : <p className="bg-red-200 p-2 inline rounded-lg font-semibold">Chưa có</p>
+      />
+    ) : (
+      <p className="bg-red-200 p-2 inline rounded-lg font-semibold">Chưa có</p>
     );
   };
 
@@ -146,10 +147,30 @@ const Products = () => {
     );
   };
 
+  const handleDownload = () => {
+    const fileUrl = "/excel/sanpham.csv";
+
+    axios({
+      url: fileUrl,
+      method: "GET",
+      responseType: "blob",
+    })
+      .then((response) => {
+        const blob = new Blob([response.data]);
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = "Mau_Excel_SanPham.csv";
+        link.click();
+      })
+      .catch((error) => {
+        console.error("Đã xảy ra lỗi:", error);
+      });
+  };
   const rightToolbarTemplate = () => {
     return (
       <div className="flex gap-3">
-           <div
+        <div
           className={`${
             !selectedData || !selectedData.length ? "hidden" : ""
           }  `}
@@ -165,12 +186,16 @@ const Products = () => {
           ></Button>
         </div>
 
-
         <UploadExcelForm
           className=""
           ApiExcel={ApiExcel}
           fetch={fetchProducts}
         />
+        <Tippy content="Mẫu Excel">
+          <Fab onClick={handleDownload} className="z-0" color="info" component="label">
+            <AiOutlineDownload />
+          </Fab>
+        </Tippy>
       </div>
     );
   };
@@ -226,7 +251,6 @@ const Products = () => {
 
   return (
     <div className="relative ">
-    
       {loading && <Loading />}
       {!loading && (
         <div className="relative  ">

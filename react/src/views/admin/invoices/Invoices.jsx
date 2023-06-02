@@ -415,8 +415,8 @@ export default function Invoices() {
                     </div>
                   )}
                   {totalAmount ? (
-                    <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                      <div class="flex justify-between text-base font-medium text-gray-900">
+                    <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                      <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Tổng tiền</p>
 
                         {totalAmount ? (
@@ -431,7 +431,7 @@ export default function Invoices() {
                           ""
                         )}
                       </div>
-                      <div class="flex items-center justify-between text-base font-medium text-gray-900">
+                      <div className="flex items-center justify-between text-base font-medium text-gray-900">
                         <p>Tiền nhận</p>
                         <Controller
                           name="price"
@@ -491,7 +491,7 @@ export default function Invoices() {
                       /> */}
                       </div>
                       {totalAmount && tableData[selectedTable]?.inputValue ? (
-                        <div class="flex justify-between text-base font-medium text-gray-900">
+                        <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Tiền thừa</p>
                           <p>
                             {new Intl.NumberFormat({
@@ -507,7 +507,7 @@ export default function Invoices() {
                         ""
                       )}
 
-                      <p class="mt-0.5 text-sm text-gray-500">
+                      <p className="mt-0.5 text-sm text-gray-500">
                         Nhập tên và số điện thoại khách hàng bên dưới
                       </p>
                     </div>

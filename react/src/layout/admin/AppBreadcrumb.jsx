@@ -38,7 +38,7 @@ const AppBreadcrumb = () => {
   return (
     <CBreadcrumb className="m-0 ms-2">
       <CBreadcrumbItem href="/quantri/">Trang chủ</CBreadcrumbItem>
-      <CBreadcrumbItem className='cursor-pointer' onClick={() => navigate(-1)}>Trang trước</CBreadcrumbItem>
+      {/* <CBreadcrumbItem className='cursor-pointer' onClick={() => navigate(-1)}>Trang trước</CBreadcrumbItem> */}
       {/* <button onClick={() => navigate(-1)}>Trang trước</button> */}
       {breadcrumbs.map((breadcrumb, index) => {
         return (

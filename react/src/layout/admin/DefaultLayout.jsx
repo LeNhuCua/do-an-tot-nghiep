@@ -9,8 +9,8 @@ import ScrollButton from "../../components/scrollbutton/ScrollButton";
 
 const DefaultLayout = () => {
   UseTitle("Quản trị");
-  const { setUser, token } = useStateContext();
-  if (!token) {
+  const { setUser ,token} = useStateContext();
+  if (!token ) {
     return <Navigate to="/quantri/dangnhap" />;
   }
   useEffect(() => {

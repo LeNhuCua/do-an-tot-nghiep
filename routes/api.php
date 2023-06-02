@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\InvoicesController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\Admin\ProductSizeController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\ProductTypesController;
@@ -184,6 +185,19 @@ Route::group(['prefix' => 'orders'], function () {
     // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
 });
 
+Route::group(['prefix' => 'productsSize'], function () {
+    Route::delete('/{id}', [ProductSizeController::class, 'destroy']);
+    
+    // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
+
+    // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
+    // Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
+    // Route::get('/{id}', [ProductsController::class, 'show']);
+    // Route::post('/{id}', [ProductsController::class, 'update']);
+    // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+});
+
+
 
 
 //KHÁCH HÀNG
@@ -223,6 +237,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/totalCart', [CartsController::class, 'totalCart']);
     });
 });
+
+
+
 
 //đặt hàng
 

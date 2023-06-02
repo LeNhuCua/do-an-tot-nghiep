@@ -94,7 +94,7 @@ class ComponentToPrint extends React.Component {
                   <tbody className="bg-white">
                     {this.props.invoices &&
                       this.props.invoices.map((item, index) => (
-                        <tr key={item.productId} className="whitespace-nowrap">
+                        <tr key={index} className="whitespace-nowrap">
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {index + 1}
                           </td>

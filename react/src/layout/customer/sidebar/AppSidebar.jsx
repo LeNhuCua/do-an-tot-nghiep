@@ -57,6 +57,8 @@ export default function AppSidebar() {
             <div>
               <ul className="">
                 <CustomLink_Mobile to="/">Trang chủ</CustomLink_Mobile>
+                
+
 
                 {categories.map((category) => (
                   <div key={category.categoryId}>
@@ -94,6 +96,10 @@ export default function AppSidebar() {
                     </div>
                   </div>
                 ))}
+                <CustomLink_Mobile to="/xemtigia">Giá vàng</CustomLink_Mobile>
+                <CustomLink_Mobile to="/tinnhan">Liên hệ</CustomLink_Mobile>
+
+
                 
               </ul>{" "}
             </div>

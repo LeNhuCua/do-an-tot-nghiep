@@ -33,7 +33,8 @@ class User extends Authenticatable
         'confirmation_token',
         'confirmed',
         'remember_token',
-        'otp'
+        'otp',
+        'last_login_at'
     ];
 
     protected $with = ['role'];
@@ -43,8 +44,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role_id', 'id');
     }
-  
-
+    public function cartItems()
+    {
+        return $this->belongsTo(Cart::class, 'userId', 'userId');
+    }
 
     /**
      * The attributes that should be hidden for serialization.

@@ -36,6 +36,14 @@ const reducer = (state, action) => {
         ...state,
         totalCart: action.payload,
       };
+      case "SET_TOTAL_CART":
+        return {
+          ...state,
+          totalCart: action.payload,
+        };
+
+
+
 
     case "FETCH_NEW_ORDER":
       return {

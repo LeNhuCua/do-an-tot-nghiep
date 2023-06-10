@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -11,6 +11,7 @@ import { useStateContext } from "../../../context/ContextProvider";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axiosClient from "../../../axios-client-customer";
 import { AiOutlineCaretDown } from "react-icons/ai";
+import { DataContext } from "../../../context/DataContext";
 
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -21,9 +22,9 @@ export default function BasicMenu() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const { state, dispatch } = useContext(DataContext);
 
-  const { setUser, tokenCustomer, setTokenCustomer, token, user } =
-    useStateContext();
+  const { setUser, setTokenCustomer,  user } = useStateContext();
   const navigate = useNavigate();
   const onLogout = (ev) => {
     ev.preventDefault();
@@ -31,6 +32,7 @@ export default function BasicMenu() {
     axiosClient.post("/logout").then(() => {
       setUser({});
       setTokenCustomer(null);
+      dispatch({ type: "SET_TOTAL_CART", payload: null });
       navigate("/");
     });
   };

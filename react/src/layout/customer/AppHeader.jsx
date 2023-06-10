@@ -69,9 +69,9 @@ const AppHeader = () => {
       : header.classList.remove("is-sticky");
   };
 
-  const { state, dispatch} = useContext(DataContext);
+  const { state, dispatch } = useContext(DataContext);
 
-  const { categories, subcategories ,totalCart} = state;
+  const { categories, totalCart } = state;
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -168,16 +168,21 @@ const AppHeader = () => {
               />
             </Link>
           </div>
-          <div className="hidden xl:flex justify-end items-center relative  ">
+          <div className=" xl:flex justify-end items-center relative  ">
             <ul className="flex items-center gap-5 ">
               <li className="flex gap-1 items-center cs-hover font-[500]">
                 <AiFillStar /> Về chúng tôi
               </li>
-       
-              <li className="flex gap-1 items-center cs-hover font-[500]">
+              <Link
+                to="/xemtigia"
+                className="flex text-gray-900 no-underline gap-1 items-center cs-hover font-[500]"
+              >
                 <AiOutlineBarChart /> Giá vàng
-              </li>
-              <Link to="/tinnhan" className="flex gap-1 items-center cs-hover font-[500]">
+              </Link>
+              <Link
+                to="/tinnhan"
+                className="flex text-gray-900 no-underline gap-1 items-center cs-hover font-[500]"
+              >
                 <AiOutlineContacts /> Liên hệ
               </Link>
             </ul>

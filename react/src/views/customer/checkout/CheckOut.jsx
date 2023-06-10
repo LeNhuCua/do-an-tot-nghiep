@@ -28,6 +28,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Checkbox } from "primereact/checkbox";
+import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
 
 const CheckOut = () => {
   UseTitle("Đặt hàng");
@@ -456,9 +457,19 @@ const CheckOut = () => {
     setOpenUpdate(true);
   };
   console.log(openUpdate);
+  const ListBreadcrumb = [
+    {
+      name: "Giỏ hàng",
+      link: "/giohang",
+    },
+    {
+      name: "Đặt hàng",
+    },
+  ];
 
   return (
     <div>
+      <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
       <div className="card flex justify-content-center">
         <Dialog
           header="Header"

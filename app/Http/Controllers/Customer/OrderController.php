@@ -54,12 +54,9 @@ class OrderController extends Controller
     public function show(Request $request)
     {
 
+        $userId = Auth::user()->userId;
         $orderId = $request->input('orderId');
-
-
-
-
-        $orderDetail = OrderDetail::orderBy("created_at", "desc")->where('orderId', $orderId)->get();
+        $orderDetail = Order::orderBy("created_at", "desc")->where('orderId', $orderId)->where('userId', $userId)->get();
         return response()->json([
             'orderDetail' => $orderDetail
         ]);
@@ -137,6 +134,7 @@ class OrderController extends Controller
                     $order->userId  = $userId;
                     $order->paymentMethodId  = $request->paymentMethodId;
                     $order->shippingMethodId  = $request->shippingMethodId;
+                    $order->deposits  = $request->deposits;
                     $order->save();
 
                     $order_Details = collect();

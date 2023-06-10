@@ -75,6 +75,15 @@ class ProductsController extends Controller
         $alias = $request->input('alias');
         $typeCategoryId = DB::table('type_categories')->where('alias', $alias)->where('status', '=', 1)->pluck('typeCategoryId');
         // $data = Product::orderBy("productId", "desc")->where('typeCategoryId', $typeCategoryId)->paginate(1);;
+
+        $typeCategoryName = DB::table('type_categories')->where('alias', $alias)->where('status', '=', 1)->pluck('name');
+        $categoryName = DB::table('type_categories')
+            ->join('categories', 'type_categories.categoryId', '=', 'categories.categoryId')
+            ->select('categories.name','categories.alias')
+            ->where('type_categories.alias', '=', $alias)
+            ->get();
+
+
         if ($request->input('sort') && $request->input('fillPrice')) {
             $sort = $request->input('sort');
             $fillPrice = $request->input('fillPrice');
@@ -122,7 +131,14 @@ class ProductsController extends Controller
                 $data = Product::filterByPrice('1000000', '999999999')->whereIn('typeCategoryId', $typeCategoryId)->paginate(5);
             }
         }
-        return $data;
+
+        return response()->json([
+            'data' => $data,
+            'status' => 200,
+            'typeCategoryName' => $typeCategoryName,
+            'categoryName' => $categoryName
+
+        ]);
     }
 
     public function showCategories(Request $request)
@@ -131,6 +147,7 @@ class ProductsController extends Controller
         $categoryId = DB::table('categories')->where('alias', $alias)->where('status', '=', 1)->pluck('categoryId');
         $typeCategoryId = DB::table('type_categories')->where('categoryId', $categoryId)->where('status', '=', 1)->pluck('typeCategoryId');
         // $data = Product::orderBy("created_at", "desc")->whereIn('typeCategoryId', $typeCategoryId)->paginate(5);
+        $categoryName = DB::table('categories')->where('alias', $alias)->where('status', '=', 1)->pluck('name');
 
         if ($request->input('sort') && $request->input('fillPrice')) {
             $sort = $request->input('sort');
@@ -180,9 +197,13 @@ class ProductsController extends Controller
             }
         }
 
+        return response()->json([
+            'data' => $data,
+            'status' => 200,
+            'categoryName' => $categoryName
 
 
-        return $data;
+        ]);
     }
 
 
@@ -200,6 +221,7 @@ class ProductsController extends Controller
     {
         $search = $request->input('search');
         $data = Product::searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(5);
+
 
         // $data = Product::orderBy("productId", "desc")->where('typeCategoryId', $typeCategoryId)->paginate(1);;
         if ($request->input('sort') && $request->input('fillPrice')) {
@@ -249,6 +271,8 @@ class ProductsController extends Controller
                 $data = Product::filterByPrice('1000000', '999999999')->searchByPrice($search)->orWhere('name', 'like', '%' . $search . '%')->paginate(5);
             }
         }
+
+    
         return $data;
     }
 

@@ -26,6 +26,7 @@ use App\Http\Controllers\Customer\UsersController as CustomerUserController;
 use App\Http\Controllers\Customer\ProvincesController;
 use App\Http\Controllers\Customer\ShippingCostsController;
 use App\Http\Controllers\Customer\WardsController;
+use App\Http\Controllers\MessageController;
 use App\Http\Middleware\CheckAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -150,9 +151,9 @@ Route::group(['prefix' => 'invoices'], function () {
 
 //thống kê
 Route::group(['prefix' => 'statistical'], function () {
-
     Route::get('/sales-data', [StatisticalController::class, 'getSalesDataByDay']);
     Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
+    Route::get('/sales-data-year', [StatisticalController::class, 'getSalesDataByYear']);
 });
 
 
@@ -173,9 +174,15 @@ Route::group(['prefix' => 'users'], function () {
 
 Route::group(['prefix' => 'orders'], function () {
     Route::resource('/', AdminOrderController::class);
+    Route::get('/ordersBeingProcessed', [AdminOrderController::class, 'ordersBeingProcessed']);
+    Route::put('/orderCheckDelivery', [AdminOrderController::class, 'orderCheckDelivery']);
+
+
     Route::put('/orderCheck', [AdminOrderController::class, 'orderCheck']);
+
+
     Route::put('/orderCancel', [AdminOrderController::class, 'orderCancel']);
-    
+
     // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
 
     // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
@@ -187,7 +194,7 @@ Route::group(['prefix' => 'orders'], function () {
 
 Route::group(['prefix' => 'productsSize'], function () {
     Route::delete('/{id}', [ProductSizeController::class, 'destroy']);
-    
+
     // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
 
     // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
@@ -295,6 +302,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 
+
+Route::get('/messages', [MessageController::class, 'index']);
+Route::post('/messages', [MessageController::class, 'store']);
+
 // Route::group(['prefix' => 'wards'], function () {
 //     // Route::resource('/', ProvincesController::class);
 //     Route::get('/districts/{id}/wards', [WardsController::class, 'index']);
@@ -341,7 +352,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route::post('reset-password', 'Auth\ResetPasswordController@reset');
 // Route::post('/forgot-password', [ForgotPasswordController::class, 'forgotPassword']);
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendOTP']);
-Route::post('/reset-password',[ForgotPasswordController::class, 'resetPassword']);
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
 
 // Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
 

@@ -36,7 +36,7 @@ const OrderDetail = React.lazy(() =>
 const SendMessage = React.lazy(() =>
   import("../views/customer/message/SendMessage")
 );
-const GoldPrice = React.lazy(() =>
+const ExchangeRate = React.lazy(() =>
   import("../views/customer/exchangeRate/ExchangeRate")
 );
 

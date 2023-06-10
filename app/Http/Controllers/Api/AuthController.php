@@ -32,7 +32,7 @@ class AuthController extends Controller
     use AuthorizesRequests, ValidatesRequests;
 
 
-    
+
 
 
 
@@ -54,15 +54,15 @@ class AuthController extends Controller
             ]);
         } else {
             try {
-
                 $product = User::findOrFail($userId);
                 $product->fullName  = $request->fullName;
-                $product->email  = $request->email;
-                $product->birthday  = $request->birthday;
+
                 $product->phoneNumber  = $request->phoneNumber;
                 $product->gender  = $request->gender;
                 $product->save();
-
+                if ($request->birthday != "null") {
+                    $product->birthday  = $request->birthday;
+                }
 
                 if ($request->hasFile('avatar')) {
                     if ($product->avatar) {
@@ -78,12 +78,13 @@ class AuthController extends Controller
                 $product->save();
 
 
-     
+
                 return response()->json([
                     'status' => 400,
                     'message' => 'Product Updated Successfully!!',
                     'product' => $product,
-     
+                    '$request->gender' => $request->birthday
+
 
                 ]);
             } catch (\Exception $e) {
@@ -185,10 +186,13 @@ class AuthController extends Controller
                 // Người dùng đã được xác nhận
                 $token = $admin->createToken('main')->plainTextToken;
                 $cookie = cookie('jwt', $token, 60 * 24); // 1 day
-
+                $user = User::find($admin->userId)->first();
+                $user->last_login_at = Carbon::now();
+                $user->save();
+               
                 return response()->json([
                     'status' => 200,
-                    'username' => $admin->fullName,
+                    'username' => $user,
                     'token' => $token,
                     'message' => 'Đăng nhập thành công',
                     'user' => $request->user()

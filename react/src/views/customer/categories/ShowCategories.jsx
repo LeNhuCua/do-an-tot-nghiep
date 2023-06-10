@@ -13,6 +13,7 @@ import "./style.css";
 import { Dropdown } from "primereact/dropdown";
 import { CCol } from "@coreui/react";
 import SendEmail from "../checkout/SendEmail";
+import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
 
 const ShowCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -62,7 +63,7 @@ const ShowCategories = () => {
   useEffect(() => {
     fetchProductCategories();
   }, [alias, sort.code, fillPrice.code]);
-
+  const [pageName,setPageName] = useState("")
   const fetchProductCategories = async (pageNumber = 1) => {
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get("page") || pageNumber;
@@ -72,14 +73,24 @@ const ShowCategories = () => {
     const response = await axios.get(
       `${API}/api/cus-products/showCategories?alias=${alias}&&page=${page}&&sort=${sort.code}&&fillPrice=${fillPrice.code}`
     );
-    setCategories(response.data.data);
-    setPageCount(response.data.last_page);
+    setCategories(response.data.data.data);
+    setPageName(response.data.categoryName[0])
+    setPageCount(response.data.data.last_page);
     setLoading(false);
   };
 
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: pageName
+    },
+  ];
   return (
     <div className="">
-      
+      <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
       <div className="row container">
         <CCol xl={6}>
           <span>Sắp xếp theo</span>

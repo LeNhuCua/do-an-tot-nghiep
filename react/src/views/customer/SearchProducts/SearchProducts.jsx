@@ -12,6 +12,7 @@ import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import "./style.css";
 import { Dropdown } from "primereact/dropdown";
 import { CCol } from "@coreui/react";
+import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
 
 const SearchProducts = () => {
   const [categories, setCategories] = useState([]);
@@ -61,6 +62,9 @@ const SearchProducts = () => {
     fetchProductCategories();
   }, [search, sort.code, fillPrice.code]);
 
+  const [total,setTotal] = useState("");
+
+
   const fetchProductCategories = async (pageNumber = 1) => {
     const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get("page") || pageNumber;
@@ -72,12 +76,22 @@ const SearchProducts = () => {
     );
     setCategories(response.data.data);
     setPageCount(response.data.last_page);
+    setTotal(response.data.total);
     setLoading(false);
   };
+  const ListBreadcrumb = [
+
+    {
+      name: "Tìm kiếm",
+    },
+  ];
 
   return (
     <div className="">
+      <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
+      
       <div className="row container">
+        <h1 className="text-xl my-3">Kết quả tìm kiếm <span className="text-red-600">{total}</span> sản phẩm với từ khoá "<span className="text-red-600"> {search}</span>"</h1>
         <CCol xl={6}>
           <span>Sắp xếp theo</span>
           <Dropdown

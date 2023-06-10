@@ -12,6 +12,7 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import { DataContext } from "../../../context/DataContext";
 import { BsArrowBarRight } from "react-icons/bs";
+import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
 
 const ShoppingCart = () => {
   UseTitle("Giỏ hàng");
@@ -210,6 +211,12 @@ const ShoppingCart = () => {
   filteredCartProducts.forEach(function (selected) {
     totalQuantity += selected.quantity;
   });
+  const ListBreadcrumb = [
+ 
+    {
+      name: "Giỏ hàng",
+    },
+  ];
 
   return (
     <div>
@@ -219,6 +226,8 @@ const ShoppingCart = () => {
           className=" w-full  bg-opacity-90 top-0 overflow-y-auto overflow-x-hidden  "
           id="chec-div"
         >
+        <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
+
           <div
             className="w-full  z-10  h-full overflow-x-hidden transform translate-x-0 transition ease-in-out duration-700"
             id="checkout"
@@ -228,15 +237,7 @@ const ShoppingCart = () => {
                 className="w-full lg:pl-10 pl-4 pr-10 lg:pr-4  bg-white overflow-y-auto overflow-x-hidden h-screen"
                 id="scroll"
               >
-                <button
-                  className="flex items-center text-gray-500  hover:text-gray-600 cursor-pointer"
-                  onClick={() => alert("fsf")}
-                >
-                  <BiArrowBack />
-                  <div className="text-sm py-2  pl-2 leading-none">
-                    Quay lại
-                  </div>
-                </button>
+     
 
                 {/* <p className="text-4xl font-black leading-10 text-gray-800 pt-3">
                     Giỏ hàng

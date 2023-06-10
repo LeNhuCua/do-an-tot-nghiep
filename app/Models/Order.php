@@ -27,11 +27,17 @@ class Order extends Model
         'userId',
         'paymentMethodId',
         'shippingMethodId',
+        'deposits',
+        'isDeposit'
     ];
     protected $primaryKey = 'orderId';
     public $incrementing = false;
-    protected $with = ['orderDetail','shippingMethod','paymentMethod','orderStatus','customer','customerAddress'];
+    protected $with = ['orderDetail','shippingMethod','paymentMethod','orderStatus','customer','customerAddress','shippingFee'];
 
+    public function shippingFee()
+    {
+        return $this->belongsTo(ShippingFee::class, 'orderId', 'orderId');
+    }
     public function orderDetail()
     {
         return $this->hasMany(OrderDetail::class, 'orderId', 'orderId');

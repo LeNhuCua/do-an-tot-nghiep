@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useStateContext } from "../../../context/ContextProvider";
 import { AiFillEdit, AiOutlineMail } from "react-icons/ai";
 import { API, API_IMAGES } from "../../../API";
-import avatar from "../../../assets/images/avatars/avatar.png";
+import avatar from "../../../assets/images/avatar.png";
 
 import { InputText } from "primereact/inputtext";
 import { RadioButton } from "primereact/radiobutton";

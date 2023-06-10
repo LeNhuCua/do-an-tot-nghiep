@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import avatar8 from "../../../assets/images/avatars/8.jpg";
+import avatar from "../../../assets/images/avatar.png";
+
+
 import { CAvatar, CBadge, CDropdownHeader, CDropdownItem } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilBell, cilLockLocked, cilUser } from "@coreui/icons";
@@ -35,7 +37,7 @@ export default function BasicMenu() {
   return (
     <div>
       <div onClick={handleClick} className="hover:cursor-pointer">
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar src={avatar} size="md" />
       </div>
 
       <Menu

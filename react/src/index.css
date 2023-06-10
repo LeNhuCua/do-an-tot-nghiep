@@ -18,12 +18,18 @@
         @apply hover:text-yellow-500 transition-all duration-500 cursor-pointer;
     }
 
+
+
+
+
     .cs-menuItem {
         @apply text-sm uppercase no-underline text-black font-bold w-full h-full hover:text-white transition-all duration-300 after:hidden after:content-[''] after:absolute after:w-full after:h-full after:rounded-full after:bg-yellow-300 after:top-0 after:left-0 after:-z-10 relative rounded-full p-2;
     }
+
     .cs-heading-primary {
         @apply text-xl xl:text-2xl uppercase font-bold hover:cs-hover relative before:content-['-'];
     }
+
     .animation {
         animation: left-to-right ease-in 0.1s;
     }
@@ -31,6 +37,7 @@
     .top-bottom {
         animation: top-bottom ease-in-out 0.5s;
     }
+
     .top-bottom1 {
         animation: top-bottom1 ease-in-out 0.5s;
     }
@@ -68,7 +75,13 @@
         width: 1.75rem;
     }
 
- 
+    .item-footer:hover a {
+        color: rgb(194,120,3);
+        transition: all 0.5s;
+        /* @apply hover:text-yellow-500 transition-all duration-500 cursor-pointer; */
+
+    }
+
 }
 
 
@@ -148,4 +161,4 @@
 
 body {
     font-family: (--font-family);
-}  
+}

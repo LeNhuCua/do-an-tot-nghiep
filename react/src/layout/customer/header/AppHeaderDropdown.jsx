@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import avatar8 from "../../../assets/images/avatars/8.jpg";
+
 import { CAvatar, CBadge, CDropdownHeader, CDropdownItem } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilBell, cilLockLocked, cilUser } from "@coreui/icons";

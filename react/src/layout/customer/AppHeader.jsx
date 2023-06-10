@@ -159,7 +159,7 @@ const AppHeader = () => {
         <div
           className={`flex justify-between items-center relative py-2 lg:py-0 cs-container  `}
         >
-          <div className="h-20 w-44">
+          <div className="h-12 ">
             <Link to="/">
               <img
                 className="w-full h-full object-cover"
@@ -168,7 +168,7 @@ const AppHeader = () => {
               />
             </Link>
           </div>
-          <div className=" xl:flex justify-end items-center relative  ">
+          <div className="hidden xl:flex justify-end items-center relative  ">
             <ul className="flex items-center gap-5 ">
               <li className="flex gap-1 items-center cs-hover font-[500]">
                 <AiFillStar /> Về chúng tôi

@@ -6,7 +6,7 @@ import { Link, useActionData } from "react-router-dom";
 import { useStateContext } from "../../../context/ContextProvider";
 import { AiFillEdit, AiOutlineMail } from "react-icons/ai";
 import { API, API_IMAGES } from "../../../API";
-import avatar from "../../../assets/images/avatars/avatar.png";
+import avatar from "../../../assets/images/avatar.png";
 import axiosClient from "../../../axios-client-customer";
 import { InputText } from "primereact/inputtext";
 import { RadioButton } from "primereact/radiobutton";

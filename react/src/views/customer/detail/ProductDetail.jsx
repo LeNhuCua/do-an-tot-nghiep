@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import { BsArrowBarRight, BsCartPlusFill } from "react-icons/bs";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Galleria } from "primereact/galleria";
 import { InputNumber } from "primereact/inputnumber";
 
@@ -227,7 +227,7 @@ const ProductDetail = () => {
               ""
             )}
           </div>
-          <div className="flex flex-col gap-4 px-5">
+          <div className="flex flex-col gap-4 px-0 xl:px-5">
             <div className="flex flex-col gap-3">
               <h1 className="text-[1.875rem] font-bold text-[#313131] uppercase ">
                 {detailProduct[0] ? detailProduct[0].name : ""}
@@ -393,9 +393,9 @@ const ProductDetail = () => {
                         <h3 className="text-red-600 text-lg">
                           Size:{" "}
                           <span className="text-gray-400">
-                            Liên hệ 0345 802 983 hoặc 02838 754 350 để được tư
+                            Liên hệ 0258 3826 952  để được tư
                             vấn hoặc quý khách có thể tham khảo đo size trang
-                            sức tại đây{" "}
+                            sức <Link to="/huongdandosize">tại đây</Link> {" "}
                           </span>
                         </h3>
                       </div>

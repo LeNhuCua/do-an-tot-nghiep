@@ -11,7 +11,7 @@ import ForgotPassword from "../../views/resetpassword/ForgotPassword";
 import ResetPasswordPage from "../../views/resetpassword/ResetPasswordPage ";
 
 const DefaultLayout = () => {
-  UseTitle("Vàng bạc đá quý Kim Huy");
+  UseTitle("Vàng bạc Kim Huy");
   const { setUser, tokenCustomer } = useStateContext();
 
   useEffect(() => {

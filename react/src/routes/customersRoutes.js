@@ -40,6 +40,12 @@ const ExchangeRate = React.lazy(() =>
   import("../views/customer/exchangeRate/ExchangeRate")
 );
 
+const SizeAway = React.lazy(() =>
+  import("../views/customer/sizeAway/SizeAway")
+);
+
+
+
 const routes = [
   //khách hàng
   { path: "/", exact: true, name: "Trang chủ", element: Home },
@@ -47,7 +53,10 @@ const routes = [
   { path: "/danhmuccon/:alias", name: "Danh mục", element: ShowTypeCategories },
 
   // { path: "/", name: "Trang chủ", element: Home },
-  { path: "/sanpham/:alias", name: "Trang chủ", element: ProductDetail },
+  { path: "/sanpham/:alias", name: "Chi tiết", element: ProductDetail },
+  { path: "/huongdandosize", name: "Chi tiết", element: SizeAway },
+
+  
   { path: "/timkiem/:search", name: "Tìm kiếm", element: SearchProducts },
   { path: "/giohang", name: "Giỏ hàng", element: ShoppingCart },
   { path: "/dathang", name: "Đặt hàng", element: CheckOut },

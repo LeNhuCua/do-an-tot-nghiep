@@ -25,6 +25,7 @@ import { InputNumber } from "primereact/inputnumber";
 import SearchProducts from "../../../components/admin/Invoices/SearchProducts";
 import ComponentToPrint from "./ComponentToPrint";
 import Bill from "../../../components/admin/Invoices/Bill";
+import Loading from "../../../components/Loading";
 
 export default function Invoices() {
   const {
@@ -262,7 +263,7 @@ export default function Invoices() {
   //   });
   // };
   console.log(invoices[selectedTable]);
-
+  const [isLoading, setIsLoading] = useState(false);
   const CreateInvoice = async () => {
     const formData = new FormData();
     formData.append("totalAmount", totalAmount);
@@ -289,7 +290,9 @@ export default function Invoices() {
     if (!isConfirm) {
       return;
     }
+    setIsLoading(true);
     await axios.post(`${API}/api/invoices`, formData).then((response) => {
+      
       if (response.data.status === 400) {
         Swal.fire({
           icon: "success",
@@ -300,7 +303,6 @@ export default function Invoices() {
         setInvoices({ ...invoices, [selectedTable]: [] });
         setTableData({ ...tableData, [selectedTable]: [] });
         // navigate("/quantri/sanpham");
-
         // reset();
       } else {
         Swal.fire({
@@ -308,6 +310,7 @@ export default function Invoices() {
           text: "Vui lòng kiểm tra lại thông tin!",
         });
       }
+      setIsLoading(false);
     });
   };
   const handlePrint = useReactToPrint({
@@ -353,9 +356,12 @@ export default function Invoices() {
     setTableData(newTableData);
   };
 
-  console.log(invoices);
+  console.log(isLoading);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-2">
+      {
+        isLoading &&  <Loading/>
+      }
       <ScrollPanel className="col-span-3 h-[100vh]">
         <TabView>
           <TabPanel header="Hoá đơn" leftIcon="pi pi-calendar mr-2">

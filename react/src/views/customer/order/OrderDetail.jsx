@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 const OrderDetail = () => {
   const { id } = useParams();
   const [orders, setOrders] = useState([]);
+  const [orderStatus, setOrderStatus] = useState("");
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -18,8 +19,9 @@ const OrderDetail = () => {
           `${API}/api/cus-order/show?orderId=${id}`
         );
         setLoading(false);
-        setOrders(data.orderDetail);
-        console.log(data.orderDetail);
+        setOrders(data.orderDetail[0].order_detail);
+        console.log(data.orderDetail[0].order_detail);
+        setOrderStatus(data.orderDetail[0]);
       } catch (error) {
         console.log(error);
       }
@@ -59,7 +61,7 @@ const OrderDetail = () => {
       })
       .catch(() => {});
   };
-
+  console.log(orderStatus);
   return (
     <div className="cs-container">
       {loading && <Loading />}
@@ -141,17 +143,23 @@ const OrderDetail = () => {
           </Link>
         ))}
       </div>
-      <div className="mt-2">
-        <div className="w-full">
-          <Button
-            className="youtube p-0 w-full justify-center"
-            onClick={() => orderCancer(id)}
-          >
-            <i className="pi pi-times"></i>
-            <span className="p-3">Huỷ đơn hàng</span>
-          </Button>
+      {
+        orderStatus && orderStatus.orderStatusId  === "TT001" ? (
+          <div className="mt-2">
+                    
+          <div className="w-full">
+            <Button
+              className="youtube p-0 w-full justify-center"
+              onClick={() => orderCancer(id)}
+            >
+              <i className="pi pi-times"></i>
+              <span className="p-3">Huỷ đơn hàng</span>
+            </Button>
+          </div>
         </div>
-      </div>
+        )  : ""
+      }
+    
     </div>
   );
 };

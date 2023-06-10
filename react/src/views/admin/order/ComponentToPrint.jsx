@@ -17,7 +17,7 @@ class ComponentToPrint extends React.Component {
 
     // Kết hợp vào chuỗi
     const currentDate = `${date}/${month}/${year} ${hour}:${minute}:${second}`;
-    console.log(this.props.invoices);
+
     return (
       <div>
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -43,7 +43,7 @@ class ComponentToPrint extends React.Component {
               </div>
             </div>
             <div className="w-full h-0.5 bg-indigo-500"></div>
-            <div className="flex justify-between p-4">
+            <div className="grid grid-cols-2 justify-between p-4">
               <div>
                 <h6 className="font-bold">
                   Ngày mua:{" "}
@@ -57,13 +57,19 @@ class ComponentToPrint extends React.Component {
               <div className="w-40">
                 <address className="text-sm">
                   <span className="font-bold">Khách hàng: </span>
-                  {this.props.name}
+                  {this.props.invoices.customer_address.recipientName}
                 </address>
               </div>
               <div className="w-40">
                 <address className="text-sm">
                   <span className="font-bold">Điện thoại: </span>
-                  {this.props.phone}
+                  {this.props.invoices.customer_address.recipientPhone}
+                </address>
+              </div>
+              <div className="w-40">
+                <address className="text-sm">
+                  <span className="font-bold">Địa chỉ nhận: </span>
+                  {this.props.invoices.customer_address.recipientAddress}
                 </address>
               </div>
               <div></div>
@@ -91,20 +97,20 @@ class ComponentToPrint extends React.Component {
                   </thead>
                   <tbody className="bg-white">
                     {this.props.invoices &&
-                      this.props.invoices.map((item, index) => (
+                      this.props.invoices.order_detail.map((item, index) => (
                         <tr key={index} className="whitespace-nowrap">
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {index + 1}
                           </td>
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-900 whitespace-pre-line">
-                              {item.name}  {"( x"}{item.amount}{")"} 
+                              {item.product.name}  {"( x"}{item.quantity}{")"} 
                             </div>
                           </td>
 
                           <td className="px-6 py-4">
                             <div className="text-sm text-gray-900">
-                              {item.weight}
+                              {item.sizeValue}
                             </div>
                           </td>
                       
@@ -113,7 +119,7 @@ class ComponentToPrint extends React.Component {
                               {new Intl.NumberFormat({
                                 style: "currency",
                                 currency: "JPY",
-                              }).format(item.sizePrice)}{" "}
+                              }).format(item.price)}{" "}
                               đồng
                             </div>
                           </td>
@@ -122,12 +128,45 @@ class ComponentToPrint extends React.Component {
                               {new Intl.NumberFormat({
                                 style: "currency",
                                 currency: "JPY",
-                              }).format(item.sizePrice * item.amount)}{" "}
+                              }).format(item.price * item.quantity)}{" "}
                               đồng
                             </div>
                           </td>
                         </tr>
                       ))}
+
+                    <tr className="text-gray-800">
+                      <th colSpan="3"></th>
+                      <td className="text-sm font-bold">
+                        <b>Tổng tiền đơn hàng</b>
+                      </td>
+                      <td className="text-sm font-bold">
+                        <b>
+                          {" "}
+                          {new Intl.NumberFormat({
+                            style: "currency",
+                            currency: "JPY",
+                          }).format(this.props.invoices.totalAmount)}{" "}
+                          đồng
+                        </b>
+                      </td>
+                    </tr>
+                    <tr className="text-gray-800">
+                      <th colSpan="3"></th>
+                      <td className="text-sm font-bold">
+                        <b>Tiền ship</b>
+                      </td>
+                      <td className="text-sm font-bold">
+                        <b>
+                          {" "}
+                          {new Intl.NumberFormat({
+                            style: "currency",
+                            currency: "JPY",
+                          }).format(this.props.invoices.shipping_fee.shippingFeeAmount)}{" "}
+                          đồng
+                        </b>
+                      </td>
+                    </tr>
 
                     <tr className="text-gray-800">
                       <th colSpan="3"></th>
@@ -140,40 +179,8 @@ class ComponentToPrint extends React.Component {
                           {new Intl.NumberFormat({
                             style: "currency",
                             currency: "JPY",
-                          }).format(this.props.totalAmount)}{" "}
-                          đồng
-                        </b>
-                      </td>
-                    </tr>
-                    <tr className="text-gray-800">
-                      <th colSpan="3"></th>
-                      <td className="text-sm font-bold">
-                        <b>Tiền nhận</b>
-                      </td>
-                      <td className="text-sm font-bold">
-                        <b>
-                          {" "}
-                          {new Intl.NumberFormat({
-                            style: "currency",
-                            currency: "JPY",
-                          }).format(this.props.inputValue)}{" "}
-                          đồng
-                        </b>
-                      </td>
-                    </tr>
-                    <tr className="text-gray-800">
-                      <th colSpan="3"></th>
-                      <td className="text-sm font-bold">
-                        <b>Tiền thừa</b>
-                      </td>
-                      <td className="text-sm font-bold">
-                        <b>
-                          {" "}
-                          {new Intl.NumberFormat({
-                            style: "currency",
-                            currency: "JPY",
                           }).format(
-                            this.props.inputValue - this.props.totalAmount
+                            this.props.invoices.totalAmount - this.props.invoices.shipping_fee.shippingFeeAmount
                           )}{" "}
                           đồng
                         </b>

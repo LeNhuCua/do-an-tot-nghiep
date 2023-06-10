@@ -177,9 +177,9 @@ const AppHeader = () => {
               <li className="flex gap-1 items-center cs-hover font-[500]">
                 <AiOutlineBarChart /> Giá vàng
               </li>
-              <li className="flex gap-1 items-center cs-hover font-[500]">
+              <Link to="/tinnhan" className="flex gap-1 items-center cs-hover font-[500]">
                 <AiOutlineContacts /> Liên hệ
-              </li>
+              </Link>
             </ul>
           </div>
           {/* search search-active */}

@@ -1,43 +1,51 @@
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { API } from "../../../API";
 import OrderGrid from "../../../components/admin/datatable/OrderGrid";
 import Tippy from "@tippyjs/react";
 import { Link } from "react-router-dom";
 import { IconButton } from "@mui/material";
-import { AiFillEdit, AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+import {
+  AiFillEdit,
+  AiFillPrinter,
+  AiOutlineCheck,
+  AiOutlineClose,
+} from "react-icons/ai";
 import { BiShow } from "react-icons/bi";
 import Loading from "../../../components/Loading";
 import Swal from "sweetalert2";
 import DetailOrder from "./DetailOrder";
 import { DataContext } from "../../../context/DataContext";
+import { useReactToPrint } from "react-to-print";
+import ComponentToPrint from "./ComponentToPrint";
+import { MdEmojiTransportation } from "react-icons/md";
 
-const OrderNew = () => {
+const OrdersBeingProcessed = () => {
   // const [orderNew, setOrderNew] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { state, dispatch } = useContext(DataContext);
-
-  const { orderNews } = state;
+  const [ordersBeingProcessed, setOrdersBeingProcessed] = useState([]);
 
   useEffect(() => {
     fetchOrdersNew();
   }, []);
   const fetchOrdersNew = async () => {
-    await axios.get(`${API}/api/orders/`).then(({ data }) => {
-      // dispatch({ type: "FETCH_PRODUCTS", payload: data });
-      dispatch({ type: "FETCH_NEW_ORDER", payload: data });
-      setLoading(false);
-      // setOrderNew(data);
-      // setLoading(false);
-    });
+    await axios
+      .get(`${API}/api/orders/ordersBeingProcessed`)
+      .then(({ data }) => {
+        // dispatch({ type: "FETCH_PRODUCTS", payload: data });
+        setOrdersBeingProcessed(data);
+        setLoading(false);
+        // setOrderNew(data);
+        // setLoading(false);
+      });
   };
 
   //detail
   const [visible, setVisible] = useState(false);
   const [detailFind, setDetailFind] = useState([]);
   const showDetail = async (id) => {
-    const getDetail = await orderNews.find(
+    const getDetail = await ordersBeingProcessed.find(
       (orderNew) => orderNew.orderId === id
     );
 
@@ -80,11 +88,9 @@ const OrderNew = () => {
       .catch(() => {});
   };
 
-
-
   const orderCheck = async (id) => {
     const isConfirm = await Swal.fire({
-      title: `Xác nhận đơn hàng?`,
+      title: `Giao đơn hàng?`,
       // text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
@@ -99,7 +105,7 @@ const OrderNew = () => {
       return;
     }
     await axios
-      .put(`${API}/api/orders/orderCheck?orderId=${id}`)
+      .put(`${API}/api/orders/orderCheckDelivery?orderId=${id}`)
       .then(({ data }) => {
         if (data.status === 200) {
           // navigate("/dondathang");
@@ -114,19 +120,37 @@ const OrderNew = () => {
       })
       .catch(() => {});
   };
-
-
-
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+    copyStyles: true,
+  });
+  const [orderPrint, setOrderPrint] = useState({});
+  const handlePrintWithId = (orderId) => {
+    const getDetail = ordersBeingProcessed.find(
+      (orderNew) => orderNew.orderId === orderId
+    );
+  
+    if (getDetail) {
+      setOrderPrint(getDetail);
+      setTimeout(() => {
+        handlePrint();
+      }, 0);
+    }
+    // Do something with the orderId if needed
+  };
+  
+  
   const actionButtons = (rowData) => {
     return (
       <>
-        <Tippy content="Xác nhận đơn">
+        <Tippy content="Giao đơn hàng">
           <IconButton
             color="success"
             className="me-2 hover:ring-2 "
             onClick={() => orderCheck(rowData.orderId)}
           >
-            <AiOutlineCheck />
+            <MdEmojiTransportation />
           </IconButton>
         </Tippy>
 
@@ -139,13 +163,13 @@ const OrderNew = () => {
             <BiShow />
           </IconButton>
         </Tippy>
-        <Tippy content="Huỷ đơn hàng">
+        <Tippy content="In đơn hàng">
           <IconButton
             color="error"
             className="me-2 hover:ring-2 "
-            onClick={() => orderCancer(rowData.orderId)}
+            onClick={() => handlePrintWithId(rowData.orderId)}
           >
-            <AiOutlineClose />
+            <AiFillPrinter />
           </IconButton>
         </Tippy>
       </>
@@ -179,10 +203,9 @@ const OrderNew = () => {
   ];
   return (
     <div>
-      
       {loading && <Loading />}
 
-      {!loading && <OrderGrid data={orderNews} col={col} />}
+      {!loading && <OrderGrid data={ordersBeingProcessed} col={col} />}
       {Object.keys(detailFind).length ? (
         <DetailOrder
           detailFind={detailFind}
@@ -192,8 +215,16 @@ const OrderNew = () => {
       ) : (
         ""
       )}
+
+      {Object.keys(orderPrint).length ? (
+        <div style={{ display: "none" }}>
+          <ComponentToPrint ref={componentRef} invoices={orderPrint} />
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 };
 
-export default OrderNew;
+export default OrdersBeingProcessed;

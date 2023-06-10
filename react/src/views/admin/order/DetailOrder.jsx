@@ -103,9 +103,28 @@ const DetailOrder = (props) => {
                       style: "currency",
                       currency: "JPY",
                     }).format(detailFind && detailFind.totalAmount)}{" "}
-                    đ
+                    VNĐ
                   </p>{" "}
                 </div>
+
+
+                <div>
+                  <Divider align="left">
+                    <div className="inline-flex align-items-center">
+                      <i className="pi pi-money-bill mr-2"></i>
+                      <b>Tiền cọc</b>
+                    </div>
+                  </Divider>
+                  <p className="pl-16">
+                    {" "}
+                    {new Intl.NumberFormat({
+                      style: "currency",
+                      currency: "JPY",
+                    }).format(detailFind && detailFind.deposits)}{" "}
+                    VNĐ <span>{detailFind && detailFind.isDeposit === 0 ? <span className="bg-red-400 p-1 rounded text-white font-bold text-sm">Chưa đặt cọc</span> : <span className="bg-blue-500 p-1 rounded text-white font-bold text-sm">Đã đặt cọc</span>}</span>
+                  </p>{" "}
+                </div>
+
                 <div>
                   <Divider align="left">
                     <div className="inline-flex align-items-center">
@@ -171,33 +190,11 @@ const DetailOrder = (props) => {
                     {detailFind && detailFind.customer_address.province.name}
                   </p>{" "}
                 </div>
-                <div>
-                  <Divider align="left">
-                    <div className="inline-flex align-items-center">
-                      <i className="pi pi-dollar mr-2"></i>
-                      <b>Tổng tiền</b>
-                    </div>
-                  </Divider>
-                  <p className="pl-16">
-                    {" "}
-                    {new Intl.NumberFormat({
-                      style: "currency",
-                      currency: "JPY",
-                    }).format(detailFind && detailFind.totalAmount)}{" "}
-                    đ
-                  </p>{" "}
-                </div>
-                <div>
-                  <Divider align="left">
-                    <div className="inline-flex align-items-center">
-                      <i className="pi pi-eraser mr-2"></i>
-                      <b>Ngày đặt</b>
-                    </div>
-                  </Divider>
-                  <p className="pl-16">
-                    {detailFind && formatDateTime(detailFind.created_at)}
-                  </p>
-                </div>
+
+
+   
+
+
               </div>
             </TabPanel>
             <TabPanel header="Sản phẩm đặt" rightIcon="pi pi-book ml-2">
@@ -233,7 +230,7 @@ const DetailOrder = (props) => {
                           <h1 className="text-xl font-bold leading-3 text-gray-600 ">
                             Trọng lượng:{" "}
                             <span className="font-normal">
-                              {order.product.weight} {order.product.unit.name}
+                              {/* {order.product.weight} {order.product.unit.name} */}
                             </span>
                           </h1>
                           <h1 className="text-xl font-bold leading-3  text-gray-600 ">

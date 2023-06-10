@@ -23,7 +23,7 @@ const Bill = (props) => {
             <span>{c.productId}</span>
           </div>
           <h6>
-            Size: <span> {c.sizeValue}</span>
+            Size: <span> {c.sizeValue}</span>  / <span> {c.weight} {c.unitName}</span> 
           </h6>
 
           <span className="font-bold text-900">

@@ -33,6 +33,12 @@ const Order = React.lazy(() => import("../views/customer/order/Order"));
 const OrderDetail = React.lazy(() =>
   import("../views/customer/order/OrderDetail")
 );
+const SendMessage = React.lazy(() =>
+  import("../views/customer/message/SendMessage")
+);
+const GoldPrice = React.lazy(() =>
+  import("../views/customer/exchangeRate/ExchangeRate")
+);
 
 const routes = [
   //khách hàng
@@ -65,6 +71,8 @@ const routes = [
     name: "Chi tiết đơn đặt",
     element: OrderDetail,
   },
+  { path: "/tinnhan", name: "Dơn đặt hàng", element: SendMessage },
+  { path: "/xemtigia", name: "Tỉ giá", element: ExchangeRate },
 ];
 
 export default routes;

@@ -1,6 +1,7 @@
 import React from "react";
 
 import { TabView, TabPanel } from "primereact/tabview";
+import StatisticalByYear from "../../../components/admin/totalrevenue/StatisticalByYear";
 
 const StatisticalByDay = React.lazy(() =>
   import("../../../components/admin/totalrevenue/StatisticalByDay")
@@ -23,7 +24,10 @@ const SalesReport = () => {
           <TabPanel
             header="Theo năm"
             rightIcon="pi pi-calendar-plus ml-2"
-          ></TabPanel>
+          >
+
+<StatisticalByYear/>
+          </TabPanel>
         </TabView>
       </div>
     </>

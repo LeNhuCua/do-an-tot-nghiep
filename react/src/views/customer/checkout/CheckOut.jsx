@@ -26,6 +26,9 @@ import ReactDOMServer from "react-dom/server";
 import { useStateContext } from "../../../context/ContextProvider";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { AiOutlineInfoCircle } from "react-icons/ai";
+import { Checkbox } from "primereact/checkbox";
+
 const CheckOut = () => {
   UseTitle("Đặt hàng");
   const {
@@ -213,6 +216,7 @@ const CheckOut = () => {
 
   const onSubmit = async (data) => {
     setLoading(true);
+
     const formData = new FormData();
     console.log(checkoutProducts);
     const total =
@@ -228,7 +232,7 @@ const CheckOut = () => {
       "shippingMethodId",
       data.shippingMethodName.shippingMethodId
     );
-
+    formData.append("deposits", totalAmount * 0.1);
     //orderDetail
     for (let i = 0; i < checkoutProducts.length; i++) {
       formData.append(
@@ -452,6 +456,7 @@ const CheckOut = () => {
     setOpenUpdate(true);
   };
   console.log(openUpdate);
+
   return (
     <div>
       <div className="card flex justify-content-center">
@@ -482,7 +487,7 @@ const CheckOut = () => {
               {/* <Address/> */}
               <div className="cs-container card py-1">
                 <div className="flex flex-col lg:flex-row items-center justify-between">
-                  <h2 className="text-lg lg:text-xl text-bold">
+                  <h2 className="text-lg lg:text-sm text-bold">
                     {selectedAddress !== "" && selectedAddress ? (
                       <div>
                         {selectedAddress.recipientName}
@@ -601,7 +606,7 @@ const CheckOut = () => {
                 id="cart"
               >
                 <div
-                  className="lg:w-2/3 w-full lg:pl-10 pl-4 pr-10 lg:pr-4  bg-white overflow-y-auto overflow-x-hidden h-screen"
+                  className="lg:w-3/5 w-full lg:pl-10 pl-4 pr-10 lg:pr-4  bg-white overflow-y-auto overflow-x-hidden h-screen"
                   id="scroll"
                 >
                   {/* <p className="text-4xl font-black leading-10 text-gray-800 pt-3">
@@ -623,15 +628,15 @@ const CheckOut = () => {
                             />
                           </div>
                           <div className="lg:pl-3 lg:w-3/4 lg:ml-4">
-                            <p className="text-xl  text-gray-800 lg:pt-0 pt-4">
+                            <p className="text-sm  text-gray-800 lg:pt-0 pt-4">
                               {cart.product.productId}
                             </p>
                             <div className="flex items-center justify-between w-full pt-1">
-                              <p className="text-2xl font-black leading-none text-gray-800">
+                              <p className="text-lg font-black leading-none text-gray-800">
                                 {cart.product.name}
                               </p>
                               <div className="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                <h3>{cart.quantity}</h3>
+                                <h3 className="text-sm">{cart.quantity}</h3>
                                 {/* <input
                                 id="form1"
                                 min="0"
@@ -644,7 +649,7 @@ const CheckOut = () => {
                             </div>
                             <div className="grid lg:grid-cols-2 grid-cols-1">
                               <div className="">
-                                <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                                <h1 className="text-sm font-bold leading-3 text-gray-600 ">
                                   Trọng lượng:
                                   <span className="font-normal">
                                     {" "}
@@ -652,7 +657,7 @@ const CheckOut = () => {
                                     {cart.product.product_size[0].unit.name}
                                   </span>
                                 </h1>
-                                <h1 className="text-xl leading-3 text-gray-600 py-3">
+                                <h1 className="text-sm leading-3 text-gray-600 py-3">
                                   Loại:
                                   <span className="font-normal">
                                     {" "}
@@ -661,7 +666,7 @@ const CheckOut = () => {
                                 </h1>
                               </div>
                               <div className="">
-                                <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                                <h1 className="text-sm font-bold leading-3 text-gray-600 ">
                                   Đơn giá:{" "}
                                   <span className="font-normal">
                                     {new Intl.NumberFormat({
@@ -671,7 +676,7 @@ const CheckOut = () => {
                                     <span> VNĐ</span>
                                   </span>
                                 </h1>
-                                <h1 className="text-xl leading-3 text-gray-600 py-3">
+                                <h1 className="text-sm leading-3 text-gray-600 py-3">
                                   Kích thước:
                                   <span className="font-normal">
                                     {" "}
@@ -682,7 +687,7 @@ const CheckOut = () => {
                             </div>
 
                             <div className="flex items-center justify-end pr-6">
-                              <p className="text-xl font-black leading-none text-gray-800">
+                              <p className="text-sm font-black leading-none text-gray-800">
                                 {new Intl.NumberFormat({
                                   style: "currency",
                                   currency: "JPY",
@@ -699,7 +704,7 @@ const CheckOut = () => {
                   </div>
                 </div>
                 <CForm
-                  className="lg:w-1/3 w-full bg-gray-100 h-full"
+                  className="lg:w-2/5 w-full bg-gray-100 h-full"
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <div className="flex flex-col  px-14 py-20 justify-between overflow-y-auto">
@@ -774,10 +779,10 @@ const CheckOut = () => {
                       </div>
                       {getFormErrorMessage("shippingMethodName")}
                       <div className="flex items-center pb-2 justify-between lg:pt-2 ">
-                        <p className="text-xl leading-normal text-gray-800">
+                        <p className="text-sm leading-normal text-gray-800">
                           Tổng
                         </p>
-                        <p className="text-xl font-bold leading-normal text-right text-gray-800">
+                        <p className="text-sm font-bold leading-normal text-right text-gray-800">
                           {new Intl.NumberFormat({
                             style: "currency",
                             currency: "JPY",
@@ -786,13 +791,13 @@ const CheckOut = () => {
                         </p>
                       </div>
                       <div className="flex items-center pb-2 justify-between lg:pt-2 ">
-                        <p className="text-xl leading-normal text-gray-800">
+                        <p className="text-sm leading-normal text-gray-800">
                           Phí ship
                         </p>
                         {selectedShippingMethods &&
                         selectedShippingMethods.shippingMethodId !==
                           "PTVC002" ? (
-                          <p className="text-xl font-bold leading-normal text-right text-gray-800">
+                          <p className="text-sm font-bold leading-normal text-right text-gray-800">
                             {new Intl.NumberFormat({
                               style: "currency",
                               currency: "JPY",
@@ -804,7 +809,7 @@ const CheckOut = () => {
                             <span> VNĐ</span>
                           </p>
                         ) : (
-                          <p className="text-xl font-bold leading-normal text-right text-gray-800">
+                          <p className="text-sm font-bold leading-normal text-right text-gray-800">
                             {new Intl.NumberFormat({
                               style: "currency",
                               currency: "JPY",
@@ -814,13 +819,13 @@ const CheckOut = () => {
                         )}
                       </div>
                       <div className="flex items-center pb-2 justify-between lg:pt-2 ">
-                        <p className="text-xl leading-normal text-gray-800">
+                        <p className="text-sm leading-normal text-gray-800">
                           Tổng tiền trả
                         </p>
                         {selectedShippingMethods &&
                         selectedShippingMethods.shippingMethodId !==
                           "PTVC002" ? (
-                          <p className="text-xl font-bold leading-normal text-right text-gray-800">
+                          <p className="text-sm font-bold leading-normal text-right text-gray-800">
                             {new Intl.NumberFormat({
                               style: "currency",
                               currency: "JPY",
@@ -833,7 +838,7 @@ const CheckOut = () => {
                             <span> VNĐ</span>
                           </p>
                         ) : (
-                          <p className="text-xl font-bold leading-normal text-right text-gray-800">
+                          <p className="text-sm font-bold leading-normal text-right text-gray-800">
                             {new Intl.NumberFormat({
                               style: "currency",
                               currency: "JPY",
@@ -842,10 +847,84 @@ const CheckOut = () => {
                           </p>
                         )}
                       </div>
+                      <div className="bg-blue-100 p-2 rounded-lg ">
+                        <div className="flex items-center pb-2 justify-between lg:pt-2 ">
+                          <p className="text-sm leading-normal text-gray-800">
+                            Tổng cọc (1% tiền đơn hàng )
+                          </p>
+                          <p className="text-sm font-bold leading-normal text-right text-gray-800">
+                            {new Intl.NumberFormat({
+                              style: "currency",
+                              currency: "JPY",
+                            }).format(totalAmount * 0.1)}
+                            <span> VNĐ</span>
+                          </p>
+                        </div>
+                        <div className="pb-2">
+                          <div className="bg-red-300">
+                            <div className="flex gap-2 items-center">
+                              <AiOutlineInfoCircle />{" "}
+                              <span>Thông tin tài khoản ngân hàng</span>
+                            </div>
+                            <p>- Số tài khoản: 105872540327</p>
+                            <p>- Tên chủ thể: Lê Như Của</p>
+                            <p>- Ngân hàng: VietinBank</p>
+                          </div>
+                          <div>
+                            <div className="flex gap-2 items-center">
+                              <AiOutlineInfoCircle /> <span>Điều khoản</span>
+                            </div>
+                            <p>
+                              - Vui lòng chờ chúng tôi xác nhận hàng và thông
+                              tin về tiền đặt cọc chúng tôi sẽ hỗ trợ cho bạn
+                              sớm nhất.
+                            </p>
+                            <p>
+                              - Nếu có thắc mắc vui lòng liên hệ: 0776223708
+                            </p>
+                            <p>
+                              - Thông tin về tài khoản chúng tôi để trên màn
+                              hình (chỉ sử dụng duy nhất tài khoản này){" "}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="lg:pt-2 lg:pb-2">
+                        <Controller
+                          name="checked"
+                          control={control}
+                          rules={{ required: "Vui lòng chấp nhận điều khoản." }}
+                          render={({ field, fieldState }) => (
+                            <>
+                              <Checkbox
+                                inputId={field.name}
+                                checked={field.value}
+                                inputRef={field.ref}
+                                className={classNames({
+                                  "p-invalid": fieldState.error,
+                                })}
+                                onChange={(e) => field.onChange(e.checked)}
+                              />
+                              <label
+                                htmlFor={field.name}
+                                className={classNames({
+                                  "p-error": errors.checked,
+                                })}
+                              >
+                                <span className="ml-2">
+                                  {" "}
+                                  Chấp nhận điều khoản
+                                </span>
+                              </label>
+                              {getFormErrorMessage(field.name)}
+                            </>
+                          )}
+                        />
+                      </div>
                       <div>
                         <button
                           // onClick={() => setShow(!show)}
-                          className="flex items-center group font-bold text-xl uppercase justify-center gap-2 leading-none w-full py-4 rounded-2xl bg-red-600 shadow-3xl border-gray-800 border hover:bg-gray-600 hover:text-yellow-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white"
+                          className="flex items-center group font-bold text-sm uppercase justify-center gap-2 leading-none w-full py-4 rounded-2xl bg-red-600 shadow-3xl border-gray-800 border hover:bg-gray-600 hover:text-yellow-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white"
                         >
                           <BsArrowBarRight className="group-hover:text-yellow-400 transition-all duration-500" />
                           <span className="group-hover:text-yellow-400 transition-all duration-500">

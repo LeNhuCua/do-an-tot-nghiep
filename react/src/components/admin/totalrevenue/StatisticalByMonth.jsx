@@ -61,7 +61,6 @@ const StatisticalByMonth = () => {
       )
       .then((response) => {
         setSalesData(response.data);
-
         setChartData(response.data.chartDataByMonth);
         setDetailData(response.data.detailByMonth);
         setBestSellProduct(response.data.getBestSellProductByMonth);
@@ -70,9 +69,9 @@ const StatisticalByMonth = () => {
         console.log(error);
       });
   }, [date]);
-
+  console.log(bestSellProduct);
   const [visible, setVisible] = useState(false);
-
+  console.log(detailData);
   const avatarTemplate = (rowData) => {
     return rowData.avatar ? (
       <img
@@ -194,6 +193,7 @@ const StatisticalByMonth = () => {
               ></Column>
 
               <Column field="name" header="Sản phẩm"></Column>
+              <Column field="avatar" header="Sản phẩm"></Column>
               <Column field="so_luong_ban" header="Số lượng bán"></Column>
             </DataTable>
           ) : (
@@ -251,6 +251,11 @@ const StatisticalByMonth = () => {
               <Column
                 field="total_quantity"
                 header="Số lượng bán"
+                sortable
+              ></Column>
+              <Column
+                field="sizeValue"
+                header="Kích thước"
                 sortable
               ></Column>
               <Column

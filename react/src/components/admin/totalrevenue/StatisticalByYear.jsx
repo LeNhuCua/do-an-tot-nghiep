@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { FilterMatchMode } from "primereact/api";
 
-
 import { API, API_IMAGES } from "../../../API.js";
 
 import { Chart } from "primereact/chart";
@@ -13,17 +12,10 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 
-const StatisticalByDay = () => {
+const StatisticalByYear = () => {
   const formatDate = (date) => {
     const year = date.getFullYear();
-    // Lấy tháng, nếu là tháng 1-9 thì thêm số 0 ở đầu
-    const month =
-      date.getMonth() + 1 < 10
-        ? "0" + (date.getMonth() + 1)
-        : date.getMonth() + 1;
-    // Lấy ngày, nếu là ngày 1-9 thì thêm số 0 ở đầu
-    const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-    return `${year}-${month}-${day}`;
+    return `${year}`;
   };
 
   const today = new Date();
@@ -55,12 +47,13 @@ const StatisticalByDay = () => {
 
   useEffect(() => {
     axios
-      .get(`${API}/api/statistical/sales-data?date=${formatDate(date)}`)
+      .get(`${API}/api/statistical/sales-data-year?date=${formatDate(date)}`)
       .then((response) => {
         setSalesData(response.data);
+        console.log(response.data);
         setChartData(response.data.chartData);
         setDetailData(response.data.detail);
-        setBestSellProduct(response.data.getBestSellProductByDay);
+        setBestSellProduct(response.data.getBestSellProductByYear);
       })
       .catch((error) => {
         console.log(error);
@@ -135,71 +128,18 @@ const StatisticalByDay = () => {
   console.log(bestSellProduct);
   return (
     <div>
-      {!useDatePicker ? (
-        <div className="flex flex-wrap gap-2">
-          <div
-            className={`border inline cursor-pointer rounded-lg font-bold p-3 mr-2 hover:bg-blue-500 hover:text-white hover:duration-300  ${
-              selected === "today" ? "bg-blue-500 text-white font-bold" : ""
-            }`}
-            onClick={() => {
-              setSelected("today");
-              setDate(today);
-            }}
-          >
-            Hiện tại
-          </div>
-          <div
-            className={`border inline cursor-pointer rounded-lg font-bold p-3 mr-2 hover:bg-blue-500 hover:text-white hover:duration-300  ${
-              selected === "yesterday" ? "bg-blue-500 text-white font-bold" : ""
-            }`}
-            onClick={() => {
-              setSelected("yesterday");
-              setDate(yesterday);
-            }}
-          >
-            Ngày trước
-          </div>
-          <div
-            className={`border inline cursor-pointer rounded-lg font-bold p-3 mr-2 hover:bg-blue-500 hover:text-white hover:duration-300  ${
-              selected === "dayBeforeYesterday"
-                ? "bg-blue-500 text-white font-bold"
-                : ""
-            }`}
-            onClick={() => {
-              setSelected("dayBeforeYesterday");
-              setDate(dayBeforeYesterday);
-            }}
-          >
-            2 ngày trước
-          </div>
-          <Button
-            icon="pi pi-calendar"
-            label="Chọn ngày"
-            severity="secondary"
-            onClick={handleUseDatePicker}
-          />
-        </div>
-      ) : (
-        <div className="flex flex-wrap gap-2">
-          <Calendar
-            value={date}
-            onChange={(e) => setDate(e.value)}
-            showButtonBar
-            maxDate={today}
-            showIcon
-          />
-          <Button
-            icon="pi pi-times"
-            label="Huỷ bỏ"
-            severity="secondary"
-            onClick={handleUseButtons}
-          />
-        </div>
-      )}
+      <Calendar
+        value={date}
+        onChange={(e) => setDate(e.value)}
+        view="year"
+        maxDate={today}
+        dateFormat="yy"
+      />
+
       <div className="my-3 card p-8 grid grid-cols-2">
         <div className="col-span-1">
           <h5 className="mb-4 text-center text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-3xl lg:text-4xl dark:text-white">
-            Ngày{" "}
+            Năm{" "}
             <span className="text-blue-600 dark:text-blue-500">
               {formatDate(date)}
             </span>{" "}
@@ -210,7 +150,7 @@ const StatisticalByDay = () => {
               {new Intl.NumberFormat({
                 style: "currency",
                 currency: "JPY",
-              }).format(salesData.totalSales)}{" "}
+              }).format(salesData.totalSales ? salesData.totalSales.total_sales : "")}{" "}
               đồng
             </span>
           </h3>
@@ -222,7 +162,7 @@ const StatisticalByDay = () => {
           </h3>
           <h3 className="text-lg font-medium mb-3">
             Top <span className="text-purple-500 font-medium">3</span> sản phẩm
-            bán chạy nhất trong ngày
+            bán chạy nhất trong năm
           </h3>
 
           {bestSellProduct.length > 0 ? (
@@ -308,7 +248,7 @@ const StatisticalByDay = () => {
       )}
 
       <div className="card p-2">
-        <h4 className="text-center">Biểu đồ doanh thu 7 ngày trước đó</h4>
+        <h4 className="text-center">Biểu đồ doanh thu so với năm trước</h4>
         <Chart type="bar" data={chartData} options={chartOptions} />
       </div>
       <div>
@@ -319,4 +259,4 @@ const StatisticalByDay = () => {
   );
 };
 
-export default StatisticalByDay;
+export default StatisticalByYear;

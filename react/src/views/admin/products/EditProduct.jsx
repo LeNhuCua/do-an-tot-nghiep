@@ -16,7 +16,6 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { DataContext } from "../../../context/DataContext";
 
-import { classNames } from "primereact/utils";
 
 import { AiOutlinePlus } from "react-icons/ai";
 import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias";
@@ -434,13 +433,13 @@ const EditProduct = () => {
 
   const deleteSize = async (id) => {
     const isConfirm = await Swal.fire({
-      title: "Bạn có chắc muốn xoá ảnh này?",
+      title: "Bạn có chắc muốn xoá kích thước  này?",
       text: "Không thể hoàn tác!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Xác nhận!",
     }).then((result) => {
       return result.isConfirmed;
     });
@@ -518,8 +517,8 @@ const EditProduct = () => {
                 {...register("name", {
                   required: "Vui lòng nhập tên sản phẩm",
                   maxLength: {
-                    value: 50,
-                    message: "Giới hạn chỉ 50 kí tự",
+                    value: 100,
+                    message: "Giới hạn chỉ 100 kí tự",
                   },
                 })}
                 onKeyUp={() => {
@@ -539,7 +538,7 @@ const EditProduct = () => {
               ""
             )}
           </CCol>
-          <CCol xl={6}>
+          <CCol xl={3}>
             <CascadeSelect
               value={selectedTypeCategory}
               onChange={(e) => setSelectedTypeCategory(e.value)}
@@ -651,7 +650,7 @@ const EditProduct = () => {
             </div>
           </CCol> */}
 
-          <CCol xl={6} className="relative">
+          <CCol xl={3} className="relative">
             <label
               className="absolute text-[0.75rem] -top-5 left-6 select-none z-50 text-[#6c757d]"
               htmlFor="type"

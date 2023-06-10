@@ -127,27 +127,34 @@ const _nav = [
   },
 
   {
-    component: CNavGroup,
-    name: "Bán hàng",
-    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Lập hoá đơn",
-        to: "/quantri/laphoadon",
-      },
-      {
-        component: CNavItem,
-        name: "Đơn hàng online",
-        to: "/quantri/donhangonline",
-      },
-      // {
-      //   component: CNavItem,
-      //   name: "Loại sản phẩm",
-      //   to: "/quantri/loaisanpham",
-      // },
-    ],
+    component: CNavItem,
+    name: "Lập hoá đơn",
+    to: "/quantri/laphoadon",
+    icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
   },
+
+  // {
+  //   component: CNavGroup,
+  //   name: "Bán hàng",
+  //   icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: "Lập hoá đơn",
+  //       to: "/quantri/laphoadon",
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: "Đơn hàng online",
+  //       to: "/quantri/donhangonline",
+  //     },
+  //     // {
+  //     //   component: CNavItem,
+  //     //   name: "Loại sản phẩm",
+  //     //   to: "/quantri/loaisanpham",
+  //     // },
+  //   ],
+  // },
   {
     component: CNavItem,
     name: "Thống kê",

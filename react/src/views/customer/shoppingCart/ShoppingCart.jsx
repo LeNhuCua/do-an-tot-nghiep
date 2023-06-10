@@ -155,17 +155,33 @@ const ShoppingCart = () => {
       setSelectedData(selectedData.filter((cartId) => cartId !== id));
     }
   };
+  // const handleSelectAllChange = (event) => {
+  //   const isChecked = event.target.checked;
+  //   if (isChecked) {
+  //     const allProductIds = carts.map((p) => p.cartId );
+
+  //     setSelectedData(allProductIds);
+  //   } else {
+  //     setSelectedData([]);
+  //   }
+  // };
+
   const handleSelectAllChange = (event) => {
     const isChecked = event.target.checked;
     if (isChecked) {
-      const allProductIds = carts.map((p) => p.cartId);
+      const allProductIds = carts
+        .filter((p) => p.product.product_size.number > 0)
+        .map((p) => p.cartId);
+  
       setSelectedData(allProductIds);
     } else {
       setSelectedData([]);
     }
   };
+  
 
-  console.log(selectedData);
+
+  console.log(carts);
   const [filteredCartProducts, setFilteredCartProducts] = useState([]);
   // setSelectedData(selectedData.filter((cartId) => cartId !== id));
   // const filteredCartProducts = carts.filter((item) =>
@@ -217,7 +233,7 @@ const ShoppingCart = () => {
                   onClick={() => alert("fsf")}
                 >
                   <BiArrowBack />
-                  <div className="text-xl py-2  pl-2 leading-none">
+                  <div className="text-sm py-2  pl-2 leading-none">
                     Quay lại
                   </div>
                 </button>
@@ -238,22 +254,32 @@ const ShoppingCart = () => {
                       Tất cả
                     </label>
                   </div>
+                  
 
                   {carts.length > 0 && !loading ? (
                     carts.map((cart) => (
                       <div
                         key={cart.cartId}
-                        className="lg:flex items-center gap-4 py-2 border-t border-gray-300"
+                        className="lg:flex items-center gap-4 py-2 relative border-t  border-gray-300"
                       >
                         <div className="w-2/6 flex items-center gap-3 lg:w-1/6">
+                          <div className="absolute top-1 right-1">
+                            {cart.product.product_size[0].number === 0 ? (
+                              <h4 className="text-red-500 text-sm">Hết hàng</h4>
+                            ) : (
+                              ""
+                            )}
+                          </div>
+
                           <input
                             checked={selectedData.includes(cart.cartId)}
                             value={cart.cartId}
                             onChange={(e) =>
                               handleSelectProduct(e, cart.cartId)
-                            }
+                            } 
+                            
                             type="checkbox"
-                            className="w-6 h-6 text-green-600 cursor-pointer bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            className={`${cart.product.product_size[0].number === 0 ? "pointer-events-none" : ""} w-6 h-6 text-green-600 cursor-pointer bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600`}
                           />
                           <Link to={`/sanpham/${cart.product.alias}`}>
                             <img
@@ -264,11 +290,11 @@ const ShoppingCart = () => {
                           </Link>
                         </div>
                         <div className="lg:pl-3 lg:w-3/4 lg:ml-4">
-                          <p className="text-xl  text-gray-800 lg:pt-0 pt-4">
+                          <p className="text-sm  text-gray-800 lg:pt-0 pt-4">
                             {cart.product.productId}
                           </p>
                           <div className="flex items-center justify-between w-full pt-1">
-                            <p className="text-2xl font-black leading-none text-gray-800">
+                            <p className="text-lg font-black leading-none text-gray-800">
                               {cart.product.name}
                             </p>
                             <div className="col-md-3 col-lg-3 col-xl-2 d-flex">
@@ -278,7 +304,7 @@ const ShoppingCart = () => {
                               >
                                 <AiOutlineMinus />
                               </button>
-                              <h3>{cart.quantity}</h3>
+                              <h3 className="text-sm">{cart.quantity}</h3>
                               {/* <input
                                 id="form1"
                                 min="0"
@@ -298,14 +324,15 @@ const ShoppingCart = () => {
                           </div>
                           <div className="grid lg:grid-cols-2 grid-cols-1">
                             <div className="">
-                              <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                              <h1 className="text-sm font-bold leading-3 text-gray-600 ">
                                 Trọng lượng:
                                 <span className="font-normal">
                                   {" "}
-                                  {cart.product.product_size[0].weight} {cart.product.product_size[0].unit.name}
+                                  {cart.product.product_size[0].weight}{" "}
+                                  {cart.product.product_size[0].unit.name}
                                 </span>
                               </h1>
-                              <h1 className="text-xl leading-3 text-gray-600 py-3">
+                              <h1 className="text-sm leading-3 text-gray-600 py-3">
                                 Loại:
                                 <span className="font-normal">
                                   {" "}
@@ -314,7 +341,7 @@ const ShoppingCart = () => {
                               </h1>
                             </div>
                             <div className="">
-                              <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                              <h1 className="text-sm font-bold leading-3 text-gray-600 ">
                                 Đơn giá:{" "}
                                 <span className="font-normal">
                                   {new Intl.NumberFormat({
@@ -324,7 +351,7 @@ const ShoppingCart = () => {
                                   <span> VNĐ</span>
                                 </span>
                               </h1>
-                              <h1 className="text-xl leading-3 text-gray-600 py-3">
+                              <h1 className="text-sm leading-3 text-gray-600 py-3">
                                 Kích thước:
                                 <span className="font-normal">
                                   {" "}
@@ -339,11 +366,11 @@ const ShoppingCart = () => {
                               className="flex itemms-center"
                               onClick={() => deleteCart(cart.cartId)}
                             >
-                              <p className="text-xl leading-3 underline text-red-500 pl-5 cursor-pointer">
+                              <p className="text-sm leading-3 underline text-red-500 pl-5 cursor-pointer">
                                 Xoá
                               </p>
                             </div>
-                            <p className="text-xl font-black leading-none text-gray-800">
+                            <p className="text-sm font-black leading-none text-gray-800">
                               {new Intl.NumberFormat({
                                 style: "currency",
                                 currency: "JPY",
@@ -379,8 +406,8 @@ const ShoppingCart = () => {
 
                   <div>
                     <div className="flex items-center pb-6 justify-between lg:pt-5 pt-20">
-                      <p className="text-2xl leading-normal text-gray-800">$</p>
-                      <p className="text-2xl font-bold leading-normal text-right text-gray-800">
+                      <p className="text-lg leading-normal text-gray-800">$</p>
+                      <p className="text-lg font-bold leading-normal text-right text-gray-800">
                         {new Intl.NumberFormat({
                           style: "currency",
                           currency: "JPY",
@@ -397,7 +424,7 @@ const ShoppingCart = () => {
                       <Link
                         to="/dathang"
                         // onClick={() => setShow(!show)}
-                        className="flex items-center group font-bold text-xl uppercase justify-center gap-2 leading-none w-full py-4 rounded-2xl bg-red-600 shadow-3xl border-gray-800 border hover:bg-gray-600 hover:text-yellow-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white"
+                        className="flex items-center group font-bold text-sm uppercase justify-center gap-2 leading-none w-full py-4 rounded-2xl bg-red-600 shadow-3xl border-gray-800 border hover:bg-gray-600 hover:text-yellow-400 transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white"
                       >
                         <BsArrowBarRight className="group-hover:text-yellow-400 transition-all duration-500" />
                         <span className="group-hover:text-yellow-400 transition-all duration-500">

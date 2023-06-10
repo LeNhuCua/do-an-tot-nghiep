@@ -63,6 +63,8 @@ const EditSlide = React.lazy(() => import("../views/admin/slides/EditSlide"));
 
 //HOÁ ĐƠN
 const Invoices = React.lazy(() => import("../views/admin/invoices/Invoices"));
+
+
 const SalesReport = React.lazy(() =>
   import("../views/admin/totalrevenue/TotalRevenue")
 );
@@ -70,6 +72,10 @@ const SalesReport = React.lazy(() =>
 //xử lí đơn hàng
 const OrderNew = React.lazy(() =>
   import("../views/admin/order/OrderNew")
+);
+
+const OrdersBeingProcessed = React.lazy(() =>
+  import("../views/admin/order/OrdersBeingProcessed")
 );
 
 
@@ -177,11 +183,13 @@ const routes = [
   //Lap hoa don
   { path: "/laphoadon", name: "Lập hoá đơn", element: Invoices },
 
+
   //THỐNG KÊ
   { path: "/thongke", name: "Thống kê", element: SalesReport },
 
   //
-  { path: "/donhangmoi", name: "Thống kê", element: OrderNew },
+  { path: "/donhangmoi", name: "Đơn hàng mới", element: OrderNew },
+  { path: "/donhangdangxuly", name: "Đơn hàng đang xử lý", element: OrdersBeingProcessed },
 
   
 

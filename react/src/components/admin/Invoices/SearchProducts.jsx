@@ -188,7 +188,7 @@ const SearchProducts = (props) => {
                 <p>{product.productId}</p>
               </div>
               <div className="flex-1 text-sm">
-                <p>{product.name}</p>
+                <p className="font-bold">{product.name}</p>
               </div>
               <div className="flex flex-col flex-1 mt-auto min-h-[6.25rem]">
                 <div className="flex gap-3 flex-1 border-t py-2">

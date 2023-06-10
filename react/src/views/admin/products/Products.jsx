@@ -115,11 +115,11 @@ const Products = () => {
       header: "Tên",
       filter: true,
     },
-    {
-      field: "type_category.name",
-      header: "Danh mục cha",
-      filter: true,
-    },
+    // {
+    //   field: "type_category.name",
+    //   header: "Danh mục cha",
+    //   filter: true,
+    // },
     {
       field: "avatars",
       header: "Ảnh bìa",

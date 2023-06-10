@@ -594,7 +594,7 @@ export default function CreateProduct() {
                   />
                 )}
               />
-              <Tippy content="Thêm loại sản phẩm">
+              {/* <Tippy content="Thêm loại sản phẩm">
                 <Button
                   icon="pi pi-plus"
                   rounded
@@ -604,7 +604,7 @@ export default function CreateProduct() {
                   aria-label="Search"
                   onClick={() => setVisible(true)}
                 />
-              </Tippy>
+              </Tippy> */}
             </div>
 
             {errors.productTypeId && (

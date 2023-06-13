@@ -25,6 +25,10 @@ const ShoppingCart = React.lazy(() =>
 );
 
 const Profile = React.lazy(() => import("../views/customer/profile/Profile"));
+const ChangePassword = React.lazy(() => import("../views/customer/changepass/ChangePassword"));
+
+
+
 const EditProfile = React.lazy(() =>
   import("../views/customer/profile/EditProfile")
 );
@@ -44,8 +48,6 @@ const SizeAway = React.lazy(() =>
   import("../views/customer/sizeAway/SizeAway")
 );
 
-
-
 const routes = [
   //khách hàng
   { path: "/", exact: true, name: "Trang chủ", element: Home },
@@ -56,7 +58,6 @@ const routes = [
   { path: "/sanpham/:alias", name: "Chi tiết", element: ProductDetail },
   { path: "/huongdandosize", name: "Chi tiết", element: SizeAway },
 
-  
   { path: "/timkiem/:search", name: "Tìm kiếm", element: SearchProducts },
   { path: "/giohang", name: "Giỏ hàng", element: ShoppingCart },
   { path: "/dathang", name: "Đặt hàng", element: CheckOut },
@@ -73,6 +74,7 @@ const routes = [
     exact: true,
   },
   { path: "/thongtincanhan/chinhsua", name: "Chỉnh sửa", element: EditProfile },
+  { path: "/doimatkhau", name: "Dổi mật khẩu", element: ChangePassword },
 
   { path: "/dondathang", name: "Dơn đặt hàng", element: Order },
   {

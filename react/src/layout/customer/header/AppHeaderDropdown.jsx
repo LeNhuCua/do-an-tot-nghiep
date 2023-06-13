@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 
 import { CAvatar, CBadge, CDropdownHeader, CDropdownItem } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilBell, cilLockLocked, cilUser } from "@coreui/icons";
+import {  cilLockLocked, cilUser,cilBlurLinear,cilAccountLogout } from "@coreui/icons";
 
 import { useStateContext } from "../../../context/ContextProvider";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -66,9 +66,9 @@ export default function BasicMenu() {
           Account
         </CDropdownHeader>
         <div className="hover:bg-gray-300 py-1 px-4">
-          <Link to="/dondathang" className="no-underline">
+          <Link to="/dondathang" className="no-underline text-gray-900 hover:text-yellow-500 duration-300">
             <div>
-              <CIcon icon={cilBell} className="me-2" />
+              <CIcon icon={cilBlurLinear} className="me-2" />
               Thông tin đơn hàng
               <CBadge color="info" className="ms-2">
                 42
@@ -77,19 +77,26 @@ export default function BasicMenu() {
           </Link>
         </div>
         
-        <div className="hover:bg-gray-300 py-1 px-4">
-          <Link to="/thongtincanhan" className="no-underline">
+        <div className="hover:bg-gray-300 py-1 px-4 ">
+          <Link to="/thongtincanhan" className="no-underline text-gray-900 hover:text-yellow-500 duration-300">
             <div>
-              <CIcon icon={cilBell} className="me-2" />
+              <CIcon icon={cilUser} className="me-2" />
               Thông tin cá nhân
-              <CBadge color="info" className="ms-2">
-                42
-              </CBadge>
+              
             </div>
           </Link>
         </div>
-        <MenuItem className="border" onClick={onLogout}>
-          <CIcon icon={cilLockLocked} className="me-2" />
+        <div className="hover:bg-gray-300 py-1 px-4 ">
+          <Link to="/doimatkhau" className="no-underline text-gray-900 hover:text-yellow-500 duration-300">
+            <div>
+              <CIcon icon={cilLockLocked} className="me-2" />
+              Đổi mật khẩu
+              
+            </div>
+          </Link>
+        </div>
+        <MenuItem className="border font-bold" onClick={onLogout}>
+          <CIcon icon={cilAccountLogout} className="me-2" />
           Đăng xuất
         </MenuItem>
       </Menu>

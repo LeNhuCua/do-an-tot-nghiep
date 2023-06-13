@@ -29,7 +29,7 @@ class AccountConfirmation extends Mailable
             ->view('account_confirmation')
             ->with([
                 'user' => $this->user,
-                'confirmationLink' => url('/api/confirm-account/' . $this->user->confirmation_token)
+                'confirmationLink' => url('/api/confirm-account/' . $this->user->confirmation_token),
             ]);
     }
 }

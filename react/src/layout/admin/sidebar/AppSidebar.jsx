@@ -36,7 +36,6 @@ const AppSidebar = () => {
     >
       <CSidebarBrand className="d-none d-md-flex" to="/">
         {/* <img className="sidebar-brand-full h-11" src={a}  height={35} alt="" /> */}
-    
         <CIcon className="sidebar-brand-narrow" icon={sygnet} height={35} />
       </CSidebarBrand>
       <CSidebarNav>

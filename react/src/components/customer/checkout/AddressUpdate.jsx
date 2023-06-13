@@ -5,7 +5,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Controller, useForm } from "react-hook-form";
 import { CCol } from "@coreui/react";
 
-const Address = ({ onDataChange }) => {
+const AddressUpdate = ({ onDataChange,updateAddress }) => {
   const {
     register,
     handleSubmit,
@@ -21,10 +21,10 @@ const Address = ({ onDataChange }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [selectedProvinces, setSelectedProvinces] = useState(null);
-  const [selectedDistricts, setSelectedDistricts] = useState(null);
-  const [selectedWard, setSelectedWard] = useState(null);
-  console.log(selectedProvinces);
+  const [selectedProvinces, setSelectedProvinces] = useState(updateAddress.province);
+  const [selectedDistricts, setSelectedDistricts] = useState(updateAddress.district);
+  const [selectedWard, setSelectedWard] = useState(updateAddress.ward);
+  console.log(updateAddress);
   useEffect(() => {
     fetchProvinces();
   }, []);
@@ -122,4 +122,4 @@ const Address = ({ onDataChange }) => {
   );
 };
 
-export default Address;
+export default AddressUpdate;

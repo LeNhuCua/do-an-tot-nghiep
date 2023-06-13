@@ -9,6 +9,7 @@ use App\Models\TypeCategories;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProductsController extends Controller
 {
@@ -22,9 +23,16 @@ class ProductsController extends Controller
 
     public function hotProducts()
     {
-        $posts = Product::where("rating", ">=", 4)->orderBy("rating", "desc")->where('status', '=', 1)->get();
+        $posts = Product::where("rating", ">=", 3)->orderBy("rating", "desc")->where('status', '=', 1)->take(20)->get();
         return $posts;
     }
+
+    public function bestProduct()
+    {
+        $posts = Product::orderBy("numberBuy", "desc")->where('status', '=', 1)->take(20)->get();
+        return $posts;
+    }
+
 
 
 
@@ -62,7 +70,7 @@ class ProductsController extends Controller
 
     public function categories()
     {
-        $categories = Category::with('typeCategory')->orderBy("created_at", "desc")->get();
+        $categories = Category::with('typeCategory')->orderBy("created_at", "desc")->where('status','=',1)->get();
 
         return $categories;
     }
@@ -79,7 +87,7 @@ class ProductsController extends Controller
         $typeCategoryName = DB::table('type_categories')->where('alias', $alias)->where('status', '=', 1)->pluck('name');
         $categoryName = DB::table('type_categories')
             ->join('categories', 'type_categories.categoryId', '=', 'categories.categoryId')
-            ->select('categories.name','categories.alias')
+            ->select('categories.name', 'categories.alias')
             ->where('type_categories.alias', '=', $alias)
             ->get();
 
@@ -272,10 +280,51 @@ class ProductsController extends Controller
             }
         }
 
-    
+
         return $data;
     }
 
+
+
+
+
+    public function rating(Request $request)
+    {
+
+        $messages = [
+            'required' => 'Trường :attribute phải nhập',
+            'unique' => 'Trường :attribute đã tồn tại'
+        ];
+
+        $validator = Validator::make($request->all(), [], $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_error' => $validator->errors(),
+                'message' => 'Kiểm tra lại thông tin',
+            ]);
+        } else {
+
+            if (auth()->check()) {
+
+                $product = Product::find($request->productId);
+                $product->rating = ($product->rating  + $request->rating) / 2;
+                $product->numberRate += 1;
+                $product->save();
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Đánh giá thành công ',
+                    'product' => $product
+
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 401,
+                    'message' => 'Cần đăng nhập ',
+                ]);
+            }
+        }
+    }
 
 
 

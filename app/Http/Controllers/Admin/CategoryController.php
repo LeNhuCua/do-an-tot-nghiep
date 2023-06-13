@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\ProductType;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Validator;
@@ -148,6 +149,12 @@ class CategoryController extends Controller
 
     public function importExcel(Request $request)
     {
+
+        $auth = Auth::user();
+        if($auth) {
+            
+        }
+
         function removeAccents(string $str): string
         {
             $str = mb_convert_encoding($str, 'UTF-8', mb_list_encodings());
@@ -174,34 +181,46 @@ class CategoryController extends Controller
             $spreadsheet = $reader->load($file->getPathname());
             $worksheet = $spreadsheet->getActiveSheet();
             $rows = $worksheet->toArray();
-
             // Process and validate the data
             $dataToSave = [];
-
 
             foreach ($rows as $index => $row) {
                 if ($index === 0) { // Skip header row
                     continue;
                 }
+                $categoryName = Category::where('name', $row[1])->first();
+                $categoryId = Category::where('categoryId', $row[0])->first();
+                if ($categoryName) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'Tên danh mục ' . $row[0] . ' tại dòng thứ ' . $index . ' đã tồn tại. Vui lòng nhập tên khác',
+                    ]);
+                    break;
+                } else if ($categoryId) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'Mã danh mục ' . $row[0] . ' tại dòng thứ ' . $index . ' đã tồn tại. Vui lòng nhập tên khác',
+                    ]);
+                    break;
+                } else {
+                    $dataToSave[] = [
+                        'categoryId' => $row[0],
+                        'name' => $row[1],
+                        'alias' => convertNameWithoutAccents($row[1]),
+                        'status' => 1,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ];
+                    // Save data to database using Eloquent
+                    Category::insert($dataToSave);
 
-                $dataToSave[] = [
-                    'categoryId' => $row[0],
-                    'name' => $row[1],
-                    'alias' => convertNameWithoutAccents($row[1]),
-                    'status' => 1,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ];
+                    // Return response to frontend
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Thành công',
+                    ]);
+                }
             }
-
-            // Save data to database using Eloquent
-            Category::insert($dataToSave);
-
-            // Return response to frontend
-            return response()->json([
-                'status' => 200,
-                'message' => 'Thành công',
-            ]);
         } catch (\Exception $e) {
             // Handle errors
             return response()->json([

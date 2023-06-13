@@ -31,6 +31,7 @@ import { DataContext } from "../../../context/DataContext";
 
 const Home = () => {
   const [newProducts, setNewProducts] = useState([]);
+  const [bestProduct, setBestProduct] = useState([]);
 
   const { swiperRef, swiperRef1 } = useContext(SlideContext);
 
@@ -47,6 +48,15 @@ const Home = () => {
     }
   }, []);
 
+  const fetchBestProduct = async () => {
+    const response = await axios.get(`${API}/api/cus-products/bestProduct`);
+    setBestProduct(response.data);
+  };
+
+  useEffect(() => {
+    fetchBestProduct();
+  }, []);
+
   const fetchProducts = async (pageNumber = 1) => {
     const response = await axios.get(
       `${API}/api/cus-products/newProducts?page=${pageNumber}`
@@ -58,19 +68,17 @@ const Home = () => {
   const { state, dispatch } = useContext(DataContext);
 
   const { hotProducts } = state;
-  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
-    if (hotProducts.length === 0) {
+  
       fetchHotProducts();
-    } else {
-      setLoading(false);
-    }
+   
   }, []);
   const fetchHotProducts = async () => {
     await axios.get(`${API}/api/cus-products/hotProducts`).then(({ data }) => {
       dispatch({ type: "FETCH_HOTPRODUCTS", payload: data });
-      setLoading(false);
+     
     });
   };
   console.log(newProducts);
@@ -143,24 +151,24 @@ const Home = () => {
 
       <section className="flex flex-col gap-20 cs-container ">
         <div className="flex justify-between items-center">
-          <TextHeading after="Discount">Sản phẩm khuyến mãi</TextHeading>
+          <TextHeading after="Best">Sản phẩm bán chạy</TextHeading>
           <div className="flex gap-4">
             <div
               onClick={() => swiperRef1.current?.slidePrev()}
-              className="cursor-pointer  w-[3.2rem] h-[3rem] bg-[rgba(0,0,0,0.3)] text-black hover:text-white hover:bg-black transition-all duration-300  flex items-center justify-center border-0"
+              className="cursor-pointer  w-[3.2rem] h-[3rem] bg-[rgba(0,0,0,0.3)] text-gray-950 hover:text-white hover:bg-black transition-all duration-300  flex items-center justify-center border-0"
             >
-              <IoChevronBackOutline size={20} />
+              <AiOutlineLeft size={20} />
             </div>
             <button
               onClick={() => swiperRef1.current?.slideNext()}
-              className="cursor-pointer  w-[3.2rem] h-[3rem] bg-[rgba(0,0,0,0.3)] text-black hover:text-white hover:bg-black transition-all duration-300  flex items-center justify-center border-0"
+              className="cursor-pointer  w-[3.2rem] h-[3rem] bg-[rgba(0,0,0,0.3)] text-gray-950 hover:text-white hover:bg-black transition-all duration-300  flex items-center justify-center border-0"
             >
-              <MdNavigateNext size={30} />
+              <AiOutlineRight size={20} />
             </button>
           </div>
         </div>
 
-        {/* <ProductSlide swiperRef={swiperRef1} data={productsHot} /> */}
+        <ProductSlide swiperRef={swiperRef1} data={bestProduct} />
       </section>
     </div>
   );

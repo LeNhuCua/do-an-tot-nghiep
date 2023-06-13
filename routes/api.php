@@ -26,6 +26,7 @@ use App\Http\Controllers\Customer\UsersController as CustomerUserController;
 use App\Http\Controllers\Customer\ProvincesController;
 use App\Http\Controllers\Customer\ShippingCostsController;
 use App\Http\Controllers\Customer\WardsController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\MessageController;
 use App\Http\Middleware\CheckAccess;
 use Illuminate\Http\Request;
@@ -44,40 +45,34 @@ use Illuminate\Support\Facades\Route;
 
 
 //danh mục sản phẩm
-// Route::middleware(['access'])->group(function () {
-Route::group(['prefix' => 'categories'], function () {
-    Route::resource('/', CategoryController::class);
-    Route::post('/importExcel', [CategoryController::class, 'importExcel']);
-    Route::delete('/deleteAll', [CategoryController::class, 'deleteAll']);
-    Route::get('/{id}', [CategoryController::class, 'show']);
-    Route::put('/{id}', [CategoryController::class, 'update']);
-    Route::delete('/{categoryId}', [CategoryController::class, 'destroy']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::middleware(['access'])->group(function () {
+        Route::group(['prefix' => 'categories'], function () {
+            Route::resource('/', CategoryController::class);
+            Route::delete('/deleteAll', [CategoryController::class, 'deleteAll']);
+            Route::get('/{id}', [CategoryController::class, 'show']);
+            Route::put('/{id}', [CategoryController::class, 'update']);
+            Route::delete('/{categoryId}', [CategoryController::class, 'destroy']);
+        });
+    });
 });
-// });
-Route::get('/index1', [CategoryController::class, 'index1']);
+Route::post('/categories/importExcel', [CategoryController::class, 'importExcel']);
 
 
 //danh mục con
 
-Route::group(['prefix' => 'typeCategories'], function () {
-    Route::resource('/', TypeCategoriesController::class);
-    Route::post('/importExcel', [TypeCategoriesController::class, 'importExcel']);
-    Route::delete('/deleteAll', [TypeCategoriesController::class, 'deleteAll']);
-    Route::get('/{id}', [TypeCategoriesController::class, 'show']);
-    Route::put('/{id}', [TypeCategoriesController::class, 'update']);
-    Route::delete('/{typeCategoryId}', [TypeCategoriesController::class, 'destroy']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'typeCategories'], function () {
+        Route::resource('/', TypeCategoriesController::class);
+        Route::delete('/deleteAll', [TypeCategoriesController::class, 'deleteAll']);
+        Route::get('/{id}', [TypeCategoriesController::class, 'show']);
+        Route::put('/{id}', [TypeCategoriesController::class, 'update']);
+        Route::delete('/{typeCategoryId}', [TypeCategoriesController::class, 'destroy']);
+    });
 });
+Route::post('/importExcel', [TypeCategoriesController::class, 'importExcel']);
 
-// //danh mục con
-
-// Route::group(['prefix' => 'subcategories'], function () {
-//     Route::resource('/', SubCategoriesController::class);
-//     Route::post('/importExcel', [SubCategoriesController::class, 'importExcel']);
-//     Route::delete('/deleteAll', [SubCategoriesController::class, 'deleteAll']);
-//     Route::get('/{id}', [SubCategoriesController::class, 'show']);
-//     Route::put('/{id}', [SubCategoriesController::class, 'update']);
-//     Route::delete('/{category}', [SubCategoriesController::class, 'destroy']);
-// });
 
 // loại sản phẩm
 Route::group(['prefix' => 'productsType'], function () {
@@ -101,15 +96,15 @@ Route::group(['prefix' => 'units'], function () {
 
 
 //kích thước
-Route::group(['prefix' => 'sizes'], function () {
-    Route::resource('/', SizeController::class);
-    Route::post('/importExcel', [SizeController::class, 'importExcel']);
-    Route::delete('/deleteAll', [SizeController::class, 'deleteAll']);
-    Route::get('/{id}', [SizeController::class, 'show']);
-    Route::post('/{id}', [SizeController::class, 'update']);
-    Route::delete('/{productImage}', [SizeController::class, 'deleteImages']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'sizes'], function () {
+        Route::resource('/', SizeController::class);
+        Route::delete('/deleteAll', [SizeController::class, 'deleteAll']);
+        Route::get('/{id}', [SizeController::class, 'show']);
+        Route::put('/{id}', [SizeController::class, 'update']);
+    });
 });
-
+Route::post('/sizes/importExcel', [SizeController::class, 'importExcel']);
 
 
 //sản phẩm
@@ -219,19 +214,20 @@ Route::group(['prefix' => 'cus-products'], function () {
     Route::get('/categories', [CustomerProductsController::class, 'categories']);
     Route::get('/newProducts', [CustomerProductsController::class, 'newProducts']);
     Route::get('/hotProducts', [CustomerProductsController::class, 'hotProducts']);
+    Route::get('/bestProduct', [CustomerProductsController::class, 'bestProduct']);
     Route::get('/relatedProducts', [CustomerProductsController::class, 'relatedProducts']);
     Route::get('/showDetail', [CustomerProductsController::class, 'showDetail']);
     Route::get('/showTypeCategories', [CustomerProductsController::class, 'showTypeCategories']);
     Route::get('/showCategories', [CustomerProductsController::class, 'showCategories']);
     Route::get('/search', [CustomerProductsController::class, 'search']);
     Route::get('/searchProducts', [CustomerProductsController::class, 'searchProducts']);
-
     //đăng kí tài khoản
     Route::post('/signupCus', [CustomerUserController::class, 'signupCus']);
     // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
 });
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('/send-email', 'App\Http\Controllers\MailController@sendEmail');
+    Route::post('/send-email', [MailController::class, 'sendEmail']);
+    Route::post('/rating', [CustomerProductsController::class, 'rating']);
 });
 
 //giỏ hàng// 
@@ -255,6 +251,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'customerAddresses'], function () {
         Route::resource('/', CustomerAddressesController::class);
         Route::get('/{id}', [CustomerAddressesController::class, 'show']);
+        Route::put('/{id}', [CustomerAddressesController::class, 'update']);
 
         // Route::put('/{id}/{scope}', [CustomerAddressesController::class, 'update']);
         // Route::delete('/{id}', [CustomerAddressesController::class, 'destroy']);
@@ -329,10 +326,9 @@ Route::post('/messages', [MessageController::class, 'store']);
 
 Route::post('/signup', [UsersController::class, 'signup']);
 
-
+// Route::get('/login1',  [AuthController::class, 'showLoginForm'])->name('login');
 
 Route::post('/login', [AuthController::class, 'login']);
-
 
 Route::get('/confirm-account/{token}', [CustomerUserController::class, 'confirmAccount']);
 
@@ -341,6 +337,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'logged_user']);
     Route::post('/edit-user', [AuthController::class, 'edit_user']);
+    Route::post('/changePassword', [AuthController::class, 'changePassword']);
 
     // Route::get('/user', function (Request $request) {
     //     return $request->user();

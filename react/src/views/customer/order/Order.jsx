@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import axiosClient from "../../../axios-client-customer";
 import { API, API_IMAGES } from "../../../API";
 import Loading from "../../../components/Loading";
+import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
 
 const Order = () => {
   const { tokenCustomer, user } = useStateContext();
@@ -89,117 +90,139 @@ const Order = () => {
       });
   }, [typeOrder]);
   console.log(orders);
-  // console.log(orders.length > 0 ? orders[0].order_detail[0].price : "");
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Đơn đặt hàng"
+    },
+  ];
   return (
-    <div className="cs-container">
-      {loading && tokenCustomer && user && <Loading />}
+    <>
+       <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
+      <div className="cs-container">
+     
 
-      <div className="flex gap-4 overflow-x-auto py-2 px-2 shadow">
-        {orderButton.map((order) => (
-          <div
-            className={`${
-              selectedTab === order.id ? "border-b-2 border-red-800" : ""
-            } cursor-pointer font-semibold  py-2`}
-            key={order.id}
-            onClick={() => handelClick(order)}
-            header={order.textButton}
-          >
-            <div>{order.textButton}</div>
-          </div>
-        ))}
-      </div>
-      <div>
-        {orders.length > 0
-          ? orders.map((order) => (
+        {loading && tokenCustomer && user && <Loading />}
+
+        <div className="flex gap-4 overflow-x-auto py-2 px-2 shadow">
+          {orderButton.map((order) => (
+            <div
+              className={`${
+                selectedTab === order.id ? "border-b-2 border-red-800" : ""
+              } cursor-pointer font-semibold  py-2`}
+              key={order.id}
+              onClick={() => handelClick(order)}
+              header={order.textButton}
+            >
+              <div>{order.textButton}</div>
+            </div>
+          ))}
+        </div>
+        <div>
+          {orders.length > 0 ? (
+            orders.map((order) => (
               <Link
                 to={`chitietdonhang/${order.orderId}`}
                 key={order.orderId}
                 className="hover:bg-blue-100  no-underline cursor-pointer border p-2 flex items-center gap-4 mt-2"
               >
                 {order.order_detail.length > 0 ? (
-                    <>
-                      <div className="min-w-[2rem] max-w-[6rem]">
-                        <img
-                          className="w-full"
-                          src={`${API_IMAGES}/${order.order_detail[0].product.avatar}`}
-                          alt=""
-                        />
-                      </div>
-                      <div className="w-full">
-                        <h4 className="hidden lg:block text-lg text-black">
-                          {order.order_detail[0].product.name}
-                        </h4>
-                        <h4 className="lg:hidden block text-lg">
-                          {order.order_detail[0].product.name.length > 18
-                            ? order.order_detail[0].product.name.substring(
-                                0,
-                                18
-                              ) + "..."
-                            : order.order_detail[0].product.name}
-                        </h4>
-                        <h2 className="text-lg font-semibold text-yellow-500">
-                          x{order.order_detail[0].quantity}
-                        </h2>
+                  <>
+                    <div className="min-w-[2rem] max-w-[6rem]">
+                      <img
+                        className="w-full"
+                        src={`${API_IMAGES}/${order.order_detail[0].product.avatar}`}
+                        alt=""
+                      />
+                    </div>
+                    <div className="w-full">
+                      <h4 className="hidden lg:block text-lg text-black">
+                        {order.order_detail[0].product.name}
+                      </h4>
+                      <h4 className="lg:hidden block text-lg">
+                        {order.order_detail[0].product.name.length > 18
+                          ? order.order_detail[0].product.name.substring(
+                              0,
+                              18
+                            ) + "..."
+                          : order.order_detail[0].product.name}
+                      </h4>
+                      <h2 className="text-lg font-semibold text-yellow-500">
+                        x{order.order_detail[0].quantity}
+                      </h2>
 
-                        <div className="grid lg:grid-cols-2  grid-cols-1 gap-3">
-                          <div className="flex flex-col gap-3">
-                            <h1 className="text-xl font-bold leading-3 text-gray-600 ">
-                              Trọng lượng:{" "}
-                              <span className="font-normal">
-                                {order.order_detail[0].product.product_size[0].weight}{" "}
-                          {order.order_detail[0].product.product_size[0].unit.name}
-                              </span>
-                            </h1>
-                            <h1 className="text-xl font-bold leading-3  text-gray-600 ">
-                              Loại:{" "}
-                              <span className="font-normal">
-                                {
-                                  order.order_detail[0].product.product_type
-                                    .name
-                                }
-                              </span>
-                            </h1>
-                          </div>
-                          <div className="flex flex-col gap-3">
-                            <h1 className="text-xl font-bold leading-3 text-gray-600 ">
-                              Kích thước:{" "}
-                              <span className="font-normal">
-                                {order.order_detail[0].sizeValue}{" "}
-                              </span>
-                            </h1>
-                            <h1 className="text-xl font-bold leading-3 text-gray-600 ">
-                              Đơn giá:{" "}
-                              <span className="font-normal">
-                                {new Intl.NumberFormat({
-                                  style: "currency",
-                                  currency: "JPY",
-                                }).format(order.order_detail[0].price)}
-                                <span> VNĐ</span>
-                              </span>
-                            </h1>
-                          </div>
+                      <div className="grid lg:grid-cols-2  grid-cols-1 gap-3">
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                            Trọng lượng:{" "}
+                            <span className="font-normal">
+                              {
+                                order.order_detail[0].product.product_size[0]
+                                  .weight
+                              }{" "}
+                              {
+                                order.order_detail[0].product.product_size[0]
+                                  .unit.name
+                              }
+                            </span>
+                          </h1>
+                          <h1 className="text-xl font-bold leading-3  text-gray-600 ">
+                            Loại:{" "}
+                            <span className="font-normal">
+                              {order.order_detail[0].product.product_type.name}
+                            </span>
+                          </h1>
                         </div>
-                        <div>
-                          <h1 className="text-left md:text-right block text-xl font-bold leading-3 text-gray-600 ">
-                            Tổng:{" "}
-                            <span className="font-normal text-red-800">
+                        <div className="flex flex-col gap-3">
+                          <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                            Kích thước:{" "}
+                            <span className="font-normal">
+                              {order.order_detail[0].sizeValue}{" "}
+                            </span>
+                          </h1>
+                          <h1 className="text-xl font-bold leading-3 text-gray-600 ">
+                            Đơn giá:{" "}
+                            <span className="font-normal">
                               {new Intl.NumberFormat({
                                 style: "currency",
                                 currency: "JPY",
-                              }).format(order.totalAmount)}
+                              }).format(order.order_detail[0].price)}
                               <span> VNĐ</span>
                             </span>
                           </h1>
                         </div>
                       </div>
-                    </>
-                  ) : ""}
+                      <div>
+                        <h1 className="text-left md:text-right block text-xl font-bold leading-3 text-gray-600 ">
+                          Tổng:{" "}
+                          <span className="font-normal text-red-800">
+                            {new Intl.NumberFormat({
+                              style: "currency",
+                              currency: "JPY",
+                            }).format(order.totalAmount)}
+                            <span> VNĐ</span>
+                          </span>
+                        </h1>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  ""
+                )}
                 {/* <h1>{order.order_detail[0].price}</h1> */}
               </Link>
             ))
-          : <h4 className="text-center mt-2">Hiện tại không có đơn hàng nào </h4> }
+          ) : (
+            <h4 className="text-center mt-2">
+              Hiện tại không có đơn hàng nào{" "}
+            </h4>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

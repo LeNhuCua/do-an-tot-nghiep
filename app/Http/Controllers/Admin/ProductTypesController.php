@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\ProductType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -84,7 +85,7 @@ class ProductTypesController extends Controller
         ];
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:50',
-      
+
         ], $messages);
 
         if ($validator->fails()) {
@@ -102,7 +103,7 @@ class ProductTypesController extends Controller
                 // $category->name = $request->name;
                 // $category->alias = $request->alias;
                 // $category->save();
-                
+
                 $category->update($request->all());
 
                 // $loaiSanPhams = ProductType::where('categoryId', $category->categoryId)->get();
@@ -147,7 +148,7 @@ class ProductTypesController extends Controller
 
     public function importExcel(Request $request)
     {
-      
+
         try {
             $file = $request->file('file');
             $reader = IOFactory::createReaderForFile($file->getPathname());
@@ -163,23 +164,37 @@ class ProductTypesController extends Controller
                 if ($index === 0) { // Skip header row
                     continue;
                 }
+                $productTypeName = ProductType::where('name', $row[1])->first();
+                $productTypeId = ProductType::where('productTypeId', $row[0])->first();
+                if ($productTypeName) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'Tên loại sản phẩm ' . $row[0] . ' tại dòng thứ ' . $index . ' đã tồn tại. Vui lòng nhập tên khác',
+                    ]);
+                    break;
+                } else if ($productTypeId) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'Mã loại sản phẩm ' . $row[0] . ' tại dòng thứ ' . $index . ' đã tồn tại. Vui lòng nhập tên khác',
+                    ]);
+                    break;
+                } else {
+                    $dataToSave[] = [
+                        'productTypeId' => $row[0],
+                        'name' => $row[1],
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ];
+                    // Save data to database using Eloquent
+                    ProductType::insert($dataToSave);
 
-                $dataToSave[] = [
-                    'productTypeId' => $row[0],
-                    'name' => $row[1],
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ];
+                    // Return response to frontend
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Thành công',
+                    ]);
+                }
             }
-
-            // Save data to database using Eloquent
-            ProductType::insert($dataToSave);
-
-            // Return response to frontend
-            return response()->json([
-                'status' => 200,
-                'message' => 'Thành công',
-            ]);
         } catch (\Exception $e) {
             // Handle errors
             return response()->json([

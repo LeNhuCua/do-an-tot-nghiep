@@ -11,6 +11,7 @@ import { cilBell, cilLockLocked, cilUser } from "@coreui/icons";
 import axiosClient from "../../../axios-client";
 import { useStateContext } from "../../../context/ContextProvider";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { API_IMAGES } from "../../../API";
 
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -22,7 +23,7 @@ export default function BasicMenu() {
     setAnchorEl(null);
   };
 
-  const { setUser, setToken, token } = useStateContext();
+  const { setUser, setToken, token ,user} = useStateContext();
   const navi = useNavigate();
   const onLogout = (ev) => {
     ev.preventDefault();
@@ -37,7 +38,10 @@ export default function BasicMenu() {
   return (
     <div>
       <div onClick={handleClick} className="hover:cursor-pointer">
-        <CAvatar src={avatar} size="md" />
+        {
+          user ? <CAvatar src={`${API_IMAGES}/${user.avatar}`} size="md" /> :    <CAvatar src={avatar} size="md" />
+        }
+     
       </div>
 
       <Menu

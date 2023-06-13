@@ -33,7 +33,10 @@ class AuthController extends Controller
 
 
 
-
+    public function showLoginForm()
+    {
+        return view('login');
+    }
 
 
     public function  edit_user(Request $request)
@@ -96,6 +99,41 @@ class AuthController extends Controller
         }
     }
 
+    public function changePassword(Request $request)
+    {
+        // Xác thực người dùng
+        $user = Auth::user();
+        $userId = Auth::user()->userId;
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Kiểm tra mật khẩu hiện tại
+        if (!Hash::check($request->input('current_password'), $user->password)) {
+            return response()->json(
+                [
+                    'message' => 'Mật khẩu cũ không đúng',
+                    'status' => 400
+                ]
+            );
+        }
+
+        // Cập nhật mật khẩu mới
+        $userUpdate = User::find($userId);
+        $userUpdate->password = Hash::make($request->input('new_password'));
+        $userUpdate->save();
+
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Đổi mật khẩu thành công!!',
+            'userUpdate' => $userUpdate,
+
+
+
+        ]);
+    }
 
 
 
@@ -163,10 +201,7 @@ class AuthController extends Controller
             'unique' => 'Trường :attribute đã tồn tại.',
             'email' => 'The :attribute phải là email',
         ];
-
-
         $credentials = $request->only('account', 'password');
-
         $validator = Validator::make($credentials, [
             'account' => 'required',
             'password' => 'required|min:3',
@@ -179,24 +214,29 @@ class AuthController extends Controller
                 'message' => 'Hay kiem tra lai thong tin dang nhap',
             ]);
         }
-        if (Auth::attempt($credentials)) {
+        if (Auth::guard('web')->attempt($credentials)) {
             $admin = Auth::user();
-
             if ($admin->confirmed) {
                 // Người dùng đã được xác nhận
                 $token = $admin->createToken('main')->plainTextToken;
                 $cookie = cookie('jwt', $token, 60 * 24); // 1 day
                 $user = User::find($admin->userId)->first();
-                $user->last_login_at = Carbon::now();
-                $user->save();
-               
-                return response()->json([
-                    'status' => 200,
-                    'username' => $user,
-                    'token' => $token,
-                    'message' => 'Đăng nhập thành công',
-                    'user' => $request->user()
-                ])->withCookie($cookie);
+                if ($admin->role_id !== 2) {
+                    $user->last_login_at = Carbon::now();
+                    $user->save();
+                    return response()->json([
+                        'status' => 200,
+                        'username' => $user,
+                        'token' => $token,
+                        'message' => 'Đăng nhập thành công',
+                        'user' => $request->user()
+                    ])->withCookie($cookie);
+                } else {
+                    return response()->json([
+                        'status' => 400,
+                        'message' => "Bạn không có quyền truy cập",
+                    ]);
+                }
             } else {
                 // Người dùng chưa được xác nhận
                 return response()->json([

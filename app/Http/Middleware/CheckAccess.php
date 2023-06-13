@@ -17,9 +17,8 @@ class CheckAccess
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = auth('sanctum') -> user();
-        dd($user);
-        if($user->userId === 1){
+        $user = Auth::user();
+        if($user){
             return $next($request);
         } else {
             return response('Bạn không có quyền truy cập vào trang này', 403);

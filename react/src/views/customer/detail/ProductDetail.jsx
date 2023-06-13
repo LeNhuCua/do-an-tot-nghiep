@@ -164,20 +164,19 @@ const ProductDetail = () => {
       </div>
     );
   };
-
+  const fetchDetailProduct = async () => {
+    try {
+      const { data } = await axios.get(
+        `${API}/api/cus-products/showDetail?alias=${alias}`
+      );
+      setDetailProduct(data.productDetail);
+      setDetailImagesProduct(data.productDetail[0].product_image);
+      setDetailSizesProduct(data.productDetail[0].product_size);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
-    const fetchDetailProduct = async () => {
-      try {
-        const { data } = await axios.get(
-          `${API}/api/cus-products/showDetail?alias=${alias}`
-        );
-        setDetailProduct(data.productDetail);
-        setDetailImagesProduct(data.productDetail[0].product_image);
-        setDetailSizesProduct(data.productDetail[0].product_size);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchDetailProduct();
   }, [alias]);
 
@@ -188,7 +187,7 @@ const ProductDetail = () => {
   if (detailProduct.length <= 0) {
     return <Loading />;
   }
-  console.log(detailSizesProduct);
+
   const ListBreadcrumb = [
     {
       name: detailProduct[0] ? detailProduct[0].type_category.name : "",
@@ -200,9 +199,46 @@ const ProductDetail = () => {
       name: detailProduct[0] ? detailProduct[0].name : "",
     },
   ];
-  //   const [position, setPosition] = useState('bottom');
+
+  // const [loadingRating,setLoadingRating] = useState(false);
+
+  const submitRating = async () => {
+
+    if(user && tokenCustomer) {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("productId", detailProduct[0].productId);
+      formData.append("rating", voteRating);
+      await axiosClient.post(`${API}/api/rating`, formData).then((response) => {
+        if (response.data.status === 400) {
+          fetchDetailProduct();
+          Swal.fire({
+            icon: "success",
+            text: "Cảm ơn bạn đã đánh giá",
+          });
+        } else {
+          Swal.fire({
+            icon: "info",
+            text: "Kiểm tra lại thông tin",
+          });
+        }
+      });
+    }else {
+      Swal.fire({
+        icon: "info",
+        text: "Bạn cần đăng nhập để gửi đánh giá",
+      });
+    }
+    setLoading(false);
+
+ 
+  };
+
   return (
     <div>
+      {
+        loading && <Loading/>
+      }
       <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
       <div className="cs-container  flex flex-col gap-16">
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-2">
@@ -393,9 +429,9 @@ const ProductDetail = () => {
                         <h3 className="text-red-600 text-lg">
                           Size:{" "}
                           <span className="text-gray-400">
-                            Liên hệ 0258 3826 952  để được tư
-                            vấn hoặc quý khách có thể tham khảo đo size trang
-                            sức <Link to="/huongdandosize">tại đây</Link> {" "}
+                            Liên hệ 0258 3826 952 để được tư vấn hoặc quý khách
+                            có thể tham khảo đo size trang sức{" "}
+                            <Link to="/huongdandosize">tại đây</Link>{" "}
                           </span>
                         </h3>
                       </div>
@@ -408,8 +444,9 @@ const ProductDetail = () => {
                   </div>
                 </TabPanel>
                 <TabPanel header="ĐÁNH GIÁ" rightIcon="pi pi-calendar ml-2">
+                  <h3 className="text-lg">Chọn số sao muốn đánh giá</h3>
                   <div
-                    className=" flex justify-content-center"
+                    className=" flex"
                     style={{ minHeight: "20rem" }}
                   >
                     <div className="">
@@ -417,12 +454,15 @@ const ProductDetail = () => {
                         value={voteRating}
                         onChange={(e) => setVoteRating(e.value)}
                       />
-                      <button className="xl:w-40 mt-4 flex justify-center items-center gap-2 py-2   border rounded-3xl bg-green-200 shadow-2xl hover:bg-gray-600 hover:text-yellow-400 transition-all duration-500">
+                      <button
+                        onClick={submitRating}
+                        className="w-full mt-4 flex justify-center items-center gap-2 py-2   border rounded-3xl bg-green-200 shadow-2xl hover:bg-gray-600 hover:text-yellow-400 transition-all duration-500"
+                      >
                         <AiOutlineSend />
                         <h1
-                          className="uppercase font-bold text-xl translate-y-1"
+                          className="uppercase font-bold text-xl translate-y-1 "
                           //   onClick={() => addToCart(findP, findP.id)}
-                        >
+                        > 
                           Gửi
                         </h1>
                       </button>

@@ -1,7 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { AiFillEdit, AiOutlineDelete, AiOutlineDownload, AiOutlinePlus } from "react-icons/ai";
+import {
+  AiFillEdit,
+  AiOutlineDelete,
+  AiOutlineDownload,
+  AiOutlinePlus,
+} from "react-icons/ai";
 import { CategoriesContext } from "../../../CategoriesContext";
 import axios from "axios";
 
@@ -19,38 +24,41 @@ import Tippy from "@tippyjs/react";
 import { BiShow } from "react-icons/bi";
 
 import { Toolbar } from "primereact/toolbar";
-import DataGrid from "../../../components/admin/datatable/DataGrid";
-import { MdDeleteForever } from "react-icons/md";
-import { DetailProductsType } from "../../../components/admin/productstype";
+
 import Loading from "../../../components/Loading";
-import UseTitle from "../../../hook/UseTitle";
+
 import { DataContext } from "../../../context/DataContext";
 import DataGridNoStatus from "../../../components/admin/datatable/DataGridNoStatus";
+import { DetailSize } from "../../../components/admin/sizes";
+import axiosClient from "../../../axios-client";
+import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
+import { CContainer, CHeaderDivider } from "@coreui/react";
+import { AppBreadcrumb } from "../../../layout/admin";
 
-const ProductsType = () => {
+const Sizes = () => {
   // UseTitle("Loại sản phẩm");
 
   const { state, dispatch } = useContext(DataContext);
 
-  const { productsType, products } = state;
+  const { sizes, products } = state;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (productsType.length === 0) {
-      fetchProductsType();
+    if (sizes.length === 0) {
+      fetchSizes();
     } else {
       setLoading(false);
     }
   }, []);
-  const fetchProductsType = async () => {
-    await axios.get(`${API}/api/productsType/`).then(({ data }) => {
-      dispatch({ type: "FETCH_PRODUCTSTYPE", payload: data });
+  const fetchSizes = async () => {
+    await axiosClient.get(`${API}/api/sizes/`).then(({ data }) => {
+      dispatch({ type: "FETCH_SIZES", payload: data });
       setLoading(false);
       console.log(data);
     });
   };
 
-  const ApiExcel = `${API}/api/productsType/importExcel`;
+  const ApiExcel = `${API}/api/sizes/importExcel`;
 
   //model
   const [visible, setVisible] = useState(false);
@@ -58,9 +66,7 @@ const ProductsType = () => {
   //detail
   const [detailFind, setDetailFind] = useState([]);
   const showDetail = async (id) => {
-    const getDetail = await productsType.find(
-      (productsType) => productsType.productTypeId === id
-    );
+    const getDetail = await sizes.find((sizes) => sizes.sizeId === id);
 
     if (getDetail) {
       setDetailFind(getDetail);
@@ -74,7 +80,7 @@ const ProductsType = () => {
     return (
       <>
         <Tippy content="Sửa">
-          <Link to={`/quantri/loaisanpham/chinhsua/${rowData.productTypeId}`}>
+          <Link to={`/quantri/kichthuoc/chinhsua/${rowData.sizeId}`}>
             <IconButton color="success" className="me-2 hover:ring-2 ">
               <AiFillEdit />
             </IconButton>
@@ -85,7 +91,7 @@ const ProductsType = () => {
           <IconButton
             color="primary"
             className="me-2 hover:ring-2 "
-            onClick={() => showDetail(rowData.productTypeId)}
+            onClick={() => showDetail(rowData.sizeId)}
           >
             <BiShow />
           </IconButton>
@@ -96,19 +102,19 @@ const ProductsType = () => {
 
   const col = [
     {
-      field: "productTypeId",
+      field: "sizeId",
       header: "Mã",
       filter: true,
     },
     {
-      field: "name",
-      header: "Tên",
+      field: "sizeValue",
+      header: "Kích thước",
       filter: true,
     },
 
     {
       field: "action",
-      header: "Action",
+      header: "Chức năng",
       filter: false,
       body: actionButtons,
     },
@@ -117,7 +123,7 @@ const ProductsType = () => {
     return (
       <div>
         <Tippy content="Thêm mới">
-          <Link className="block" to={"/quantri/loaisanpham/taomoi"}>
+          <Link className="block" to={"/quantri/kichthuoc/taomoi"}>
             <Fab className="z-0" color="primary" component="label">
               <AiOutlinePlus />
             </Fab>
@@ -126,8 +132,9 @@ const ProductsType = () => {
       </div>
     );
   };
+
   const handleDownload = () => {
-    const fileUrl = "/excel/loaisanpham.csv";
+    const fileUrl = "/excel/kichthuoc.csv";
 
     axios({
       url: fileUrl,
@@ -139,13 +146,14 @@ const ProductsType = () => {
         const downloadUrl = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = downloadUrl;
-        link.download = "Mau_Excel_LoaiSanPham.csv";
+        link.download = "Mau_Excel_KichThuoc.csv";
         link.click();
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi:", error);
       });
   };
+
   const rightToolbarTemplate = () => {
     return (
       <div className="flex gap-3">
@@ -164,11 +172,8 @@ const ProductsType = () => {
             disabled={!selectedData || !selectedData.length}
           ></Button>
         </div>
-        <UploadExcelForm
-          className=""
-          ApiExcel={ApiExcel}
-          fetch={fetchProductsType}
-        />{" "}
+
+        <UploadExcelForm className="" ApiExcel={ApiExcel} fetch={fetchSizes} />
         <Tippy content="Mẫu Excel">
           <Fab
             onClick={handleDownload}
@@ -187,17 +192,17 @@ const ProductsType = () => {
     let ids = [];
     for (let i = 0; i < arr.length; i++) {
       let obj = arr[i];
-      ids.push(obj.productTypeId);
+      ids.push(obj.sizeId);
     }
     return ids;
   }
 
   const deleteSelectedData = async () => {
-    let _products = productsType.filter((val) => selectedData.includes(val));
+    let _products = sizes.filter((val) => selectedData.includes(val));
     setSelectedData(_products);
     const isConfirm = await Swal.fire({
-      title: `Bạn có chắc muốn xoá  ?`,
-      text: "Xoá các danh mục này sẽ xoá đi toàn bộ sản phẩm thuộc danh mục này có trong cửa hàng. Bạn sẽ không thể hoàn tác!",
+      title: `Bạn có chắc muốn xoá ?`,
+      text: "Xoá các kích thước này sẽ xoá đi toàn bộ sản phẩm thuộc kích thước này có trong cửa hàng. Bạn sẽ không thể hoàn tác!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -210,23 +215,23 @@ const ProductsType = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
-      .delete(`${API}/api/productsType/deleteAll`, {
+    await axiosClient
+      .delete(`${API}/api/sizes/deleteAll`, {
         data: {
           dataId: getIds(selectedData),
         },
       })
       .then(() => {
         dispatch({
-          type: "SET_PRODUCTSTYPE",
-          payload: productsType.filter(
-            (product) => !getIds(selectedData).includes(product.productTypeId)
+          type: "SET_SIZES",
+          payload: sizes.filter(
+            (product) => !getIds(selectedData).includes(product.sizeId)
           ),
         });
         dispatch({
           type: "SET_PRODUCTS",
           payload: products.filter(
-            (product) => !getIds(selectedData).includes(product.productTypeId)
+            (product) => !getIds(selectedData).includes(product.sizeId)
           ),
         });
         setSelectedData([]);
@@ -238,8 +243,21 @@ const ProductsType = () => {
       .catch((err) => console.log(err));
   };
 
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Quản lý kích thước",
+    },
+  ];
   return (
     <div className="relative">
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+
+      {/* <Breadcrumb ListBreadcrumb={ListBreadcrumb} /> */}
+
       {loading && <Loading />}
       {!loading && (
         <>
@@ -251,12 +269,12 @@ const ProductsType = () => {
           <DataGridNoStatus
             selectedData={selectedData}
             setSelectedData={setSelectedData}
-            data={productsType}
+            data={sizes}
             col={col}
           />
 
           {Object.keys(detailFind).length ? (
-            <DetailProductsType
+            <DetailSize
               detailFind={detailFind}
               visible={visible}
               setVisible={setVisible}
@@ -270,4 +288,4 @@ const ProductsType = () => {
   );
 };
 
-export default ProductsType;
+export default Sizes;

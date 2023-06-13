@@ -25,6 +25,7 @@ import DataGrid from "../../../components/admin/datatable/DataGrid";
 import { MdDeleteForever } from "react-icons/md";
 import Loading from "../../../components/Loading";
 import { DataContext } from "../../../context/DataContext";
+import axiosClient from "../../../axios-client";
 
 const Categories = () => {
   const { state, dispatch } = useContext(DataContext);
@@ -42,7 +43,7 @@ const Categories = () => {
   }, []);
 
   const fetchCategories = async () => {
-    await axios.get(`${API}/api/categories/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/categories/`).then(({ data }) => {
       dispatch({ type: "FETCH_CATEGORIES", payload: data });
       setLoading(false);
     });

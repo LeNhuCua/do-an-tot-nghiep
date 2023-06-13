@@ -28,6 +28,57 @@ class CustomerAddressesController extends Controller
             'customerAddress' => $customerAddress
         ]);
     }
+
+    public function update(Request $request, $addressId)
+    {
+
+        $messages = [
+            'required' => 'Trường :attribute phải nhập',
+
+        ];
+        $validator = Validator::make($request->all(), [
+           
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'validation_error' => $validator->errors(),
+                'message' => 'Kiểm tra lại thông tin',
+
+            ]);
+        } else {
+            try {
+
+                $customerAddress = CustomerAddress::findOrFail($addressId);
+                // $customerAddress->recipientName = $request->recipientName;
+                // $customerAddress->recipientAddress = $request->recipientAddress;
+                // $customerAddress->recipientPhone = $request->recipientPhone;
+                // $customerAddress->provinceId = $request->provinceId;
+                // $customerAddress->districtId = $request->districtId;
+                // $customerAddress->wardId = $request->wardId;
+                // $customerAddress->save();
+
+                $customerAddress->update($request->all());
+
+
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'Product Updated Successfully!!',
+                    'customerAddress' => $customerAddress
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Gặp lỗi khi cập nhật!!',
+                    'eee' => 'Lỗi: ' . $e->getMessage(),
+                    'status' => 201,
+
+                ]);
+            }
+        }
+    }
+
+
+
     public function store(Request $request)
     {
         $messages = [

@@ -67,6 +67,11 @@ const _nav = [
         name: "Đơn vị tính",
         to: "/quantri/donvitinh",
       },
+      {
+        component: CNavItem,
+        name: "Kích cỡ",
+        to: "/quantri/kichthuoc",
+      },
       // {
       //   component: CNavItem,
       //   name: "Loại sản phẩm",
@@ -191,7 +196,6 @@ const _nav = [
         name: "Đơn hàng đã huỷ",
         to: "/quantri/donhangdahuy",
       },
-      
     ],
   },
   // {

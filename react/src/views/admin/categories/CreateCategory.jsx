@@ -16,6 +16,7 @@ import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias";
 import { DataContext } from "../../../context/DataContext";
 
 import { Toast } from "primereact/toast";
+import axiosClient from "../../../axios-client.js";
 
 export default function CreateCategory() {
   const {
@@ -45,7 +46,7 @@ export default function CreateCategory() {
       formData.append("alias", convertNameWithoutAccents(data.name));
       formData.append("status", statusSelect ? statusSelect.code : 1);
     }
-    await axios.post(`${API}/api/categories`, formData).then((response) => {
+    await axiosClient.post(`${API}/api/categories`, formData).then((response) => {
       if (response.data.status === 400) {
         const createCategory = {
           categoryId: data.categoryId.toUpperCase(),

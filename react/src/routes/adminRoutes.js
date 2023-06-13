@@ -45,6 +45,11 @@ const Units = React.lazy(() => import("../views/admin/units/Units"));
 const CreateUnit = React.lazy(() => import("../views/admin/units/CreateUnit"));
 const EditUnit = React.lazy(() => import("../views/admin/units/EditUnit"));
 
+// KÍCH THƯỚC
+const Sizes = React.lazy(() => import("../views/admin/sizes/Sizes"));
+const CreateSize = React.lazy(() => import("../views/admin/sizes/CreateSize"));
+const EditSize = React.lazy(() => import("../views/admin/sizes/EditSize"));
+
 //SẢN PHẨM
 const Products = React.lazy(() => import("../views/admin/products/Products"));
 const CreateProduct = React.lazy(() =>
@@ -64,23 +69,16 @@ const EditSlide = React.lazy(() => import("../views/admin/slides/EditSlide"));
 //HOÁ ĐƠN
 const Invoices = React.lazy(() => import("../views/admin/invoices/Invoices"));
 
-
 const SalesReport = React.lazy(() =>
   import("../views/admin/totalrevenue/TotalRevenue")
 );
 
 //xử lí đơn hàng
-const OrderNew = React.lazy(() =>
-  import("../views/admin/order/OrderNew")
-);
+const OrderNew = React.lazy(() => import("../views/admin/order/OrderNew"));
 
 const OrdersBeingProcessed = React.lazy(() =>
   import("../views/admin/order/OrdersBeingProcessed")
 );
-
-
-
-
 
 // NGười dùng quản trị
 const Users = React.lazy(() => import("../views/admin/users/Users"));
@@ -122,8 +120,8 @@ const routes = [
   { path: "/danhmuc/taomoi", name: "Tạo danh mục", element: CreateCategory },
   {
     path: "/danhmuc/chinhsua/:id",
-    name: "Danh mục sửa",
     element: EditCategory,
+    name: "Danh mục sửa",
   },
 
   //DANH MỤC CON
@@ -162,6 +160,15 @@ const routes = [
     element: EditUnit,
   },
 
+  //ĐƠN VỊ TÍNH
+  { path: "/kichthuoc", name: "Kích thước", element: Sizes },
+  { path: "/kichthuoc/taomoi", name: "Tạo kích thước", element: CreateSize },
+  {
+    path: "/kichthuoc/chinhsua/:id",
+    name: "Cập nhật kích thước",
+    element: EditSize,
+  },
+
   //SAN PHAM
   { path: "/sanpham", name: "Sản phẩm", element: Products },
   { path: "/sanpham/taomoi", name: "Tạo  sản phẩm", element: CreateProduct },
@@ -183,15 +190,16 @@ const routes = [
   //Lap hoa don
   { path: "/laphoadon", name: "Lập hoá đơn", element: Invoices },
 
-
   //THỐNG KÊ
   { path: "/thongke", name: "Thống kê", element: SalesReport },
 
   //
   { path: "/donhangmoi", name: "Đơn hàng mới", element: OrderNew },
-  { path: "/donhangdangxuly", name: "Đơn hàng đang xử lý", element: OrdersBeingProcessed },
-
-  
+  {
+    path: "/donhangdangxuly",
+    name: "Đơn hàng đang xử lý",
+    element: OrdersBeingProcessed,
+  },
 
   // { path: '/thongtincanhan/chinhsua', name: 'Chỉnh sửa', element: EditProfile },
 ];

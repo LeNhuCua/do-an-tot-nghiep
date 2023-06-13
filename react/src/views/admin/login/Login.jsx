@@ -35,20 +35,11 @@ const Login = () => {
 
     axiosClient.post(`/login`, payload).then((res) => {
       if (res.data.status === 200) {
-        if (
-          res.data.user.role.name === "Admin" ||
-          res.data.user.role.name === "Manager"
-        ) {
-          setToken(res.data.token);
-          setUser(res.data.username);
-          navigate("/quantri");
-        } else {
-          Swal.fire({
-            icon: "error",
-            text: "Bạn không có quyền truy cập vào trang này",
-          });
-          navigate("/quantri/dangnhap");
-        }
+        setToken(res.data.token);
+        setUser(res.data.username);
+        navigate("/quantri");
+
+        // navigate("/quantri/dangnhap");
       } else if (res.data.status === 401) {
         setMessage([]);
         Swal.fire({

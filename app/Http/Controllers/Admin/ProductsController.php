@@ -19,7 +19,7 @@ class ProductsController extends Controller
 {
     public function index()
     {
-        $posts = Product::orderBy("productId", "desc")->get();
+        $posts = Product::orderBy("created_at", "desc")->get();
         return $posts;
     }
 
@@ -70,10 +70,9 @@ class ProductsController extends Controller
 
         ];
         $validator = Validator::make($request->all(), [
-            'alias' => 'required',
+           
             'name' => 'required|unique:products',
             'avatar' => 'required',
-            'number' => 'required',
             'productTypeId' => 'required',
             'typeCategoryId' => 'required',
             'status' => 'required',

@@ -1,19 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../../context/DataContext";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { BsArrowBarRight } from "react-icons/bs";
 import Loading from "../../../components/Loading";
 import { API, API_IMAGES } from "../../../API";
-import { BiArrowBack } from "react-icons/bi";
+
 import UseTitle from "../../../hook/UseTitle";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { CCol, CForm } from "@coreui/react";
-import { InputText } from "primereact/inputtext";
+import { CForm } from "@coreui/react";
 import { Controller, useForm } from "react-hook-form";
-import { InputTextarea } from "primereact/inputtextarea";
-import { TabView, TabPanel } from "primereact/tabview";
-import Address from "../../../components/customer/checkout/Address";
 import Swal from "sweetalert2";
 import axios from "axios";
 import axiosClient from "../../../axios-client-customer";
@@ -21,7 +17,7 @@ import { RadioButton } from "primereact/radiobutton";
 import CreateCustomerAddress from "../../../components/customer/checkout/CreateCustomerAddress";
 import { Dropdown } from "primereact/dropdown";
 import { classNames } from "primereact/utils";
-import SendEmail from "./SendEmail";
+
 import ReactDOMServer from "react-dom/server";
 import { useStateContext } from "../../../context/ContextProvider";
 import { DataTable } from "primereact/datatable";
@@ -30,22 +26,24 @@ import { AiOutlineInfoCircle } from "react-icons/ai";
 import { Checkbox } from "primereact/checkbox";
 import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
 
+import UpdateCustomerAddress from "../../../components/customer/checkout/UpdateCustomerAddress";
+import FormatDate from "../../../hook/FormatDate/FormatDate";
+
 const CheckOut = () => {
   UseTitle("Đặt hàng");
   const {
-    register,
     handleSubmit,
     formState: { errors },
-    reset,
-    trigger,
-    setValue,
-    form,
+
     control,
   } = useForm({
     mode: "onChange",
   });
+
   const { state, dispatch } = useContext(DataContext);
   const { checkoutProducts, customerAddresses, orderNews } = state;
+  const { tokenCustomer, user } = useStateContext();
+
   let totalQuantity = 0;
   checkoutProducts.forEach(function (selected) {
     totalQuantity += selected.quantity;
@@ -72,9 +70,9 @@ const CheckOut = () => {
   }, []);
 
   console.log(checkoutProducts);
-  // if (checkoutProducts.length <= 0) {
-  //   return <Navigate to="/giohang" />;
-  // }
+  if (checkoutProducts.length <= 0) {
+    return <Navigate to="/giohang" />;
+  }
 
   const [visible, setVisible] = useState(false);
   const [addAddress, setAddAddress] = useState(false);
@@ -177,7 +175,7 @@ const CheckOut = () => {
       <small className="">&nbsp;</small>
     );
   };
-  const { user } = useStateContext();
+
   const weightTemplate = (cart) => {
     return (
       <span className="">
@@ -259,53 +257,29 @@ const CheckOut = () => {
       .post(`${API}/api/cus-order`, formData)
       .then((response) => {
         if (response.data.status === 400) {
-          // const resData = response.data.order;
-          // const order_Details = response.data.order_Details;
-          // const shippingFee = response.data.shippingFee;
-          // const shippingAddress = response.data.shippingAddress;
-          // const orderNew = {
-          //   orderId: resData.orderId,
-          //   totalAmount: resData.totalAmount,
-          //   orderStatusId: resData.orderStatusId,
-          //   deliveryDate: resData.deliveryDate,
-          //   paymentMethodId: resData.paymentMethodId,
-          //   shippingMethodId: resData.shippingMethodId,
-          //   created_at: resData.created_at,
-          //   customer_address: {
-          //     recipientAddress: shippingAddress.recipientAddress,
-          //     recipientName: shippingAddress.recipientName,
-          //     recipientPhone: shippingAddress.recipientPhone,
-          //     shippingAddressId: shippingAddress.shippingAddressId,
-          //     province: {
-          //       provinceId: shippingAddress.provinceId,
-          //       name: selectedAddress.province.name,
-          //     },
-          //     district: {
-          //       districtId: shippingAddress.districtId,
-          //       name: selectedAddress.district.name,
-          //     },
-          //     ward: {
-          //       wardId: shippingAddress.wardId,
-          //       name: selectedAddress.ward.name,
-          //     },
-          //   },
-          //   order_detail: order_Details.map((order_Detail) => ({
-          //     orderDetailId: order_Detail.orderDetailId,
-          //     price: order_Detail.price,
-          //     quantity: order_Detail.quantity,
-          //     sizeValue: order_Detail.sizeValue,
-          //   })),
-          // };
-          // // dispatch({ type: "ADD_NEW_ORDER", payload: orderNew });
-
-          // console.log(dispatch({ type: "ADD_NEW_ORDER", payload: orderNew }))
+          const dataOrder = response.data.order;
           const emailData = new FormData();
           emailData.append("subject", "Đặt hàng thành công tại Kim Huy");
           const content = ReactDOMServer.renderToString(
             <div>
+              <span> {FormatDate(dataOrder.created_at)}</span>
               <h1 className="font-bold text-sm">
                 Xin chào {user.fullName}, cảm ơn bạn đã đặt hàng!{" "}
               </h1>
+              <h3>
+                <span>Mã đơn hàng của bạn: {dataOrder.orderId}</span>
+              </h3>
+              <h3>
+                <span>
+                  Tiền đặt cọc phải trả là:{" "}
+                  {new Intl.NumberFormat({
+                    style: "currency",
+                    currency: "JPY",
+                  }).format(dataOrder.deposits)}
+                  <span> VNĐ</span>
+                </span>{" "}
+                {}
+              </h3>
               <div>
                 <div className="flex gap-2">
                   <div className="flex gap-2">
@@ -445,6 +419,7 @@ const CheckOut = () => {
 
   const [openUpdate, setOpenUpdate] = useState(false);
   const [updateAddress, setUpdateAddress] = useState({});
+
   const submitUpdateAddress = async (id) => {
     await axiosClient
       .get(`${API}/api/customerAddresses/${id}`)
@@ -472,15 +447,22 @@ const CheckOut = () => {
       <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
       <div className="card flex justify-content-center">
         <Dialog
-          header="Header"
+          header="Cập nhật địa chỉ giao hàng"
           visible={openUpdate}
-          style={{ width: "50vw" }}
+          className="w-[90%] h-[80vh] xl:w-2/3"
           onHide={() => setOpenUpdate(false)}
         >
-          <div className="m-0">
-            {" "}
-            {updateAddress ? <h2>{updateAddress.recipientAddress}</h2> : ""}
-            <h1></h1>
+          <div className="m-0 row g-4">
+            <UpdateCustomerAddress
+              setAddAddress={setAddAddress}
+              setLoading={setLoading}
+              handleDataChange={handleDataChange}
+              parentProvince={parentProvince ? parentProvince : ""}
+              parentDistrict={parentDistrict ? parentDistrict : ""}
+              parentWard={parentWard ? parentWard : ""}
+              updateAddress={updateAddress}
+              setOpenUpdate={setOpenUpdate}
+            />
           </div>
         </Dialog>
       </div>
@@ -501,9 +483,13 @@ const CheckOut = () => {
                   <h2 className="text-lg lg:text-sm text-bold">
                     {selectedAddress !== "" && selectedAddress ? (
                       <div>
-                        {selectedAddress.recipientName}
-                        {" | "}
-                        {selectedAddress.recipientPhone}{" "}
+                        <span className="lg:text-lg">
+                          {" "}
+                          {selectedAddress.recipientName}
+                          {" | "}
+                          {selectedAddress.recipientPhone}{" "}
+                        </span>
+
                         <span className="text-base lg:ml-16 font-normal lg:text-lg">
                           {selectedAddress.recipientAddress} {", "}
                           {selectedAddress.ward.name} {" - "}
@@ -872,19 +858,23 @@ const CheckOut = () => {
                           </p>
                         </div>
                         <div className="pb-2">
-                          <div className="bg-red-300">
+                          <div className="bg-red-300 p-1 rounded">
                             <div className="flex gap-2 items-center">
                               <AiOutlineInfoCircle />{" "}
                               <span>Thông tin tài khoản ngân hàng</span>
                             </div>
                             <p>- Số tài khoản: 105872540327</p>
-                            <p>- Tên chủ thể: Lê Như Của</p>
+                            <p>- Tên chủ thẻ: Lê Như Của</p>
                             <p>- Ngân hàng: VietinBank</p>
                           </div>
                           <div>
                             <div className="flex gap-2 items-center">
                               <AiOutlineInfoCircle /> <span>Điều khoản</span>
                             </div>
+                            <p>
+                              - Phí ship giao hàng được tính dựa trên địa chỉ
+                              của bạn
+                            </p>
                             <p>
                               - Vui lòng chờ chúng tôi xác nhận hàng và thông
                               tin về tiền đặt cọc chúng tôi sẽ hỗ trợ cho bạn

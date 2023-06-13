@@ -36,14 +36,11 @@ const reducer = (state, action) => {
         ...state,
         totalCart: action.payload,
       };
-      case "SET_TOTAL_CART":
-        return {
-          ...state,
-          totalCart: action.payload,
-        };
-
-
-
+    case "SET_TOTAL_CART":
+      return {
+        ...state,
+        totalCart: action.payload,
+      };
 
     case "FETCH_NEW_ORDER":
       return {
@@ -244,6 +241,17 @@ const reducer = (state, action) => {
         ...state,
         sizes: action.payload,
       };
+    case "SET_SIZES":
+      return {
+        ...state,
+        sizes: action.payload,
+      };
+
+    case "ADD_SIZE":
+      return {
+        ...state,
+        sizes: [action.payload, ...state.sizes],
+      };
 
     //products
     case "FETCH_PRODUCTS":
@@ -354,7 +362,7 @@ const reducer = (state, action) => {
         ...state,
         customerAddresses: [action.payload, ...state.customerAddresses],
       };
-    case "UPDATE_SLIDE":
+    case "UPDATE_CUSTOMER_ADDRESS":
       const updatedCustomerAddresses = state.customerAddresses.map(
         (customerAddress) =>
           customerAddress.addressId === action.payload.addressId

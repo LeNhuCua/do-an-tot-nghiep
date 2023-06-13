@@ -8,6 +8,9 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('ACCESS_TOKEN');
   config.headers.Authorization = `Bearer ${token}`
+  config.headers.Accept = "application/json"
+
+
   // config.headers.Accept = 'Access-Control-Allow-Origin'
   // config.headers['Access-Control-Allow-Origin'] = '*';
   return config;

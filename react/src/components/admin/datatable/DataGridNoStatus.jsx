@@ -36,6 +36,8 @@ export default function DataGridNoStatus(props) {
     alias: { value: null, matchMode: FilterMatchMode.CONTAINS },
     categoryId: { value: null, matchMode: FilterMatchMode.CONTAINS },
     productId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    sizeId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    sizeValue: { value: null, matchMode: FilterMatchMode.CONTAINS },
     "category.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
     "subcategory.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
     // : { value: null, matchMode: FilterMatchMode.CONTAINS },

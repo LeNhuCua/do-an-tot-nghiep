@@ -23,10 +23,10 @@ const Breadcrumb = ({ ListBreadcrumb }) => {
               Trang chủ
             </Link>
           </li>
-          {ListBreadcrumb.map((breadcrumb) => {
+          {ListBreadcrumb.map((breadcrumb,index) => {
             if (breadcrumb.link == null)
               return (
-                <li aria-current="page">
+                <li key={index} aria-current="page">
                   <div className="flex items-center">
                     <svg
                       aria-hidden="true"
@@ -48,7 +48,7 @@ const Breadcrumb = ({ ListBreadcrumb }) => {
                 </li>
               );
             return (
-              <li>
+              <li key={index}>
                 <div className="flex items-center">
                   <svg
                     aria-hidden="true"

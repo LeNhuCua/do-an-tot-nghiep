@@ -9,6 +9,9 @@ import { useStateContext } from "../../../context/ContextProvider";
 
 import axiosClient from "../../../axios-client-customer";
 import axios from "axios";
+import { API } from "../../../API";
+import logomain from '../../../assets/images/logomain.png'
+import logo from '../../../assets/images/logo.png'
 
 const Login = () => {
   const {
@@ -33,7 +36,7 @@ const Login = () => {
       account: data.account,
       password: data.password,
     };
-    axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie").then((response) => {
+    axios.get(`${API}/sanctum/csrf-cookie`).then((response) => {
       axiosClient.post(`/login`, payload).then((res) => {
         if (res.data.status === 200) {
           setTokenCustomer(res.data.token);
@@ -63,7 +66,7 @@ const Login = () => {
           <div className="hidden lg:block w-[18.75rem]">
             <img
               className=""
-              src="https://dean2020.edu.vn/wp-content/uploads/2021/04/hinh-anh-vang-bac-5.jpg"
+              src={logomain}
               alt=""
             />
           </div>
@@ -71,11 +74,11 @@ const Login = () => {
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
             <h1 className="flex items-center justify-center mb-6 text-2xl font-semibold text-gray-900 ">
               <img
-                className="w-8 h-8 mr-2"
-                src="https://vitejs.dev/logo-with-shadow.png"
+                className="h-12 mr-2"
+                src={logo}
                 alt="logo"
               />
-              Kim Huy
+             
             </h1>
 
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">

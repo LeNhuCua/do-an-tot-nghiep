@@ -15,9 +15,6 @@ use Illuminate\Support\Facades\Validator;
 class TypeCategoriesController extends Controller
 {
 
-
-
-
     public function index()
     {
         $posts = TypeCategories::orderBy("created_at", "desc")->get();

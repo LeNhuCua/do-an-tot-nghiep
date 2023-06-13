@@ -28,6 +28,7 @@ use App\Http\Controllers\Customer\ShippingCostsController;
 use App\Http\Controllers\Customer\WardsController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\UsersController as ControllersUsersController;
 use App\Http\Middleware\CheckAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -71,28 +72,32 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/{typeCategoryId}', [TypeCategoriesController::class, 'destroy']);
     });
 });
-Route::post('/importExcel', [TypeCategoriesController::class, 'importExcel']);
+Route::post('/typeCategories/importExcel', [TypeCategoriesController::class, 'importExcel']);
 
 
 // loại sản phẩm
-Route::group(['prefix' => 'productsType'], function () {
-    Route::resource('/', ProductTypesController::class);
-    Route::post('/importExcel', [ProductTypesController::class, 'importExcel']);
-    Route::delete('/deleteAll', [ProductTypesController::class, 'deleteAll']);
-    Route::get('/{id}', [ProductTypesController::class, 'show']);
-    Route::put('/{id}', [ProductTypesController::class, 'update']);
-    Route::delete('/{productType}', [ProductTypesController::class, 'destroy']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'productsType'], function () {
+        Route::resource('/', ProductTypesController::class);
+        Route::delete('/deleteAll', [ProductTypesController::class, 'deleteAll']);
+        Route::get('/{id}', [ProductTypesController::class, 'show']);
+        Route::put('/{id}', [ProductTypesController::class, 'update']);
+        Route::delete('/{productType}', [ProductTypesController::class, 'destroy']);
+    });
 });
+Route::post('/productsType/importExcel', [ProductTypesController::class, 'importExcel']);
 
 //đơn vị tính
-Route::group(['prefix' => 'units'], function () {
-    Route::resource('/', UnitsController::class);
-    Route::post('/importExcel', [UnitsController::class, 'importExcel']);
-    Route::delete('/deleteAll', [UnitsController::class, 'deleteAll']);
-    Route::get('/{id}', [UnitsController::class, 'show']);
-    Route::put('/{id}', [UnitsController::class, 'update']);
-    Route::delete('/{unit}', [UnitsController::class, 'destroy']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'units'], function () {
+        Route::resource('/', UnitsController::class);
+        Route::delete('/deleteAll', [UnitsController::class, 'deleteAll']);
+        Route::get('/{id}', [UnitsController::class, 'show']);
+        Route::put('/{id}', [UnitsController::class, 'update']);
+        Route::delete('/{unit}', [UnitsController::class, 'destroy']);
+    });
 });
+Route::post('/units/importExcel', [UnitsController::class, 'importExcel']);
 
 
 //kích thước
@@ -108,98 +113,83 @@ Route::post('/sizes/importExcel', [SizeController::class, 'importExcel']);
 
 
 //sản phẩm
-Route::group(['prefix' => 'products'], function () {
-    Route::resource('/', ProductsController::class);
-    Route::post('/importExcel', [ProductsController::class, 'importExcel']);
-    Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
-    Route::get('/{id}', [ProductsController::class, 'show']);
-    Route::post('/{id}', [ProductsController::class, 'update']);
-    Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'products'], function () {
+        Route::resource('/', ProductsController::class);
+        Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
+        Route::get('/{id}', [ProductsController::class, 'show']);
+        Route::post('/{id}', [ProductsController::class, 'update']);
+        Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+    });
 });
+Route::post('/products/importExcel', [ProductsController::class, 'importExcel']);
+
+
+//nhân viên
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'users'], function () {
+        Route::resource('/', UsersController::class);
+        Route::delete('/deleteAll', [UsersController::class, 'deleteAll']);
+        Route::get('/{id}', [UsersController::class, 'show']);
+        Route::post('/{id}', [UsersController::class, 'update']);
+
+    });
+});
+Route::post('/users/importExcel', [ProductsController::class, 'importExcel']);
+
 
 
 
 //slide
-Route::group(['prefix' => 'slides'], function () {
-    Route::resource('/', SlideController::class);
-    Route::post('/importExcel', [SlideController::class, 'importExcel']);
-    Route::delete('/deleteAll', [SlideController::class, 'deleteAll']);
-    Route::get('/{id}', [SlideController::class, 'show']);
-    Route::post('/{id}', [SlideController::class, 'update']);
-    Route::delete('/{productImage}', [SlideController::class, 'deleteImages']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'slides'], function () {
+        Route::resource('/', SlideController::class);
+
+        Route::delete('/deleteAll', [SlideController::class, 'deleteAll']);
+        Route::get('/{id}', [SlideController::class, 'show']);
+        Route::post('/{id}', [SlideController::class, 'update']);
+        Route::delete('/{productImage}', [SlideController::class, 'deleteImages']);
+    });
 });
+Route::post('/slides/importExcel', [SlideController::class, 'importExcel']);
 
 
 
 //hoá đơn
-Route::group(['prefix' => 'invoices'], function () {
-    Route::resource('/', InvoicesController::class);
-    Route::post('/importExcel', [ProductsController::class, 'importExcel']);
-    Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
-    Route::get('/{id}', [ProductsController::class, 'show']);
-    Route::post('/{id}', [ProductsController::class, 'update']);
-    Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'invoices'], function () {
+        Route::resource('/', InvoicesController::class);
+    });
 });
-
-
 
 
 //thống kê
-Route::group(['prefix' => 'statistical'], function () {
-    Route::get('/sales-data', [StatisticalController::class, 'getSalesDataByDay']);
-    Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
-    Route::get('/sales-data-year', [StatisticalController::class, 'getSalesDataByYear']);
-});
-
-
-
-Route::group(['prefix' => 'users'], function () {
-    Route::resource('/', InvoicesController::class);
-    // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
-
-    // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
-    // Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
-    // Route::get('/{id}', [ProductsController::class, 'show']);
-    // Route::post('/{id}', [ProductsController::class, 'update']);
-    // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'statistical'], function () {
+        Route::get('/sales-data', [StatisticalController::class, 'getSalesDataByDay']);
+        Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
+        Route::get('/sales-data-year', [StatisticalController::class, 'getSalesDataByYear']);
+    });
 });
 
 
 
 
-Route::group(['prefix' => 'orders'], function () {
-    Route::resource('/', AdminOrderController::class);
-    Route::get('/ordersBeingProcessed', [AdminOrderController::class, 'ordersBeingProcessed']);
-    Route::put('/orderCheckDelivery', [AdminOrderController::class, 'orderCheckDelivery']);
 
-
-    Route::put('/orderCheck', [AdminOrderController::class, 'orderCheck']);
-
-
-    Route::put('/orderCancel', [AdminOrderController::class, 'orderCancel']);
-
-    // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
-
-    // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
-    // Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
-    // Route::get('/{id}', [ProductsController::class, 'show']);
-    // Route::post('/{id}', [ProductsController::class, 'update']);
-    // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'orders'], function () {
+        Route::resource('/', AdminOrderController::class);
+        Route::get('/ordersBeingProcessed', [AdminOrderController::class, 'ordersBeingProcessed']);
+        Route::put('/orderCheckDelivery', [AdminOrderController::class, 'orderCheckDelivery']);
+        Route::put('/orderCheck', [AdminOrderController::class, 'orderCheck']);
+        Route::put('/orderCancel', [AdminOrderController::class, 'orderCancel']);
+    });
 });
-
-Route::group(['prefix' => 'productsSize'], function () {
-    Route::delete('/{id}', [ProductSizeController::class, 'destroy']);
-
-    // Route::get('/lastUserId', [UsersController::class, 'lastUserId']);
-
-    // Route::post('/importExcel', [ProductsController::class, 'importExcel']);
-    // Route::delete('/deleteAll', [ProductsController::class, 'deleteAll']);
-    // Route::get('/{id}', [ProductsController::class, 'show']);
-    // Route::post('/{id}', [ProductsController::class, 'update']);
-    // Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'productsSize'], function () {
+        Route::delete('/{id}', [ProductSizeController::class, 'destroy']);
+    });
 });
-
-
 
 
 //KHÁCH HÀNG
@@ -324,7 +314,7 @@ Route::post('/messages', [MessageController::class, 'store']);
 
 // });
 
-Route::post('/signup', [UsersController::class, 'signup']);
+
 
 // Route::get('/login1',  [AuthController::class, 'showLoginForm'])->name('login');
 

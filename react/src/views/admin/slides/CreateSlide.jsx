@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 import { CCol, CForm } from "@coreui/react";
@@ -26,6 +26,8 @@ import { useNavigate } from "react-router-dom";
 import { DataContext } from "../../../context/DataContext.jsx";
 import UploadImages from "../../../components/admin/uploadimages/UploadImages.jsx";
 import { CascadeSelect } from "primereact/cascadeselect";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 export default function CreateSlide() {
   const {
@@ -58,7 +60,7 @@ export default function CreateSlide() {
     formData.append("status", statusSelect ? statusSelect.code : 1);
 
     setSubmitted(true);
-    await axios.post(`${API}/api/slides`, formData).then((response) => {
+    await axiosClient.post(`${API}/api/slides`, formData).then((response) => {
       if (response.data.status === 400) {
         const resData = response.data.slide;
         const createProducts = {
@@ -97,9 +99,19 @@ export default function CreateSlide() {
   ];
 
   const [image, setImage] = useState("");
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý slide",
+      link: "/quantri/slide",
+    },
+    {
+      name: "Thêm slide",
+    },
+  ];
 
   return (
     <div className="container">
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <CForm
         encType="multipart/form-data"
         onSubmit={handleSubmit(CreateProducts)}

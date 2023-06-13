@@ -6,6 +6,9 @@ import { useForm } from "react-hook-form";
 import UseTitle from "../../hook/UseTitle";
 import Swal from "sweetalert2";
 import Loading from "../../components/Loading";
+import logo from '../../assets/images/logo.png';
+import logomain from '../../assets/images/logomain.png'
+
 
 const ForgotPassword = () => {
   UseTitle("Quên mật khẩu");
@@ -57,7 +60,7 @@ const ForgotPassword = () => {
           <div className="hidden lg:block w-[18.75rem]">
             <img
               className=""
-              src="https://dean2020.edu.vn/wp-content/uploads/2021/04/hinh-anh-vang-bac-5.jpg"
+              src={logomain}
               alt=""
             />
           </div>
@@ -65,11 +68,11 @@ const ForgotPassword = () => {
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
             <h1 className="flex items-center justify-center mb-6 text-2xl font-semibold text-gray-900 ">
               <img
-                className="w-8 h-8 mr-2"
-                src="https://vitejs.dev/logo-with-shadow.png"
+                className="h-12 mr-2"
+                src={logo}
                 alt="logo"
               />
-              Cửa hàng Kim Huy
+             
             </h1>
 
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">

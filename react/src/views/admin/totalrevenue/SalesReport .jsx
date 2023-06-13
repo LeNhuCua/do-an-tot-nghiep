@@ -21,12 +21,8 @@ const SalesReport = () => {
           <TabPanel header="Theo tháng" rightIcon="pi pi-calendar-minus ml-2">
             <StatisticalByMonth />
           </TabPanel>
-          <TabPanel
-            header="Theo năm"
-            rightIcon="pi pi-calendar-plus ml-2"
-          >
-
-<StatisticalByYear/>
+          <TabPanel header="Theo năm" rightIcon="pi pi-calendar-plus ml-2">
+            <StatisticalByYear />
           </TabPanel>
         </TabView>
       </div>

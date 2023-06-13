@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import axios from "axios";
 
 import { CCol, CForm } from "@coreui/react";
 import Swal from "sweetalert2";
@@ -18,6 +17,8 @@ import { DataContext } from "../../../context/DataContext.jsx";
 import { AiOutlinePlus } from "react-icons/ai";
 import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias.jsx";
 import Loading from "../../../components/Loading.jsx";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 const EditTypeCategory = () => {
   const {
@@ -45,7 +46,7 @@ const EditTypeCategory = () => {
   useEffect(() => {
     const fetchTyCategory = async () => {
       try {
-        const { data } = await axios.get(`${API}/api/typeCategories/${getID}`);
+        const { data } = await axiosClient.get(`${API}/api/typeCategories/${getID}`);
         setTypeCategory(data.typeCategory);
         setLoading(false);
       } catch (error) {
@@ -55,7 +56,7 @@ const EditTypeCategory = () => {
 
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get(`${API}/api/categories/`);
+        const { data } = await axiosClient.get(`${API}/api/categories/`);
         dispatch({ type: "FETCH_CATEGORIES", payload: data });
       } catch (error) {
         console.log(error);
@@ -71,8 +72,8 @@ const EditTypeCategory = () => {
   //lấy dữ liệu của danh mục sản phẩm và loại sản phẩm
   // const fetchInitialData = async () => {
   //   const [categoryRes, productsTypeRes] = await Promise.all([
-  //     axios.get(`${API}/api/categories/`),
-  //     axios.get(`${API}/api/productsType/`),
+  //     axiosClient.get(`${API}/api/categories/`),
+  //     axiosClient.get(`${API}/api/productsType/`),
   //   ]);
 
   //   dispatch({ type: "FETCH_CATEGORIES", payload: categoryRes.data });
@@ -93,7 +94,7 @@ const EditTypeCategory = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const fetchTypeCategoriesAll = async () => {
-    await axios.get(`${API}/api/typeCategories/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/typeCategories/`).then(({ data }) => {
       dispatch({ type: "FETCH_TYPECATEGORIES", payload: data });
     });
   };
@@ -115,7 +116,7 @@ const EditTypeCategory = () => {
         : typeCategory.categoryId,
     };
 
-    await axios
+    await axiosClient
       .put(`${API}/api/typeCategories/${getID}`, formData)
       .then((response) => {
         if (response.data.status === 201) {
@@ -192,10 +193,20 @@ const EditTypeCategory = () => {
       </div>
     );
   };
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý loại danh mục",
+      link: "/quantri/danhmuccon",
+    },
+    {
+      name: typeCategory ? typeCategory.name : "",
+    },
+  ];
 
   return (
     <div className="container">
       <Toast ref={toast} />
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
       {typeCategory ? (
         <CForm onSubmit={handleSubmit(updateData)} className="row g-4">

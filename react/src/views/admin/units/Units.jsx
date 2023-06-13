@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { AiFillEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
 import { CategoriesContext } from "../../../CategoriesContext";
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 
@@ -27,6 +27,8 @@ import UseTitle from "../../../hook/UseTitle";
 import { DataContext } from "../../../context/DataContext";
 import DataGridNoStatus from "../../../components/admin/datatable/DataGridNoStatus";
 import { DetailUnit } from "../../../components/admin/units";
+import axiosClient from "../../../axios-client";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 
 const Units = () => {
   // UseTitle("Loại sản phẩm");
@@ -44,7 +46,7 @@ const Units = () => {
     }
   }, []);
   const fetchUnits = async () => {
-    await axios.get(`${API}/api/units/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/units/`).then(({ data }) => {
       dispatch({ type: "FETCH_UNITS", payload: data });
       setLoading(false);
       console.log(data);
@@ -177,7 +179,7 @@ const Units = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .delete(`${API}/api/units/deleteAll`, {
         data: {
           dataId: getIds(selectedData),
@@ -204,10 +206,17 @@ const Units = () => {
       })
       .catch((err) => console.log(err));
   };
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý đơn vị tính",
+    },
 
+  ];
   return (
     <div className="relative">
       {loading && <Loading />}
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+
       {!loading && (
         <>
           <Toolbar

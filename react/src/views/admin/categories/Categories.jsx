@@ -1,10 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tag } from "primereact/tag";
-import { AiFillEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
-
-import axios from "axios";
-import { Toast } from "primereact/toast";
+import { AiFillEdit, AiOutlineDelete, AiOutlineDownload, AiOutlinePlus } from "react-icons/ai";
 
 import Swal from "sweetalert2";
 
@@ -22,14 +19,15 @@ import { BiShow } from "react-icons/bi";
 
 import { Toolbar } from "primereact/toolbar";
 import DataGrid from "../../../components/admin/datatable/DataGrid";
-import { MdDeleteForever } from "react-icons/md";
+
 import Loading from "../../../components/Loading";
 import { DataContext } from "../../../context/DataContext";
 import axiosClient from "../../../axios-client";
+import axios from "axios";
+import { AppBreadcrumb } from "../../../layout/admin";
 
 const Categories = () => {
   const { state, dispatch } = useContext(DataContext);
-  const toast = useRef(null);
 
   const { categories, subcategories } = state;
 
@@ -50,7 +48,6 @@ const Categories = () => {
   };
 
   const ApiExcel = `${API}/api/categories/importExcel`;
-
 
   //detail
   const [detailFind, setDetailFind] = useState([]);
@@ -127,6 +124,27 @@ const Categories = () => {
     );
   };
 
+  const handleDownload = () => {
+    const fileUrl = "/excel/danhmuccha.csv";
+
+    axios({
+      url: fileUrl,
+      method: "GET",
+      responseType: "blob",
+    })
+      .then((response) => {
+        const blob = new Blob([response.data]);
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = "Mau_Excel_DanhMuc.csv";
+        link.click();
+      })
+      .catch((error) => {
+        console.error("Đã xảy ra lỗi:", error);
+      });
+  };
+
   const rightToolbarTemplate = () => {
     return (
       <div className="flex gap-3">
@@ -151,6 +169,16 @@ const Categories = () => {
           ApiExcel={ApiExcel}
           fetch={fetchCategories}
         />
+        <Tippy content="Mẫu Excel">
+          <Fab
+            onClick={handleDownload}
+            className="z-0"
+            color="info"
+            component="label"
+          >
+            <AiOutlineDownload />
+          </Fab>
+        </Tippy>
       </div>
     );
   };
@@ -186,7 +214,7 @@ const Categories = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .delete(`${API}/api/categories/deleteAll`, {
         data: {
           dataId: getIds(selectedData),
@@ -224,9 +252,18 @@ const Categories = () => {
         });
       });
   };
-
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Quản lý danh mục",
+    },
+  ];
   return (
     <div className="relative">
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
       {!loading && (
         <>
@@ -248,10 +285,8 @@ const Categories = () => {
           />
         </>
       )}
-  
     </div>
   );
 };
 
 export default Categories;
-

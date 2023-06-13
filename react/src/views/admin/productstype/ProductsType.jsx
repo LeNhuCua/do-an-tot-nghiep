@@ -26,6 +26,8 @@ import Loading from "../../../components/Loading";
 import UseTitle from "../../../hook/UseTitle";
 import { DataContext } from "../../../context/DataContext";
 import DataGridNoStatus from "../../../components/admin/datatable/DataGridNoStatus";
+import axiosClient from "../../../axios-client";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 
 const ProductsType = () => {
   // UseTitle("Loại sản phẩm");
@@ -43,7 +45,7 @@ const ProductsType = () => {
     }
   }, []);
   const fetchProductsType = async () => {
-    await axios.get(`${API}/api/productsType/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/productsType/`).then(({ data }) => {
       dispatch({ type: "FETCH_PRODUCTSTYPE", payload: data });
       setLoading(false);
       console.log(data);
@@ -210,7 +212,7 @@ const ProductsType = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .delete(`${API}/api/productsType/deleteAll`, {
         data: {
           dataId: getIds(selectedData),
@@ -237,9 +239,15 @@ const ProductsType = () => {
       })
       .catch((err) => console.log(err));
   };
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý loại sản phẩm",
+    },
 
+  ];
   return (
     <div className="relative">
+        <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
       {!loading && (
         <>

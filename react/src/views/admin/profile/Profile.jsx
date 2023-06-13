@@ -10,6 +10,7 @@ import { RadioButton } from "primereact/radiobutton";
 import Swal from "sweetalert2";
 import axiosClient from "../../../axios-client";
 import { Calendar } from "primereact/calendar";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 const Profile = () => {
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -115,8 +116,22 @@ const Profile = () => {
         }
       });
   };
+
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Thông tin cá nhân",
+    },
+  ];
+
+
   return (
-    <div className="bg-gradient-to-r from-cyan-500 to-blue-500  xl:p-9">
+    <div>
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+       <div className="bg-gradient-to-r from-cyan-500 to-blue-500  xl:p-9">
       <div className="p-8 bg-white shadow mt-24">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="relative">
@@ -326,6 +341,10 @@ const Profile = () => {
         </div>
       </div>
     </div>
+    </div>
+
+
+  
   );
 };
 

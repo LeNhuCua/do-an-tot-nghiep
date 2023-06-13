@@ -2,22 +2,20 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import axios from "axios";
-
 import { CCol, CForm } from "@coreui/react";
 import Swal from "sweetalert2";
 import { ToggleButton } from "primereact/togglebutton";
-
 import { API } from "../../../API.js";
 import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
+
 import { Button } from "primereact/button";
 import { DataContext } from "../../../context/DataContext";
 import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias";
 import Loading from "../../../components/Loading";
-import { Toast } from "primereact/toast";
 
 import { useNavigate } from "react-router-dom";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 const EditCategory = () => {
   const {
@@ -46,14 +44,14 @@ const EditCategory = () => {
   }, []);
 
   const fetchCategories = async () => {
-    await axios.get(`${API}/api/categories/${getID}`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/categories/${getID}`).then(({ data }) => {
       setCategory(data.category);
       setLoading(false);
     });
   };
 
   const fetchCategoriesAll = async () => {
-    await axios.get(`${API}/api/categories/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/categories/`).then(({ data }) => {
       dispatch({ type: "FETCH_CATEGORIES", payload: data });
     });
   };
@@ -69,7 +67,7 @@ const EditCategory = () => {
       status: checked ? 1 : 0,
     };
 
-    await axios
+    await axiosClient
       .put(`${API}/api/categories/${getID}`, formData)
       .then((response) => {
         if (response.data.status === 201) {
@@ -125,9 +123,19 @@ const EditCategory = () => {
   useEffect(() => {
     setChecked(currentStatus);
   }, [currentStatus]);
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý danh mục",
+      link: "/quantri/danhmuc",
+    },
+    {
+      name: category ? category.name : "",
+    },
+  ];
 
   return (
     <div className="container">
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
       {category ? (
         <CForm onSubmit={handleSubmit(updateCategory)} className="row g-4">

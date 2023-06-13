@@ -1,19 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Tag } from "primereact/tag";
-import { AiFillEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
-import { DataContext } from "../../../context/DataContext";
 
-import axios from "axios";
+import { AiFillEdit, AiOutlinePlus } from "react-icons/ai";
+import { DataContext } from "../../../context/DataContext";
 
 import Swal from "sweetalert2";
 
-import Button from "@mui/material/Button";
+import { Button } from "primereact/button";
 
 import UploadExcelForm from "../../../components/admin/uploadexcel/UploadExcelForm";
-import { DetailCategory } from "../../../components/admin/categories";
 
-import {API} from "../../../API";
+import { API } from "../../../API.js";
 
 import { Fab, IconButton } from "@mui/material";
 
@@ -22,118 +19,68 @@ import { BiShow } from "react-icons/bi";
 
 import { Toolbar } from "primereact/toolbar";
 import DataGrid from "../../../components/admin/datatable/DataGrid";
-import { MdDeleteForever } from "react-icons/md";
 
+import Loading from "../../../components/Loading";
+
+import { DetailTypeCategory } from "../../../components/admin/typecategories";
+import axiosClient from "../../../axios-client";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
+import DataGridNoStatus from "../../../components/admin/datatable/DataGridNoStatus";
 
 const Users = () => {
-  const { state, dispatch  } = useContext(DataContext);
+  // UseTitle("Loại sản phẩm");
 
-  const { adminUsers } = state;
+  const { state, dispatch } = useContext(DataContext);
+
+  const { users, products } = state;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (adminUsers.length === 0) {
-      fetchCategories();
+    if (users.length === 0) {
+      fetchUsers();
     } else {
       setLoading(false);
     }
   }, []);
-
-  const fetchCategories = async () => {
-    await axios.get(`${API}/api/adminUsers/`).then(({ data }) => {
-      dispatch({ type: "FETCH_ADMINUSER", payload: data });
+  const fetchUsers = async () => {
+    await axiosClient.get(`${API}/api/users/`).then(({ data }) => {
+      dispatch({ type: "FETCH_USERS", payload: data });
+      setLoading(false);
     });
   };
 
-  const ApiExcel = `${API}/api/importExcel`;
+  const ApiExcel = `${API}/api/users/importExcel`;
 
   //model
   const [visible, setVisible] = useState(false);
 
   //detail
-  const [detailId, setDetailId] = useState(null);
-  const [detailFind, setDetailFnd] = useState([]);
+  const [detailFind, setDetailFind] = useState([]);
+  const showDetail = async (id) => {
+    const getDetail = await users.find((users) => users.userId === id);
 
-  const deleteCategory = async (id) => {
-    const findId = await adminUsers.find(
-      (category) => category.categoryId === id
-    );
-    const isConfirm = await Swal.fire({
-      title: `Bạn có chắc muốn xoá ${findId.name} ?`,
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Xác nhận!",
-      cancelButtonText: "Huỷ bỏ!",
-    }).then((result) => {
-      return result.isConfirmed;
-    });
-    if (!isConfirm) {
-      return;
+    if (getDetail) {
+      setDetailFind(getDetail);
+      setVisible(!visible);
     }
-    await axios
-      .delete(`${API}/api/categories/${id}`)
-      .then(({ data }) => {
-        Swal.fire({
-          icon: "success",
-          text: data.message,
-        });
-        dispatch({ type: 'SET_CATEGORIES', payload:  adminUsers.filter((product) => id != product.categoryId) });
-        // setCategories(
-        //   categories.filter((product) => id != product.categoryId)
-        // );
-      })
-      .catch(({ response: { data } }) => {
-        Swal.fire({
-          text: data.message,
-          icon: "error",
-        });
-      });
   };
-
-  async function asyncCall(id) {
-    const getCategory = await adminUsers.find(
-      (category) => category.categoryId === id
-    );
-    if (getCategory) {
-      setDetailFnd(getCategory);
-    }
-  }
-  asyncCall(detailId);
-
-  const [selectedProducts, setSelectedProducts] = useState([]);
 
   const actionButtons = (rowData) => {
     return (
       <>
         <Tippy content="Sửa">
-          <Link to={`/quantri/danhmuc/chinhsua/${rowData.alias}`}>
+          <Link to={`/quantri/danhmuccon/chinhsua/${rowData.userId}`}>
             <IconButton color="success" className="me-2 hover:ring-2 ">
               <AiFillEdit />
             </IconButton>
           </Link>
         </Tippy>
 
-        <Tippy content="Xoá">
-          <IconButton
-            color="error"
-            className="me-2 hover:ring-2 "
-            onClick={() => deleteCategory(rowData.categoryId)}
-          >
-            <AiOutlineDelete />
-          </IconButton>
-        </Tippy>
-
         <Tippy content="Chi tiết">
           <IconButton
             color="primary"
             className="me-2 hover:ring-2 "
-            onClick={() => {
-              setVisible(!visible);
-              setDetailId(rowData.categoryId);
-            }}
+            onClick={() => showDetail(rowData.userId)}
           >
             <BiShow />
           </IconButton>
@@ -143,28 +90,35 @@ const Users = () => {
   };
 
   const col = [
+    // {
+    //   field: "userId",
+    //   header: "Mã",
+    //   filter: true,
+    // },
     {
-      field: "userId",
-      header: "Mã",
-      filter: true,
-    },
-    {
-      field: "account",
+      field: "fullName",
       header: "Tên",
       filter: true,
     },
     {
-      field: "fullName",
-      header: "Bí danh",
-      filter: true,
-    },  {
       field: "email",
-      header: "Bí danh",
+      header: "Email",
       filter: true,
     },
+   
+    {
+      field: "role.name",
+      header: "Chức vụ",
+      filter: true,
+    },
+    // {
+    //   field: "password",
+    //   header: "Danh mục cha",
+    //   filter: true,
+    // },
     {
       field: "action",
-      header: "Action",
+      header: "Chức năng",
       filter: false,
       body: actionButtons,
     },
@@ -186,45 +140,46 @@ const Users = () => {
   const rightToolbarTemplate = () => {
     return (
       <div className="flex gap-3">
-        <Button
-          endIcon={<MdDeleteForever />}
+        <div
           className={`${
-            !selectedProducts || !selectedProducts.length ? "hidden" : ""
-          } `}
-          color="error"
-          variant="contained"
-          label="Delete"
-          component="label"
-          onClick={deleteSelectedProducts}
-          disabled={!selectedProducts || !selectedProducts.length}
+            !selectedData || !selectedData.length ? "hidden" : ""
+          }  `}
         >
-          Xoá
-        </Button>
+          <Button
+            icon="pi pi-trash"
+            severity="danger"
+            variant="contained"
+            label="Xoá"
+            component="label"
+            onClick={deleteSelectedData}
+            disabled={!selectedData || !selectedData.length}
+          ></Button>
+        </div>
 
-        <UploadExcelForm
-          className=""
-          ApiExcel={ApiExcel}
-          fetch={fetchCategories}
-        />
+        <UploadExcelForm className="" ApiExcel={ApiExcel} fetch={fetchUsers} />
       </div>
     );
   };
+
+  //delete all Data
+
+  const [selectedData, setSelectedData] = useState([]);
 
   function getIds(arr) {
     let ids = [];
     for (let i = 0; i < arr.length; i++) {
       let obj = arr[i];
-      ids.push(obj.categoryId);
+      ids.push(obj.userId);
     }
     return ids;
   }
 
-  const deleteSelectedProducts = async () => {
-    let _products = adminUsers.filter((val) => selectedProducts.includes(val));
-    setSelectedProducts(_products);
+  const deleteSelectedData = async () => {
+    let _data = users.filter((val) => selectedData.includes(val));
+    setSelectedData(_data);
     const isConfirm = await Swal.fire({
       title: `Bạn có chắc muốn xoá  ?`,
-      text: "You won't be able to revert this!",
+      text: "Xoá các danh mục này sẽ xoá đi toàn bộ sản phẩm thuộc danh mục này có trong cửa hàng. Bạn sẽ không thể hoàn tác!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -237,45 +192,80 @@ const Users = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
-      .delete(`${API}/api/deleteAll/`, {
+    await axiosClient
+      .delete(`${API}/api/users/deleteAll`, {
         data: {
-          dataId: getIds(selectedProducts),
+          dataId: getIds(selectedData),
         },
       })
-      .then(() => {
-        dispatch({ type: 'SET_CATEGORIES', payload: adminUsers.filter(
-          (product) => !getIds(selectedProducts).includes(product.categoryId)
-        ) });
-        setSelectedProducts([]);
-        Swal.fire({
-          icon: "success",
-          text: "Đã xoá thành công"
-        });
+
+      .then((response) => {
+        if (response.data.status === 200) {
+          dispatch({
+            type: "SET_USERS",
+            payload: users.filter(
+              (product) => !getIds(selectedData).includes(product.userId)
+            ),
+          });
+          dispatch({
+            type: "SET_PRODUCTS",
+            payload: products.filter(
+              (product) => !getIds(selectedData).includes(product.userId)
+            ),
+          });
+          setSelectedData([]);
+          Swal.fire({
+            icon: "success",
+            title: "Đã xoá thành công !",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
       })
-      .catch((err) => console.log(err));
+      .catch(({ response: { data } }) => {
+        Swal.fire({
+          text: "Lỗi!",
+          icon: "error",
+        });
+      });
   };
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý nhân viên",
+    },
+  ];
 
   return (
     <div className="relative">
-    
-       <Toolbar
-        className="mb-4"
-        left={leftToolbarTemplate}
-        right={rightToolbarTemplate}
-      ></Toolbar>
-      <DataGrid
-        selectedProducts={selectedProducts}
-        setSelectedProducts={setSelectedProducts}
-        data={adminUsers}
-        col={col}
-      />
-      <DetailCategory
-        detailFind={detailFind}
-        visible={visible}
-        setVisible={setVisible}
-      />
-      <button onClick={handleDeleteProducts}>Delete Selected Products</button> 
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+
+      {loading && <Loading />}
+      {!loading && (
+        <>
+          <Toolbar
+            className="mb-4"
+            left={leftToolbarTemplate}
+            right={rightToolbarTemplate}
+          ></Toolbar>
+          <DataGridNoStatus
+            selectedData={selectedData}
+            setSelectedData={setSelectedData}
+            data={users}
+            col={col}
+          />
+
+          {Object.keys(detailFind).length ? (
+            <DetailTypeCategory
+              detailFind={detailFind}
+              visible={visible}
+              setVisible={setVisible}
+            />
+          ) : (
+            ""
+          )}
+        </>
+      )}
+      {/* <button onClick={handleDeleteProducts}>Delete Selected Products</button> */}
     </div>
   );
 };
@@ -315,7 +305,7 @@ export default Users;
 //       return (
 //         <div className="flex items-center mr-4">
 //           <input
-//             checked={selectedProducts.includes(params.row.categoryId)}
+//             checked={selectedData.includes(params.row.categoryId)}
 //             value={params.row.categoryId}
 //             onChange={(e) => handleSelectProduct(e, params.row.categoryId)}
 //             type="checkbox"
@@ -333,7 +323,7 @@ export default Users;
 //       return (
 //         <div className="flex items-center mr-4">
 //           <input
-//             checked={selectedProducts.includes(params.row.categoryId)}
+//             checked={selectedData.includes(params.row.categoryId)}
 //             value={params.row.categoryId}
 //             onChange={(e) => handleSelectProduct(e, params.row.categoryId)}
 //             type="checkbox"
@@ -395,7 +385,7 @@ export default Users;
 //             <IconButton
 //               color="error"
 //               className="me-2 hover:ring-2 "
-//               onClick={() => deleteCategory(params.row.categoryId)}
+//               onClick={() => deleteData(params.row.categoryId)}
 //             >
 //               <AiOutlineDelete />
 //             </IconButton>
@@ -420,15 +410,15 @@ export default Users;
 // ];
 
 // const handleDeleteProducts = () => {
-//   axios
-//     .delete(`${API}/api/deleteAll/`, { data: { selectedProducts } })
+//   axiosClient
+//     .delete(`${API}/api/deleteAll/`, { data: { selectedData } })
 //     .then(() => {
 //       setCategories(
 //         categories.filter(
-//           (product) => !selectedProducts.includes(product.categoryId)
+//           (product) => !selectedData.includes(product.categoryId)
 //         )
 //       );
-//       setSelectedProducts([]);
+//       setSelectedData([]);
 //     })
 //     .catch((err) => console.log(err));
 // };
@@ -437,18 +427,18 @@ export default Users;
 //   const isChecked = event.target.checked;
 //   if (isChecked) {
 //     const allProductIds = categories.map((p) => p.categoryId);
-//     setSelectedProducts(allProductIds);
+//     setSelectedData(allProductIds);
 //   } else {
-//     setSelectedProducts([]);
+//     setSelectedData([]);
 //   }
 // };
 
 // const handleSelectProduct = (e, id) => {
 //   if (e.target.checked) {
-//     setSelectedProducts([...selectedProducts, id]);
+//     setSelectedData([...selectedData, id]);
 //   } else {
-//     setSelectedProducts(
-//       selectedProducts.filter((productId) => productId !== id)
+//     setSelectedData(
+//       selectedData.filter((productId) => productId !== id)
 //     );
 //   }
 // };

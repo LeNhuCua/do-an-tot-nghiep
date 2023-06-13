@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axiosClient from "../../../axios-client";
 import { useStateContext } from "../../../context/ContextProvider";
+import { API } from "../../../API";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const Register = () => {
       // role_id: 1
     };
     axiosClient
-      .post("/signup", payload)
+      .post(`${API}/api/users`, payload)
       .then(({ data }) => {
         setUser(data.user);
         // setToken(data.token);

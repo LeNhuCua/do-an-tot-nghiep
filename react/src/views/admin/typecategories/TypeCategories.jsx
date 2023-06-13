@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { AiFillEdit, AiOutlinePlus } from "react-icons/ai";
 import { DataContext } from "../../../context/DataContext";
 
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 
@@ -25,6 +25,8 @@ import DataGrid from "../../../components/admin/datatable/DataGrid";
 import Loading from "../../../components/Loading";
 
 import { DetailTypeCategory } from "../../../components/admin/typecategories";
+import axiosClient from "../../../axios-client";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 
 const TypeCategories = () => {
   // UseTitle("Loại sản phẩm");
@@ -42,7 +44,7 @@ const TypeCategories = () => {
     }
   }, []);
   const fetchTypeCategories = async () => {
-    await axios.get(`${API}/api/typeCategories/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/typeCategories/`).then(({ data }) => {
       dispatch({ type: "FETCH_TYPECATEGORIES", payload: data });
       setLoading(false);
     });
@@ -186,7 +188,7 @@ const TypeCategories = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .delete(`${API}/api/typeCategories/deleteAll`, {
         data: {
           dataId: getIds(selectedData),
@@ -223,9 +225,17 @@ const TypeCategories = () => {
         });
       });
   };
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý loại danh mục",
+    },
+   
+  ];
 
   return (
     <div className="relative">
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+
       {loading && <Loading />}
       {!loading && (
         <>
@@ -397,7 +407,7 @@ export default TypeCategories;
 // ];
 
 // const handleDeleteProducts = () => {
-//   axios
+//   axiosClient
 //     .delete(`${API}/api/deleteAll/`, { data: { selectedData } })
 //     .then(() => {
 //       setCategories(

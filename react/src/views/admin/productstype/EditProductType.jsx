@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import axios from "axios";
+
 
 import { CCol, CForm } from "@coreui/react";
 import Swal from "sweetalert2";
@@ -18,6 +18,8 @@ import Loading from "../../../components/Loading";
 import { Toast } from "primereact/toast";
 
 import { useNavigate } from "react-router-dom";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 const EditProductType = () => {
   const {
@@ -43,14 +45,14 @@ const EditProductType = () => {
   }, []);
 
   const fetchTypes = async () => {
-    await axios.get(`${API}/api/productsType/${getID}`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/productsType/${getID}`).then(({ data }) => {
       setProductType(data.productType);
       setLoading(false);
     });
   };
 
   const fetchProductsTypeAll = async () => {
-    await axios.get(`${API}/api/productsType/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/productsType/`).then(({ data }) => {
       dispatch({ type: "FETCH_PRODUCTSTYPE", payload: data });
     });
   };
@@ -64,7 +66,7 @@ const EditProductType = () => {
       name: data.name,
     };
 
-    await axios
+    await axiosClient
       .put(`${API}/api/productsType/${getID}`, formData)
       .then((response) => {
         if (response.data.status === 201) {
@@ -108,9 +110,19 @@ const EditProductType = () => {
         // if (alreadyExist) setAlreadyExistName("Tên danh mục đã tồn tại");
       });
   };
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý loại sản phẩm",
+      link: "/quantri/loaisanpham",
+    },
+    {
+      name:  productType ? productType.name : "",
+    },
+  ];
 
   return (
     <div className="container">
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
       {productType ? (
         <CForm onSubmit={handleSubmit(updateProductType)} className="row g-4">

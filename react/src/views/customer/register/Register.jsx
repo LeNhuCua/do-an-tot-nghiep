@@ -13,8 +13,8 @@ import axiosClient from "../../../axios-client";
 import IsName from "../../../hook/isName/IsName";
 import { InputText } from "primereact/inputtext";
 import { CCol, CForm } from "@coreui/react";
-import logomain from '../../../assets/images/logomain.png'
-import logo from '../../../assets/images/logo.png'
+import logomain from "../../../assets/images/logomain.png";
+import logo from "../../../assets/images/logo.png";
 const Register = () => {
   const {
     register,
@@ -79,21 +79,12 @@ const Register = () => {
         )} */}
         <div className="flex gap-6 items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="hidden lg:block w-[18.75rem]">
-            <img
-              className=""
-              src={logomain}
-              alt=""
-            />
+            <img className="" src={logomain} alt="" />
           </div>
 
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
             <h1 className="flex items-center justify-center mb-6 text-2xl font-semibold text-gray-900 ">
-              <img
-                className="h-12 mr-2"
-                src={logo}
-                alt="logo"
-              />
-          
+              <img className="h-12 mr-2" src={logo} alt="logo" />
             </h1>
 
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -105,7 +96,6 @@ const Register = () => {
                 className="row space-y-4 md:space-y-6"
                 action="#"
               >
-              
                 <CCol xl={12}>
                   <span className="p-float-label">
                     <InputText
@@ -211,6 +201,7 @@ const Register = () => {
                   <div>
                     <span className="p-float-label ">
                       <InputText
+                        type="password"
                         id="password"
                         className={`w-full ${errors.name && "invalid"}`}
                         {...register("password", {
@@ -223,7 +214,7 @@ const Register = () => {
                         onKeyUp={() => {
                           trigger("password");
                         }}
-                        type="text"
+                       
                         placeholder="* * * * * * *"
                       />
                       <label
@@ -245,6 +236,7 @@ const Register = () => {
                   <div>
                     <span className="p-float-label ">
                       <InputText
+                     
                         id="passwordConfirmation"
                         className={`w-full ${errors.name && "invalid"}`}
                         {...register("passwordConfirmation", {
@@ -257,7 +249,7 @@ const Register = () => {
                         onKeyUp={() => {
                           trigger("passwordConfirmation");
                         }}
-                        type="text"
+                        type="password"
                         placeholder="* * * * * * *"
                       />
                       <label

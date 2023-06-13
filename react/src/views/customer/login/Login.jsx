@@ -10,8 +10,9 @@ import { useStateContext } from "../../../context/ContextProvider";
 import axiosClient from "../../../axios-client-customer";
 import axios from "axios";
 import { API } from "../../../API";
-import logomain from '../../../assets/images/logomain.png'
-import logo from '../../../assets/images/logo.png'
+import logomain from "../../../assets/images/logomain.png";
+import logo from "../../../assets/images/logo.png";
+import Loading from "../../../components/Loading";
 
 const Login = () => {
   const {
@@ -28,7 +29,7 @@ const Login = () => {
   if (tokenCustomer) {
     return <Navigate to="/" />;
   }
-
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState([]);
   const navigate = useNavigate();
   const onSubmit = (data) => {
@@ -37,7 +38,8 @@ const Login = () => {
       password: data.password,
     };
     axios.get(`${API}/sanctum/csrf-cookie`).then((response) => {
-      axiosClient.post(`/login`, payload).then((res) => {
+      setLoading(true);
+      axiosClient.post(`${API}/api/login`, payload).then((res) => {
         if (res.data.status === 200) {
           setTokenCustomer(res.data.token);
           setUser(res.data.username);
@@ -57,28 +59,21 @@ const Login = () => {
         }
       });
     });
+    setLoading(false);
   };
 
   return (
     <>
+      {loading && <Loading />}
       <section className="bg-gray-5 bg-green-200">
         <div className="flex gap-6 items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="hidden lg:block w-[18.75rem]">
-            <img
-              className=""
-              src={logomain}
-              alt=""
-            />
+            <img className="" src={logomain} alt="" />
           </div>
 
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
             <h1 className="flex items-center justify-center mb-6 text-2xl font-semibold text-gray-900 ">
-              <img
-                className="h-12 mr-2"
-                src={logo}
-                alt="logo"
-              />
-             
+              <img className="h-12 mr-2" src={logo} alt="logo" />
             </h1>
 
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">

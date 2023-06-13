@@ -26,6 +26,7 @@ import SearchProducts from "../../../components/admin/Invoices/SearchProducts";
 import ComponentToPrint from "./ComponentToPrint";
 import Bill from "../../../components/admin/Invoices/Bill";
 import Loading from "../../../components/Loading";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 export default function Invoices() {
   const {
@@ -292,7 +293,6 @@ export default function Invoices() {
     }
     setIsLoading(true);
     await axios.post(`${API}/api/invoices`, formData).then((response) => {
-      
       if (response.data.status === 400) {
         Swal.fire({
           icon: "success",
@@ -356,48 +356,275 @@ export default function Invoices() {
     setTableData(newTableData);
   };
 
-  console.log(isLoading);
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Lập hoá đơn",
+    },
+  ];
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-2">
-      {
-        isLoading &&  <Loading/>
-      }
-      <ScrollPanel className="col-span-3 h-[100vh]">
-        <TabView>
-          <TabPanel header="Hoá đơn" leftIcon="pi pi-calendar mr-2">
-            <Fieldset legend={legendTemplate} className="mt-4">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-3">
-                {[...Array(tableCount)].map((_, i) => (
-                  <button
-                    key={i}
-                    className={`border p-2   ${
-                      i + 1 === selectedTable && invoices[i + 1].length > 0
-                        ? "bg-blue-500 text-white font-bold"
-                        : i + 1 === selectedTable
-                        ? "bg-blue-500 text-white font-bold"
-                        : invoices[i + 1].length > 0
-                        ? "bg-green-300"
-                        : ""
-                    }  `}
-                    onClick={() => setSelectedTable(i + 1)}
-                  >
-                    Hoá đơn {i + 1}
-                  </button>
-                ))}
+    <>
+     <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-2">
+        {isLoading && <Loading />}
+        <ScrollPanel className="col-span-3 h-[100vh]">
+          <TabView>
+            <TabPanel header="Hoá đơn" leftIcon="pi pi-calendar mr-2">
+              <Fieldset legend={legendTemplate} className="mt-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-3">
+                  {[...Array(tableCount)].map((_, i) => (
+                    <button
+                      key={i}
+                      className={`border p-2   ${
+                        i + 1 === selectedTable && invoices[i + 1].length > 0
+                          ? "bg-blue-500 text-white font-bold"
+                          : i + 1 === selectedTable
+                          ? "bg-blue-500 text-white font-bold"
+                          : invoices[i + 1].length > 0
+                          ? "bg-green-300"
+                          : ""
+                      }  `}
+                      onClick={() => setSelectedTable(i + 1)}
+                    >
+                      Hoá đơn {i + 1}
+                    </button>
+                  ))}
+                </div>
+              </Fieldset>{" "}
+            </TabPanel>
+            <TabPanel header="Sản phẩm" rightIcon="pi pi-credit-card ml-2">
+              <div className="relative">
+                <SearchProducts
+                  products={products}
+                  addToInvoice={addToInvoice}
+                />
               </div>
-            </Fieldset>{" "}
-          </TabPanel>
-          <TabPanel header="Sản phẩm" rightIcon="pi pi-credit-card ml-2">
-            <div className="relative">
-              <SearchProducts products={products} addToInvoice={addToInvoice} />
-            </div>
-          </TabPanel>
-        </TabView>
-      </ScrollPanel>
+            </TabPanel>
+          </TabView>
+        </ScrollPanel>
 
-      <ScrollPanel className="col-span-2 h-[100vh]">
-        <div className="hidden lg:block">
-          <div className="card p-2 ">
+        <ScrollPanel className="col-span-2 h-[100vh]">
+          <div className="hidden lg:block">
+            <div className="card p-2 ">
+              <div>
+                {selectedTable && (
+                  <div>
+                    <h2 className="uppercase text-center font-bold">
+                      Hoá đơn {selectedTable}
+                    </h2>
+
+                    {invoices[selectedTable].length > 0 ? (
+                      invoices[selectedTable].map((c, i) => (
+                        <Bill
+                          key={i}
+                          c={c}
+                          removeFromInvoice={removeFromInvoice}
+                          increaseAmount={increaseAmount}
+                          reduceAmount={reduceAmount}
+                        />
+                      ))
+                    ) : (
+                      <div>
+                        <ImFileEmpty size={30} /> Hoá đơn trống
+                      </div>
+                    )}
+                    {totalAmount ? (
+                      <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
+                        <div className="flex justify-between text-base font-medium text-gray-900">
+                          <p>Tổng tiền</p>
+
+                          {totalAmount ? (
+                            <p>
+                              {new Intl.NumberFormat({
+                                style: "currency",
+                                currency: "JPY",
+                              }).format(totalAmount)}{" "}
+                              VNĐ
+                            </p>
+                          ) : (
+                            ""
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between text-base font-medium text-gray-900">
+                          <p>Tiền nhận</p>
+                          <Controller
+                            name="price"
+                            control={control}
+                            rules={{
+                              required: "Vui lòng nhập tiền nhận",
+                              validate: {
+                                greaterThanOrEqualTo1: (value) =>
+                                  value >= 1 || "Vui lòng nhập tiền nhận >= 1",
+                                lessThanOrEqualTo1Billion: (value) =>
+                                  value <= 1000000000 ||
+                                  "Vui lòng nhập tiền nhận <= 1 tỷ",
+                              },
+                              validate: (value) =>
+                                value >= totalAmount ||
+                                "Vui lòng nhập tiền nhận >= tổng tiền đơn hàng!",
+                            }}
+                            render={({ field, fieldState }) => (
+                              <div className="flex flex-col">
+                                <div className="flex justify-end">
+                                  <InputNumber
+                                    inputStyle={{ textAlign: "right" }}
+                                    suffix=" VNĐ"
+                                    id={field.price}
+                                    inputRef={field.ref}
+                                    value={
+                                      tableData[selectedTable]?.inputValue || ""
+                                    }
+                                    onBlur={field.onBlur}
+                                    onValueChange={(e) => {
+                                      field.onChange(e); // Cập nhật giá trị cho ô input
+                                      handleInputChange(e, selectedTable); // Lưu giá trị của ô input vào biến state yearValue
+                                    }}
+                                    inputClassName={classNames({
+                                      "p-invalid": fieldState.error,
+                                    })}
+                                    placeholder="Vd: 12"
+                                  />
+                                </div>
+
+                                {getFormErrorMessage(field.name)}
+
+                                {/* {fieldState.error && (
+                                <div className="p-error">
+                                  {fieldState.error.greaterThanOrEqualTo1}
+                                </div>
+                              )} */}
+                              </div>
+                            )}
+                          />
+                          {/* <InputNumber
+                        suffix=" VNĐ"
+                        inputId="integeronly"
+                        value={inputValue}
+                        onValueChange={(e) => setInputValue(e.value)}
+                        inputStyle={{ textAlign: "right" }}
+                      /> */}
+                        </div>
+                        {totalAmount && tableData[selectedTable]?.inputValue ? (
+                          <div className="flex justify-between text-base font-medium text-gray-900">
+                            <p>Tiền thừa</p>
+                            <p>
+                              {new Intl.NumberFormat({
+                                style: "currency",
+                                currency: "JPY",
+                              }).format(
+                                tableData[selectedTable]?.inputValue -
+                                  totalAmount
+                              )}{" "}
+                              VNĐ
+                            </p>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+
+                        <p className="mt-0.5 text-sm text-gray-500">
+                          Nhập tên và số điện thoại khách hàng bên dưới
+                        </p>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                )}
+              </div>
+              <div
+                className={`${invoices[selectedTable].length ? "" : "hidden"}`}
+              >
+                <CForm
+                  encType="multipart/form-data"
+                  onSubmit={handleSubmit(CreateInvoice)}
+                  className={`row g-4 relative `}
+                >
+                  <CCol xl={6}>
+                    <span className="p-float-label ">
+                      <InputText
+                        id="name"
+                        name="name"
+                        className={`w-full`}
+                        value={tableData[selectedTable]?.name || ""}
+                        onChange={(e) => handleNameChange(e, selectedTable)}
+                        type="text"
+                        placeholder="Vd: Nguyễn văn A"
+                      />
+                      <label htmlFor="name">Tên khách hàng</label>
+                    </span>
+                  </CCol>
+                  <CCol xl={6}>
+                    <span className="p-float-label ">
+                      <InputNumber
+                        className="w-full"
+                        placeholder="Vd: 0999999999"
+                        value={tableData[selectedTable]?.phone || ""}
+                        onValueChange={(e) =>
+                          handlePhoneChange(e, selectedTable)
+                        }
+                        useGrouping={false}
+                      />
+                      <label htmlFor="phone">Điện thoại</label>
+                    </span>
+                  </CCol>
+                  <CCol xl={6}>
+                    <Button
+                      disabled={invoices[selectedTable].length ? false : true}
+                      className="w-full flex justify-center "
+                      type="button"
+                      color="secondary"
+                      variant="contained"
+                      label="In"
+                      icon="pi pi-print"
+                      // startIcon={<PrintIcon />}
+                      onClick={
+                        tableData[selectedTable]?.phone === null ||
+                        tableData[selectedTable]?.name === null ||
+                        tableData[selectedTable]?.inputValue === null
+                          ? () =>
+                              Swal.fire({
+                                icon: "warning",
+                                title: "Cảnh báo!",
+                                text: "Vui lòng nhập tên, số điện thoại và số tiền nhận của khách hàng!",
+                              })
+                          : invoices[selectedTable] &&
+                            invoices[selectedTable].length
+                          ? handlePrint
+                          : () =>
+                              Swal.fire({
+                                icon: "warning",
+                                title: "Cảnh báo!",
+                                text: "Không có dữ liệu để in!",
+                              })
+                      }
+                    />
+                  </CCol>
+                  <CCol xl={6}>
+                    <Button
+                      icon="pi pi-arrow-up"
+                      disabled={invoices[selectedTable].length ? false : true}
+                      className="w-full"
+                      label="Thanh toán"
+                      severity="success"
+                    />
+                  </CCol>
+                </CForm>
+              </div>
+            </div>
+          </div>
+
+          {/* mobile */}
+
+          <Sidebar
+            position="right"
+            visible={visible}
+            onHide={() => setVisible(false)}
+            className="w-full md:w-25rem lg:w-35rem"
+          >
             <div>
               {selectedTable && (
                 <div>
@@ -416,13 +643,13 @@ export default function Invoices() {
                       />
                     ))
                   ) : (
-                    <div>
-                      <ImFileEmpty size={30} /> Hoá đơn trống
-                    </div>
+                    <h4>
+                      <ImFileEmpty /> Hoá đơn trống
+                    </h4>
                   )}
                   {totalAmount ? (
-                    <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-                      <div className="flex justify-between text-base font-medium text-gray-900">
+                    <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
+                      <div class="flex justify-between text-base font-medium text-gray-900">
                         <p>Tổng tiền</p>
 
                         {totalAmount ? (
@@ -437,20 +664,13 @@ export default function Invoices() {
                           ""
                         )}
                       </div>
-                      <div className="flex items-center justify-between text-base font-medium text-gray-900">
+                      <div class="flex items-center justify-between text-base font-medium text-gray-900">
                         <p>Tiền nhận</p>
                         <Controller
                           name="price"
                           control={control}
                           rules={{
                             required: "Vui lòng nhập tiền nhận",
-                            validate: {
-                              greaterThanOrEqualTo1: (value) =>
-                                value >= 1 || "Vui lòng nhập tiền nhận >= 1",
-                              lessThanOrEqualTo1Billion: (value) =>
-                                value <= 1000000000 ||
-                                "Vui lòng nhập tiền nhận <= 1 tỷ",
-                            },
                             validate: (value) =>
                               value >= totalAmount ||
                               "Vui lòng nhập tiền nhận >= tổng tiền đơn hàng!",
@@ -479,12 +699,6 @@ export default function Invoices() {
                               </div>
 
                               {getFormErrorMessage(field.name)}
-
-                              {/* {fieldState.error && (
-                                <div className="p-error">
-                                  {fieldState.error.greaterThanOrEqualTo1}
-                                </div>
-                              )} */}
                             </div>
                           )}
                         />
@@ -496,8 +710,9 @@ export default function Invoices() {
                         inputStyle={{ textAlign: "right" }}
                       /> */}
                       </div>
-                      {totalAmount && tableData[selectedTable]?.inputValue ? (
-                        <div className="flex justify-between text-base font-medium text-gray-900">
+                      {totalAmount &&
+                      tableData[selectedTable]?.inputValue >= totalAmount ? (
+                        <div class="flex justify-between text-base font-medium text-gray-900">
                           <p>Tiền thừa</p>
                           <p>
                             {new Intl.NumberFormat({
@@ -513,7 +728,7 @@ export default function Invoices() {
                         ""
                       )}
 
-                      <p className="mt-0.5 text-sm text-gray-500">
+                      <p class="mt-0.5 text-sm text-gray-500">
                         Nhập tên và số điện thoại khách hàng bên dưới
                       </p>
                     </div>
@@ -600,220 +815,22 @@ export default function Invoices() {
                 </CCol>
               </CForm>
             </div>
-          </div>
-        </div>
+          </Sidebar>
 
-        {/* mobile */}
-
-        <Sidebar
-          position="right"
-          visible={visible}
-          onHide={() => setVisible(false)}
-          className="w-full md:w-25rem lg:w-35rem"
-        >
           <div>
-            {selectedTable && (
-              <div>
-                <h2 className="uppercase text-center font-bold">
-                  Hoá đơn {selectedTable}
-                </h2>
-
-                {invoices[selectedTable].length > 0 ? (
-                  invoices[selectedTable].map((c, i) => (
-                    <Bill
-                      key={i}
-                      c={c}
-                      removeFromInvoice={removeFromInvoice}
-                      increaseAmount={increaseAmount}
-                      reduceAmount={reduceAmount}
-                    />
-                  ))
-                ) : (
-                  <h4>
-                    <ImFileEmpty /> Hoá đơn trống
-                  </h4>
-                )}
-                {totalAmount ? (
-                  <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
-                    <div class="flex justify-between text-base font-medium text-gray-900">
-                      <p>Tổng tiền</p>
-
-                      {totalAmount ? (
-                        <p>
-                          {new Intl.NumberFormat({
-                            style: "currency",
-                            currency: "JPY",
-                          }).format(totalAmount)}{" "}
-                          VNĐ
-                        </p>
-                      ) : (
-                        ""
-                      )}
-                    </div>
-                    <div class="flex items-center justify-between text-base font-medium text-gray-900">
-                      <p>Tiền nhận</p>
-                      <Controller
-                        name="price"
-                        control={control}
-                        rules={{
-                          required: "Vui lòng nhập tiền nhận",
-                          validate: (value) =>
-                            value >= totalAmount ||
-                            "Vui lòng nhập tiền nhận >= tổng tiền đơn hàng!",
-                        }}
-                        render={({ field, fieldState }) => (
-                          <div className="flex flex-col">
-                            <div className="flex justify-end">
-                              <InputNumber
-                                inputStyle={{ textAlign: "right" }}
-                                suffix=" VNĐ"
-                                id={field.price}
-                                inputRef={field.ref}
-                                value={
-                                  tableData[selectedTable]?.inputValue || ""
-                                }
-                                onBlur={field.onBlur}
-                                onValueChange={(e) => {
-                                  field.onChange(e); // Cập nhật giá trị cho ô input
-                                  handleInputChange(e, selectedTable); // Lưu giá trị của ô input vào biến state yearValue
-                                }}
-                                inputClassName={classNames({
-                                  "p-invalid": fieldState.error,
-                                })}
-                                placeholder="Vd: 12"
-                              />
-                            </div>
-
-                            {getFormErrorMessage(field.name)}
-                          </div>
-                        )}
-                      />
-                      {/* <InputNumber
-                        suffix=" VNĐ"
-                        inputId="integeronly"
-                        value={inputValue}
-                        onValueChange={(e) => setInputValue(e.value)}
-                        inputStyle={{ textAlign: "right" }}
-                      /> */}
-                    </div>
-                    {totalAmount &&
-                    tableData[selectedTable]?.inputValue >= totalAmount ? (
-                      <div class="flex justify-between text-base font-medium text-gray-900">
-                        <p>Tiền thừa</p>
-                        <p>
-                          {new Intl.NumberFormat({
-                            style: "currency",
-                            currency: "JPY",
-                          }).format(
-                            tableData[selectedTable]?.inputValue - totalAmount
-                          )}{" "}
-                          VNĐ
-                        </p>
-                      </div>
-                    ) : (
-                      ""
-                    )}
-
-                    <p class="mt-0.5 text-sm text-gray-500">
-                      Nhập tên và số điện thoại khách hàng bên dưới
-                    </p>
-                  </div>
-                ) : (
-                  ""
-                )}
-              </div>
-            )}
+            <div style={{ display: "none" }}>
+              <ComponentToPrint
+                ref={componentRef}
+                invoices={invoices[selectedTable]}
+                totalAmount={totalAmount}
+                name={tableData[selectedTable]?.name}
+                phone={tableData[selectedTable]?.phone}
+                inputValue={tableData[selectedTable]?.inputValue}
+              />
+            </div>
           </div>
-          <div className={`${invoices[selectedTable].length ? "" : "hidden"}`}>
-            <CForm
-              encType="multipart/form-data"
-              onSubmit={handleSubmit(CreateInvoice)}
-              className={`row g-4 relative `}
-            >
-              <CCol xl={6}>
-                <span className="p-float-label ">
-                  <InputText
-                    id="name"
-                    name="name"
-                    className={`w-full`}
-                    value={tableData[selectedTable]?.name || ""}
-                    onChange={(e) => handleNameChange(e, selectedTable)}
-                    type="text"
-                    placeholder="Vd: Nguyễn văn A"
-                  />
-                  <label htmlFor="name">Tên khách hàng</label>
-                </span>
-              </CCol>
-              <CCol xl={6}>
-                <span className="p-float-label ">
-                  <InputNumber
-                    className="w-full"
-                    placeholder="Vd: 0999999999"
-                    value={tableData[selectedTable]?.phone || ""}
-                    onValueChange={(e) => handlePhoneChange(e, selectedTable)}
-                    useGrouping={false}
-                  />
-                  <label htmlFor="phone">Điện thoại</label>
-                </span>
-              </CCol>
-              <CCol xl={6}>
-                <Button
-                  disabled={invoices[selectedTable].length ? false : true}
-                  className="w-full flex justify-center "
-                  type="button"
-                  color="secondary"
-                  variant="contained"
-                  label="In"
-                  icon="pi pi-print"
-                  // startIcon={<PrintIcon />}
-                  onClick={
-                    tableData[selectedTable]?.phone === null ||
-                    tableData[selectedTable]?.name === null ||
-                    tableData[selectedTable]?.inputValue === null
-                      ? () =>
-                          Swal.fire({
-                            icon: "warning",
-                            title: "Cảnh báo!",
-                            text: "Vui lòng nhập tên, số điện thoại và số tiền nhận của khách hàng!",
-                          })
-                      : invoices[selectedTable] &&
-                        invoices[selectedTable].length
-                      ? handlePrint
-                      : () =>
-                          Swal.fire({
-                            icon: "warning",
-                            title: "Cảnh báo!",
-                            text: "Không có dữ liệu để in!",
-                          })
-                  }
-                />
-              </CCol>
-              <CCol xl={6}>
-                <Button
-                  icon="pi pi-arrow-up"
-                  disabled={invoices[selectedTable].length ? false : true}
-                  className="w-full"
-                  label="Thanh toán"
-                  severity="success"
-                />
-              </CCol>
-            </CForm>
-          </div>
-        </Sidebar>
-
-        <div>
-          <div style={{ display: "none" }}>
-            <ComponentToPrint
-              ref={componentRef}
-              invoices={invoices[selectedTable]}
-              totalAmount={totalAmount}
-              name={tableData[selectedTable]?.name}
-              phone={tableData[selectedTable]?.phone}
-              inputValue={tableData[selectedTable]?.inputValue}
-            />
-          </div>
-        </div>
-      </ScrollPanel>
-    </div>
+        </ScrollPanel>
+      </div>
+    </>
   );
 }

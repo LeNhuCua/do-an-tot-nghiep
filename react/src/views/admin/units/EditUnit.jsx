@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
-import axios from "axios";
+
 
 import { CCol, CForm } from "@coreui/react";
 import Swal from "sweetalert2";
@@ -18,6 +18,8 @@ import Loading from "../../../components/Loading.jsx";
 import { Toast } from "primereact/toast";
 
 import { useNavigate } from "react-router-dom";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 const EditUnit = () => {
   const {
@@ -43,14 +45,14 @@ const EditUnit = () => {
   }, []);
 
   const fetchTypes = async () => {
-    await axios.get(`${API}/api/units/${getID}`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/units/${getID}`).then(({ data }) => {
       setUnit(data.unit);
       setLoading(false);
     });
   };
 
   const fetchUnitsAll = async () => {
-    await axios.get(`${API}/api/units/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/units/`).then(({ data }) => {
       dispatch({ type: "FETCH_UNITS", payload: data });
     });
   };
@@ -64,7 +66,7 @@ const EditUnit = () => {
       name: data.name,
     };
 
-    await axios
+    await axiosClient
       .put(`${API}/api/units/${getID}`, formData)
       .then((response) => {
         if (response.data.status === 201) {
@@ -108,9 +110,19 @@ const EditUnit = () => {
         // if (alreadyExist) setAlreadyExistName("Tên danh mục đã tồn tại");
       });
   };
-
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý đơn vị tính",
+      link: "/quantri/donvitinh",
+    },
+    {
+      name: unit ? unit.name : "",
+    },
+  ];
   return (
     <div className="container">
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+
       {loading && <Loading />}
       {unit ? (
         <CForm onSubmit={handleSubmit(updateUnit)} className="row g-4">

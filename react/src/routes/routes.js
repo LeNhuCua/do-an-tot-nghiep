@@ -60,7 +60,7 @@ const Slides = React.lazy(() => import("./views/admin/slides/Slides"));
 const CreateSlide = React.lazy(() =>
   import("./views/admin/slides/CreateSlide")
 );
-const EditSlide = React.lazy(() => import("./views/admin/slides/EditSlide"));
+
 
 //HOÁ ĐƠN
 const Invoices = React.lazy(() => import("./views/admin/invoices/Invoices"));
@@ -179,7 +179,7 @@ const routes = [
   //SLIDES
   { path: "/slide", name: "Slides", element: Slides },
   { path: "/slide/taomoi", name: "Tạo  slide", element: CreateSlide },
-  { path: "/slide/chinhsua/:id", name: "Sửa", element: EditSlide },
+
 
   { path: "/quantrivien", name: "Quản trị", element: Users },
   { path: "/quantrivien/taomoi", name: "Tạo quản trị", element: RegisterAdmin },

@@ -15,6 +15,7 @@ import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias.js
 import { DataContext } from "../../../context/DataContext.jsx";
 
 import { Toast } from "primereact/toast";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 export default function CreateSize() {
   const {
@@ -68,14 +69,20 @@ export default function CreateSize() {
     // });
   };
 
-
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý kích thước",
+      link: "/quantri/kichthuoc",
+    },
+    {
+      name: "Thêm kích thước",
+    },
+  ];
   return (
     <div className="container">
       <Toast ref={toast} />
-
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <CForm onSubmit={handleSubmit(CreateProductType)} className="row g-4">
-     
-
         <CCol md={6}>
           <span className="p-float-label ">
             <InputText
@@ -101,7 +108,9 @@ export default function CreateSize() {
             <small className="cs-text-error">{errors.sizeValue.message}</small>
           )}
           {validationError.sizeValue && (
-            <small className="cs-text-error">Giá trị kích thước đã tồn tại</small>
+            <small className="cs-text-error">
+              Giá trị kích thước đã tồn tại
+            </small>
           )}
         </CCol>
 

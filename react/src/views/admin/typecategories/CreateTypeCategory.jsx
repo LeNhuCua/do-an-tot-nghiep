@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 import { CCol, CForm } from "@coreui/react";
@@ -15,6 +15,8 @@ import { DataContext } from "../../../context/DataContext.jsx";
 import { AutoComplete } from "primereact/autocomplete";
 import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias.jsx";
 import { Toast } from "primereact/toast";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 export default function CreateTypeCategory() {
   const {
@@ -35,7 +37,7 @@ export default function CreateTypeCategory() {
   const { categories } = state;
 
   const fetchCategories = async () => {
-    await axios.get(`${API}/api/categories/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/categories/`).then(({ data }) => {
       dispatch({ type: "FETCH_CATEGORIES", payload: data });
     });
   };
@@ -55,7 +57,7 @@ export default function CreateTypeCategory() {
     formData.append("status", statusSelect ? statusSelect.code : 1);
     formData.append("categoryId", selectedCategoryItem.categoryId);
 
-    await axios.post(`${API}/api/typeCategories`, formData).then((response) => {
+    await axiosClient.post(`${API}/api/typeCategories`, formData).then((response) => {
       if (response.data.status === 400) {
         const createProducts = {
           ...data,
@@ -114,11 +116,19 @@ export default function CreateTypeCategory() {
     }
     setFilteredItems(_filteredItems);
   };
-
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý loại danh mục",
+      link: "/quantri/danhmuccon",
+    },
+    {
+      name: "Thêm loại danh mục",
+    },
+  ];
   return (
     <div className="container">
       <Toast ref={toast} />
-
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <CForm onSubmit={handleSubmit(CreateTypeCategory)} className="row g-4">
         <CCol md={6}>
           <span className="p-float-label ">

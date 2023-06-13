@@ -106,6 +106,7 @@ const EditSize = () => {
       name: size ? size.sizeValue : "",
     },
   ];
+  
   return (
     <div className="container">
       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />

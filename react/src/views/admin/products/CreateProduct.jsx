@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 import { CCol, CForm } from "@coreui/react";
@@ -28,6 +28,8 @@ import UploadImages from "../../../components/admin/uploadimages/UploadImages.js
 import { CascadeSelect } from "primereact/cascadeselect";
 import { MultiSelect } from "primereact/multiselect";
 import { forEach } from "lodash";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 export default function CreateProduct() {
   const {
@@ -50,7 +52,7 @@ export default function CreateProduct() {
   const navigate = useNavigate();
 
   const fetchSizes = async () => {
-    await axios.get(`${API}/api/sizes/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/sizes/`).then(({ data }) => {
       dispatch({ type: "FETCH_SIZES", payload: data });
     });
   };
@@ -61,7 +63,7 @@ export default function CreateProduct() {
   }, []);
 
   const fetchUnits = async () => {
-    await axios.get(`${API}/api/units/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/units/`).then(({ data }) => {
       dispatch({ type: "FETCH_UNITS", payload: data });
     });
   };
@@ -72,7 +74,7 @@ export default function CreateProduct() {
   }, []);
 
   const fetchProductsType = async () => {
-    await axios.get(`${API}/api/productsType/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/productsType/`).then(({ data }) => {
       dispatch({ type: "FETCH_PRODUCTSTYPE", payload: data });
     });
   };
@@ -83,12 +85,12 @@ export default function CreateProduct() {
   }, []);
 
   const fetchTypeCategories = async () => {
-    await axios.get(`${API}/api/typeCategories/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/typeCategories/`).then(({ data }) => {
       dispatch({ type: "FETCH_TYPECATEGORIES", payload: data });
     });
   };
   const fetchCategories = async () => {
-    await axios.get(`${API}/api/categories/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/categories/`).then(({ data }) => {
       dispatch({ type: "FETCH_CATEGORIES", payload: data });
     });
   };
@@ -145,7 +147,7 @@ export default function CreateProduct() {
   };
 
   const fetchProducts = async () => {
-    await axios.get(`${API}/api/products/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/products/`).then(({ data }) => {
       dispatch({ type: "FETCH_PRODUCTS", payload: data });
       // setLoading(false);
     });
@@ -263,7 +265,7 @@ export default function CreateProduct() {
       }
       // JSON.stringify(invoices[selectedTable][i])
       setSubmitted(true);
-      await axios.post(`${API}/api/products`, formData).then((response) => {
+      await axiosClient.post(`${API}/api/products`, formData).then((response) => {
         if (response.data.status === 400) {
           // const resData = response.data.product;
           // const resImages = response.data.productImages;
@@ -396,9 +398,19 @@ export default function CreateProduct() {
   const [image, setImage] = useState("");
   const regexPattern =
     /^[^\s\u0103\u0105\u1EA1\u1EAD\u00E2\u00E0\u00E1\u1EA3\u1EA7\u1EA5\u1EAB\u1EA9\u0103\u0105\u1EA3\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E2\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E0\u00E1\u1EA1\u1EA3\u1EA5\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00EA\u00E8\u00E9\u1EC1\u1EBF\u1EC5\u1EC3\u1EC7\u00EA\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7\u00E8\u00E9\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7]+$/;
-
+    const ListBreadcrumb = [
+      {
+        name: "Quản lý sản phẩm",
+        link: "/quantri/sanpham",
+      },
+      {
+        name: "Tạo mới sản phẩm",
+      },
+    ];
+  
   return (
     <div className="container">
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <CForm
         encType="multipart/form-data"
         onSubmit={handleSubmit(CreateProducts)}

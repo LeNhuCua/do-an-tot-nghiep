@@ -1,8 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import axios from "axios";
-
 import Swal from "sweetalert2";
 import { CCol, CForm } from "@coreui/react";
 
@@ -17,6 +15,7 @@ import { DataContext } from "../../../context/DataContext";
 
 import { Toast } from "primereact/toast";
 import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 export default function CreateCategory() {
   const {
@@ -84,11 +83,19 @@ export default function CreateCategory() {
     { name: "Hiển thị", code: 1 },
     { name: "Ẩn", code: 0 },
   ];
-
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý danh mục",
+      link: "/quantri/danhmuc",
+    },
+    {
+      name: "Tạo mới danh mục",
+    },
+  ];
   return (
     <div className="container">
       <Toast ref={toast} />
-
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <CForm onSubmit={handleSubmit(CreateData)} className="row g-4">
         <CCol xl={6}>
           <span className="p-float-label ">

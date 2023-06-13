@@ -8,6 +8,10 @@ const initialState = {
   units: [],
   sizes: [],
   products: [],
+  users: [],
+
+
+
   slides: [],
   hotProducts: [],
 
@@ -102,6 +106,21 @@ const reducer = (state, action) => {
         ...state,
         categories: remainingCategories,
       };
+
+
+    // Nhân viên
+    case "FETCH_USERS":
+      return {
+        ...state,
+        users: action.payload,
+      };
+    case "SET_USERS":
+      return {
+        ...state,
+        users: action.payload,
+      };
+
+
 
     //loại danh mục
     case "FETCH_TYPECATEGORIES":

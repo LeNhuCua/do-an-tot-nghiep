@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import { CascadeSelect } from "primereact/cascadeselect";
 
-import axios from "axios";
 
 import { CCol, CForm } from "@coreui/react";
 import Swal from "sweetalert2";
@@ -23,11 +22,12 @@ import Loading from "../../../components/Loading";
 import { InputNumber } from "primereact/inputnumber";
 import { Editor } from "primereact/editor";
 
-import UploadAvatar from "../../../components/admin/products/UploadAvatar.jsx";
 import UploadImages from "../../../components/admin/products/UploadImages.jsx";
-import { MultiSelect } from "primereact/multiselect";
+
 import { Accordion, AccordionTab } from "primereact/accordion";
-// import UploadImages from "../../../components/admin/uploadimages/UploadImages";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
+
 
 const EditProduct = () => {
   const {
@@ -77,7 +77,7 @@ const EditProduct = () => {
   const [number, setNumber] = useState(null);
   const [dataWeight, setDataWeight] = useState([]);
   const fetchSizes = async () => {
-    await axios.get(`${API}/api/sizes/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/sizes/`).then(({ data }) => {
       dispatch({ type: "FETCH_SIZES", payload: data });
     });
   };
@@ -89,7 +89,7 @@ const EditProduct = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const { data } = await axios.get(`${API}/api/products/${getID}`);
+        const { data } = await axiosClient.get(`${API}/api/products/${getID}`);
         setProduct(data.product);
 
         // setImages(data.product.product_image);
@@ -107,7 +107,7 @@ const EditProduct = () => {
 
     const fetchtypeCategories = async () => {
       try {
-        const { data } = await axios.get(`${API}/api/typeCategories/`);
+        const { data } = await axiosClient.get(`${API}/api/typeCategories/`);
         dispatch({ type: "FETCH_TYPECATEGORIES", payload: data });
       } catch (error) {
         console.log(error);
@@ -115,7 +115,7 @@ const EditProduct = () => {
     };
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get(`${API}/api/categories/`);
+        const { data } = await axiosClient.get(`${API}/api/categories/`);
         dispatch({ type: "FETCH_CATEGORIES", payload: data });
       } catch (error) {
         console.log(error);
@@ -124,7 +124,7 @@ const EditProduct = () => {
 
     const fetchUnits = async () => {
       try {
-        const { data } = await axios.get(`${API}/api/units/`);
+        const { data } = await axiosClient.get(`${API}/api/units/`);
         dispatch({ type: "FETCH_UNITS", payload: data });
       } catch (error) {
         console.log(error);
@@ -133,7 +133,7 @@ const EditProduct = () => {
 
     const fetchTypes = async () => {
       try {
-        const { data } = await axios.get(`${API}/api/productsType/`);
+        const { data } = await axiosClient.get(`${API}/api/productsType/`);
         dispatch({ type: "FETCH_PRODUCTSTYPE", payload: data });
       } catch (error) {
         console.log(error);
@@ -158,7 +158,7 @@ const EditProduct = () => {
   const [selectedType, setSelectedType] = useState(null);
 
   const fetchProductsAll = async () => {
-    await axios.get(`${API}/api/products/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/products/`).then(({ data }) => {
       dispatch({ type: "FETCH_PRODUCTS", payload: data });
     });
   };
@@ -226,7 +226,7 @@ const EditProduct = () => {
       newFormData.append(`sizes[${i}]`, JSON.stringify(dataWeight[i]));
     }
     setSubmitted(true);
-    await axios
+    await axiosClient
       .post(`${API}/api/products/${getID}`, newFormData)
       .then((response) => {
         if (response.data.status === 201) {
@@ -448,7 +448,7 @@ const EditProduct = () => {
       return;
     }
 
-    await axios
+    await axiosClient
       .delete(`http://localhost:8000/api/productsSize/${id}`)
       .then(({ data }) => {
         Swal.fire({
@@ -469,25 +469,19 @@ const EditProduct = () => {
         });
       });
   };
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý sản phẩm",
+      link: "/quantri/sanpham",
+    },
+    {
+      name: product ? product.name : "",
+    },
+  ];
 
   return (
     <div className="container">
-      {/* <div className="card flex justify-content-center">
-        <CCol md={6}>
-          <CascadeSelect
-            value={selectedCity}
-            onChange={(e) => setSelectedCity(e.value)}
-            options={categories}
-            optionLabel="name"
-            optionGroupLabel="name"
-            optionGroupChildren={["typeCategory"]}
-            className="w-full md:w-14rem"
-            breakpoint="767px"
-            placeholder="Select a City"
-            group
-          />
-        </CCol>
-      </div> */}
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <Toast ref={toast} />
       {loading && <Loading />}
       {product ? (

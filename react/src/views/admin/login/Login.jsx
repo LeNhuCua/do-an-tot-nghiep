@@ -1,5 +1,5 @@
 import React, { createRef, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 import Swal from "sweetalert2";
@@ -8,6 +8,9 @@ import UseTitle from "../../../hook/UseTitle";
 import { useStateContext } from "../../../context/ContextProvider";
 
 import axiosClient from "../../../axios-client";
+
+import logo from "../../../assets/images/logo.png";
+import logomain from "../../../assets/images/logomain.png";
 
 const Login = () => {
   const {
@@ -61,21 +64,12 @@ const Login = () => {
       <section className="bg-gray-5 bg-green-200">
         <div className="flex gap-6 items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="hidden lg:block w-[18.75rem]">
-            <img
-              className=""
-              src="https://kingshoes.vn/data/upload/media/CREP-PROTECT-CURE-B%E1%BB%99-kit-v%E1%BB%87-sinh-gi%C3%A0y-king-shoes-sneaker-authentic-4.jpg"
-              alt=""
-            />
+            <img className="" src={logomain} alt="" />
           </div>
 
           <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
             <h1 className="flex items-center justify-center mb-6 text-2xl font-semibold text-gray-900 ">
-              <img
-                className="w-8 h-8 mr-2"
-                src="https://vitejs.dev/logo-with-shadow.png"
-                alt="logo"
-              />
-              Kim Huy
+              <img className="h-12 mr-2" src={logo} alt="logo" />
             </h1>
 
             <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -142,12 +136,12 @@ const Login = () => {
                   </button>
                 </div>
                 <div className="flex items-center justify-end">
-                  <a
-                    href="#"
-                    className="text-sm font-medium text-yellow-400 hover:underline"
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm font-medium text-yellow-600 hover:underline"
                   >
                     Quên mật khẩu?
-                  </a>
+                  </Link>
                 </div>
 
                 {/* <p className="text-sm font-light text-gray-500 dark:text-gray-400">

@@ -20,17 +20,13 @@ class UsersController extends Controller
 {
     public function index()
     {
-        $posts = User::orderBy("userId", "desc")->get();
+        $posts = User::orderBy("userId", "desc")->where('role_id', '<>', 2)->get();
         return $posts;
     }
 
-    // public function lastUserId()
-    // {
-    //     $lastEmployee = User::orderBy('userId', 'desc')->first();
-    //     return $lastEmployee;
-    // }
 
-    public function signup(Request $request)
+
+    public function store(Request $request)
     {
         $messages = [
             'required' => 'Trường :attribute phải nhập',
@@ -94,63 +90,6 @@ class UsersController extends Controller
 
 
 
-    public function signupCus(Request $request)
-    {
-        $messages = [
-            'required' => 'Trường :attribute phải nhập',
-            'max' => 'Trường :attribute không được vượt quá :max.',
-            'unique' => 'Trường :attribute đã tồn tại.',
-            'email' => 'The :attribute phải là email',
-        ];
-
-        $validator = Validator::make($request->all(), [
-            'fullName' => 'required',
-            'email' => 'required',
-            'account' => 'required',
-            'password' => 'required|min:3',
-            'c_password' => 'required|same:password'
-        ], $messages);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 422,
-                'validation_error' => $validator->errors(),
-                'message' => 'Kiểm tra lại thông tin đăng kí',
-            ]);
-        } else {
-            $lastEmployee = Customer::orderBy('customerId', 'desc')->first();
-
-            $newMaNV = null;
-            if ($lastEmployee == null) {
-                $newMaNV = 'KH00001';
-            } else {
-                $newMaNVNumber = substr($lastEmployee->userId, 2) + 1;
-                $newMaNV = 'KH' . str_pad($newMaNVNumber, 5, '0', STR_PAD_LEFT);
-            }
-            $user = Customer::create([
-                'customerId' =>  $newMaNV,
-                'fullName' => $request->fullName,
-                'email' => $request->email,
-                'account' => $request->account,
-                'password' => Hash::make($request->password),
-
-            ]);
-            // $token = $user->createToken('main')->plainTextToken;
-            // return response(compact('user', 'token'));
-            if ($user) { // check if user is created
-                $token = $user->createToken('main')->plainTextToken;
-                return response(compact('user', 'token'));
-            } else { // Admin not created
-                return response()->json([
-                    'status' => 500,
-                    'message' => 'Đã có lỗi xảy ra khi đăng kí',
-                ]);
-            }
-        }
-    }
-
-
-
 
 
     public function show(User $user)
@@ -160,74 +99,100 @@ class UsersController extends Controller
         ]);
     }
 
-    public function update(Request $request, $userId)
+    public function update(Request $request, $sizeId)
     {
-        $request->validate([
-            'alias' => 'required',
-            'name' => 'required',
-            'status' => 'required',
-        ]);
 
-        try {
-            $sample = User::find($userId);
-            $sample->update($request->all());
+        $messages = [
+            'required' => 'Trường :attribute phải nhập',
 
+        ];
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:50',
+
+        ], $messages);
+
+        if ($validator->fails()) {
             return response()->json([
-                'message' => 'Product Updated Successfully!!'
+                'validation_error' => $validator->errors(),
+                'message' => 'Kiểm tra lại thông tin',
+
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Gặp lỗi khi cập nhật!!'
-            ], 500);
+        } else {
+            try {
+                $alreadyExistName = User::where('sizeValue', '=', $request->name)->first();
+                if ($alreadyExistName) {
+                    return response()->json([
+                        'status' => 201,
+                        'message' => 'Giá trị kích thước đã tồn tại!!',
+                        ' $alreadyExistName ' => $alreadyExistName
+                    ]);
+                } else {
+                    $size = User::findOrFail($sizeId);
+                    $size->sizeValue = $request->name;
+                    $size->save();
+                    return response()->json([
+                        'status' => 400,
+                        'message' => 'Product Updated Successfully!!',
+
+                    ]);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Gặp lỗi khi cập nhật!!',
+                    'eee' => 'Lỗi: ' . $e->getMessage(),
+                    'status' => 201,
+
+                ]);
+            }
         }
     }
 
 
-    public function destroy(Admin $category)
-    {
-        try {
-            $category->delete();
-
-            return response()->json([
-                'message' => 'Xoá thành công!!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Lỗi khi xoá!!'
-            ]);
-        }
-    }
 
 
     public function importExcel(Request $request)
     {
+
         try {
             $file = $request->file('file');
             $reader = IOFactory::createReaderForFile($file->getPathname());
             $spreadsheet = $reader->load($file->getPathname());
-            $worksheet = $spreadsheet->getActiveSheet();
+            $worksheet = $spreadsheet->getSheet(0);
             $rows = $worksheet->toArray();
 
             // Process and validate the data
-            $dataToSave = [];
 
+            $lastSizeId = User::selectRaw('SUBSTRING(sizeId, -5) AS sizeId')
+                ->orderBy('sizeId', 'desc')
+                ->value('sizeId');
+
+            if ($lastSizeId) {
+                $newSizeIdNumber = substr($lastSizeId, -0) + 1;
+            }
 
             foreach ($rows as $index => $row) {
                 if ($index === 0) { // Skip header row
                     continue;
                 }
-
-                $dataToSave[] = [
-                    'alias' => $row[0],
-                    'name' => $row[1],
-                    'status' => 1,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ];
+                $newSizeId =  'SIZE' . str_pad($newSizeIdNumber, 5, '0', STR_PAD_LEFT);
+                $size = User::where('sizeValue', $row[0])->first();
+                if ($size) { // Nếu đã tồn tại thì báo lỗi
+                    return response()->json([
+                        'status' => 422,
+                        'message' => 'Giá trị size là ' . $row[0] . ' tại dòng thứ ' . $index . ' đã tồn tại. Vui lòng nhập tên khác',
+                    ]);
+                    break;
+                } else {
+                    $product = new User;
+                    $product->sizeId =  $newSizeId;
+                    $product->sizeValue = $row[0];
+                    $product->created_at =  Carbon::now();
+                    $product->updated_at = Carbon::now();
+                    $product->save();
+                    $newSizeIdNumber++;
+                }
             }
 
-            // Save data to database using Eloquent
-            Admin::insert($dataToSave);
 
             // Return response to frontend
             return response()->json([
@@ -238,7 +203,8 @@ class UsersController extends Controller
             // Handle errors
             return response()->json([
                 'status' => 422,
-                'message' => 'Lỗi: ' . $e->getMessage(),
+                'message' => "Vui lòng điền đủ các trường excel như mẫu. Không được trùng tên và mã",
+                'Error' => 'Lỗi: ' . $e->getMessage(),
             ]);
         }
     }
@@ -246,10 +212,21 @@ class UsersController extends Controller
 
     public function deleteAll(Request $request)
     {
-        $selectedProducts = $request->input('dataId');
+        try {
+            $selectedData = $request->input('dataId');
 
-        DB::table('categories')->whereIn('categoryId', $selectedProducts)->delete();
+            DB::table('users')->whereIn('userId', $selectedData)->delete();
 
-        return response()->json(['message' => 'Selected products deleted successfully.'], 200);
+            return response()->json([
+                'status' => 200,
+                'message' => "Xoá nhiều sản phẩm thành công",
+
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => "Lỗi xoá sản phẩm: " . $e->getMessage(),
+            ]);
+        }
     }
 }

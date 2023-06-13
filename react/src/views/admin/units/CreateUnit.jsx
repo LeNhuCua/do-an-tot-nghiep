@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 import { CCol, CForm } from "@coreui/react";
@@ -16,6 +16,8 @@ import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias.js
 import { DataContext } from "../../../context/DataContext.jsx";
 
 import { Toast } from "primereact/toast";
+import axiosClient from "../../../axios-client.js";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
 
 export default function CreateUnit() {
   const {
@@ -42,7 +44,7 @@ export default function CreateUnit() {
       formData.append("unitId", data.unitId.toUpperCase());
       formData.append("name", data.name);
     }
-    await axios.post(`${API}/api/units`, formData).then((response) => {
+    await axiosClient.post(`${API}/api/units`, formData).then((response) => {
       if (response.data.status === 400) {
         const createType = {
           ...data,
@@ -80,10 +82,21 @@ export default function CreateUnit() {
   ];
   const regexPattern =
     /^[^\s\u0103\u0105\u1EA1\u1EAD\u00E2\u00E0\u00E1\u1EA3\u1EA7\u1EA5\u1EAB\u1EA9\u0103\u0105\u1EA3\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E2\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00E0\u00E1\u1EA1\u1EA3\u1EA5\u1EA7\u1EA9\u1EAB\u1EAD\u1EAF\u1EB1\u1EB3\u1EB5\u1EB7\u00EA\u00E8\u00E9\u1EC1\u1EBF\u1EC5\u1EC3\u1EC7\u00EA\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7\u00E8\u00E9\u1EC1\u1EBF\u1EC3\u1EC5\u1EC7]+$/;
-  return (
+  
+    const ListBreadcrumb = [
+      {
+        name: "Quản lý đơn vị tính",
+        link: "/quantri/donvitinh",
+      },
+      {
+        name: "Thêm đơn vị tính",
+      },
+    ];
+  
+    return (
     <div className="container">
       <Toast ref={toast} />
-
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <CForm onSubmit={handleSubmit(CreateProductType)} className="row g-4">
         <CCol md={6}>
           <span className="p-float-label ">

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { AiFillEdit, AiOutlineDelete, AiOutlinePlus } from "react-icons/ai";
 import { DataContext } from "../../../context/DataContext";
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 
@@ -28,6 +28,8 @@ import DetailSlides from "../../../components/admin/slides/DetailSlides";
 import Loading from "../../../components/Loading";
 import UseTitle from "../../../hook/UseTitle";
 import { Button } from "primereact/button";
+import axiosClient from "../../../axios-client";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 
 const Slides = () => {
   // UseTitle("Loại sản phẩm");
@@ -45,7 +47,7 @@ const Slides = () => {
     }
   }, []);
   const fetchSlides = async () => {
-    await axios.get(`${API}/api/slides/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/slides/`).then(({ data }) => {
       dispatch({ type: "FETCH_SLIDES", payload: data });
       setLoading(false);
     });
@@ -84,13 +86,7 @@ const Slides = () => {
   const actionButtons = (rowData) => {
     return (
       <>
-        <Tippy content="Sửa">
-          <Link to={`/quantri/slide/chinhsua/${rowData.slideId}`}>
-            <IconButton color="success" className="me-2 hover:ring-2 ">
-              <AiFillEdit />
-            </IconButton>
-          </Link>
-        </Tippy>
+   
 
         <Tippy content="Chi tiết">
           <IconButton
@@ -158,7 +154,7 @@ const Slides = () => {
           ></Button>
         </div>
 
-        <UploadExcelForm className="" ApiExcel={ApiExcel} fetch={fetchSlides} />
+
       </div>
     );
   };
@@ -190,7 +186,7 @@ const Slides = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .delete(`${API}/api/slides/deleteAll`, {
         data: {
           dataId: getIds(selectedData),
@@ -211,9 +207,16 @@ const Slides = () => {
       })
       .catch((err) => console.log(err));
   };
-
+  const ListBreadcrumb = [
+    {
+      name: "Quản lý slide",
+     
+    }
+  
+  ];
   return (
     <div className="relative ">
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
       {!loading && (
         <div className="relative  ">

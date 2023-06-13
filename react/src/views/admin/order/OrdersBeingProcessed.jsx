@@ -1,15 +1,14 @@
-import axios from "axios";
-import React, { useContext, useEffect, useRef, useState } from "react";
+
+import React, {  useEffect, useRef, useState } from "react";
 import { API } from "../../../API";
 import OrderGrid from "../../../components/admin/datatable/OrderGrid";
 import Tippy from "@tippyjs/react";
-import { Link } from "react-router-dom";
+
 import { IconButton } from "@mui/material";
 import {
-  AiFillEdit,
+
   AiFillPrinter,
-  AiOutlineCheck,
-  AiOutlineClose,
+
 } from "react-icons/ai";
 import { BiShow } from "react-icons/bi";
 import Loading from "../../../components/Loading";
@@ -19,6 +18,8 @@ import { DataContext } from "../../../context/DataContext";
 import { useReactToPrint } from "react-to-print";
 import ComponentToPrint from "./ComponentToPrint";
 import { MdEmojiTransportation } from "react-icons/md";
+import axiosClient from "../../../axios-client";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 
 const OrdersBeingProcessed = () => {
   // const [orderNew, setOrderNew] = useState([]);
@@ -30,7 +31,7 @@ const OrdersBeingProcessed = () => {
     fetchOrdersNew();
   }, []);
   const fetchOrdersNew = async () => {
-    await axios
+    await axiosClient
       .get(`${API}/api/orders/ordersBeingProcessed`)
       .then(({ data }) => {
         // dispatch({ type: "FETCH_PRODUCTS", payload: data });
@@ -71,7 +72,7 @@ const OrdersBeingProcessed = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .put(`${API}/api/orders/orderCancel?orderId=${id}`)
       .then(({ data }) => {
         if (data.status === 200) {
@@ -104,7 +105,7 @@ const OrdersBeingProcessed = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .put(`${API}/api/orders/orderCheckDelivery?orderId=${id}`)
       .then(({ data }) => {
         if (data.status === 200) {
@@ -201,8 +202,20 @@ const OrdersBeingProcessed = () => {
       body: actionButtons,
     },
   ];
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Đơn hàng đang xử lý",
+    },
+  ];
+
   return (
     <div>
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+
       {loading && <Loading />}
 
       {!loading && <OrderGrid data={ordersBeingProcessed} col={col} />}

@@ -5,13 +5,20 @@ import MenuItem from "@mui/material/MenuItem";
 
 import { CAvatar, CBadge, CDropdownHeader, CDropdownItem } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import {  cilLockLocked, cilUser,cilBlurLinear,cilAccountLogout } from "@coreui/icons";
+import {
+  cilLockLocked,
+  cilUser,
+  cilBlurLinear,
+  cilAccountLogout,
+} from "@coreui/icons";
 
 import { useStateContext } from "../../../context/ContextProvider";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import axiosClient from "../../../axios-client-customer";
 import { AiOutlineCaretDown } from "react-icons/ai";
 import { DataContext } from "../../../context/DataContext";
+import { API } from "../../../API";
+import Loading from "../../../components/Loading";
 
 export default function BasicMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -24,22 +31,26 @@ export default function BasicMenu() {
   };
   const { state, dispatch } = useContext(DataContext);
 
-  const { setUser, setTokenCustomer,  user } = useStateContext();
+  const { setUser, setTokenCustomer, user } = useStateContext();
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
   const onLogout = (ev) => {
     ev.preventDefault();
-
-    axiosClient.post("/logout").then(() => {
+    axiosClient.post(`${API}/api/logout`).then(() => {
+      setLoading(true);
       setUser({});
       setTokenCustomer(null);
       dispatch({ type: "SET_TOTAL_CART", payload: null });
       navigate("/");
     });
+    setLoading(false);
   };
   // const { tokenCustomer, user } = useStateContext();
 
   return (
     <div>
+      {loading && <Loading />}
       <div onClick={handleClick} className="hover:cursor-pointer">
         <div className="flex items-center ">
           <div className="text-sm">Xin chào</div>
@@ -66,7 +77,10 @@ export default function BasicMenu() {
           Account
         </CDropdownHeader>
         <div className="hover:bg-gray-300 py-1 px-4">
-          <Link to="/dondathang" className="no-underline text-gray-900 hover:text-yellow-500 duration-300">
+          <Link
+            to="/dondathang"
+            className="no-underline text-gray-900 hover:text-yellow-500 duration-300"
+          >
             <div>
               <CIcon icon={cilBlurLinear} className="me-2" />
               Thông tin đơn hàng
@@ -76,22 +90,26 @@ export default function BasicMenu() {
             </div>
           </Link>
         </div>
-        
+
         <div className="hover:bg-gray-300 py-1 px-4 ">
-          <Link to="/thongtincanhan" className="no-underline text-gray-900 hover:text-yellow-500 duration-300">
+          <Link
+            to="/thongtincanhan"
+            className="no-underline text-gray-900 hover:text-yellow-500 duration-300"
+          >
             <div>
               <CIcon icon={cilUser} className="me-2" />
               Thông tin cá nhân
-              
             </div>
           </Link>
         </div>
         <div className="hover:bg-gray-300 py-1 px-4 ">
-          <Link to="/doimatkhau" className="no-underline text-gray-900 hover:text-yellow-500 duration-300">
+          <Link
+            to="/doimatkhau"
+            className="no-underline text-gray-900 hover:text-yellow-500 duration-300"
+          >
             <div>
               <CIcon icon={cilLockLocked} className="me-2" />
               Đổi mật khẩu
-              
             </div>
           </Link>
         </div>

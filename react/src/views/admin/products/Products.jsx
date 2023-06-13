@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { AiFillEdit, AiOutlineDelete, AiOutlineDownload, AiOutlinePlus } from "react-icons/ai";
 import { DataContext } from "../../../context/DataContext";
-import axios from "axios";
+
 
 import Swal from "sweetalert2";
 
@@ -25,6 +25,9 @@ import { DetailProducts } from "../../../components/admin/products";
 import Loading from "../../../components/Loading";
 import UseTitle from "../../../hook/UseTitle";
 import { Button } from "primereact/button";
+import axiosClient from "../../../axios-client";
+import axios from "axios";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 
 const Products = () => {
   // UseTitle("Loại sản phẩm");
@@ -42,7 +45,7 @@ const Products = () => {
     }
   }, []);
   const fetchProducts = async () => {
-    await axios.get(`${API}/api/products/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/products/`).then(({ data }) => {
       dispatch({ type: "FETCH_PRODUCTS", payload: data });
       setLoading(false);
     });
@@ -227,7 +230,7 @@ const Products = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .delete(`${API}/api/products/deleteAll`, {
         data: {
           dataId: getIds(selectedData),
@@ -248,9 +251,19 @@ const Products = () => {
       })
       .catch((err) => console.log(err));
   };
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Quản lý sản phẩm",
+    },
+  ];
 
   return (
     <div className="relative ">
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
       {!loading && (
         <div className="relative  ">
@@ -422,7 +435,7 @@ export default Products;
 // ];
 
 // const handleDeleteProducts = () => {
-//   axios
+//   axiosClient
 //     .delete(`${API}/api/deleteAll/`, { data: { selectedData } })
 //     .then(() => {
 //       setCategories(

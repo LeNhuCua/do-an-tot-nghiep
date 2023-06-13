@@ -1,4 +1,4 @@
-import axios from "axios";
+
 import React, { useContext, useEffect, useState } from "react";
 import { API } from "../../../API";
 import OrderGrid from "../../../components/admin/datatable/OrderGrid";
@@ -11,6 +11,8 @@ import Loading from "../../../components/Loading";
 import Swal from "sweetalert2";
 import DetailOrder from "./DetailOrder";
 import { DataContext } from "../../../context/DataContext";
+import axiosClient from "../../../axios-client";
+import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 
 const OrderNew = () => {
   // const [orderNew, setOrderNew] = useState([]);
@@ -24,7 +26,7 @@ const OrderNew = () => {
     fetchOrdersNew();
   }, []);
   const fetchOrdersNew = async () => {
-    await axios.get(`${API}/api/orders/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/orders/`).then(({ data }) => {
       // dispatch({ type: "FETCH_PRODUCTS", payload: data });
       dispatch({ type: "FETCH_NEW_ORDER", payload: data });
       setLoading(false);
@@ -63,7 +65,7 @@ const OrderNew = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .put(`${API}/api/orders/orderCancel?orderId=${id}`)
       .then(({ data }) => {
         if (data.status === 200) {
@@ -98,7 +100,7 @@ const OrderNew = () => {
     if (!isConfirm) {
       return;
     }
-    await axios
+    await axiosClient
       .put(`${API}/api/orders/orderCheck?orderId=${id}`)
       .then(({ data }) => {
         if (data.status === 200) {
@@ -177,9 +179,19 @@ const OrderNew = () => {
       body: actionButtons,
     },
   ];
+
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Đơn hàng mới",
+    },
+  ];
   return (
     <div>
-      
+       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
 
       {!loading && <OrderGrid data={orderNews} col={col} />}

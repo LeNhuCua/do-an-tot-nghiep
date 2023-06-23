@@ -131,13 +131,14 @@ const OrdersBeingProcessed = () => {
     const getDetail = ordersBeingProcessed.find(
       (orderNew) => orderNew.orderId === orderId
     );
-  
+      
     if (getDetail) {
       setOrderPrint(getDetail);
       setTimeout(() => {
         handlePrint();
       }, 0);
     }
+    console.log(getDetail);
     // Do something with the orderId if needed
   };
   

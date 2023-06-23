@@ -9,14 +9,23 @@ import ScrollButton from "../../components/scrollbutton/ScrollButton";
 import { SidebarContext } from "../../context/customer/SideBarContext";
 import ForgotPassword from "../../views/resetpassword/ForgotPassword";
 import ResetPasswordPage from "../../views/resetpassword/ResetPasswordPage ";
+import { API } from "../../API";
 
 const DefaultLayout = () => {
   UseTitle("Vàng bạc Kim Huy");
-  const { setUser, tokenCustomer } = useStateContext();
+  const { setUser, tokenCustomer, setInfo } = useStateContext();
 
   useEffect(() => {
     if (tokenCustomer) {
-      axiosClient.get("/user").then((res) => {
+      axiosClient.get(`${API}/api/cus-products/info`).then((res) => {
+        setInfo(res.data[0]);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tokenCustomer) {
+      axiosClient.get(`${API}/api/user`).then((res) => {
         setUser(res.data.user);
       });
     }
@@ -47,37 +56,18 @@ const DefaultLayout = () => {
   return (
     <div className="font-sans w-full">
       <div className={`relative`}>
-        <div
-        // className={`relative xl:left-0 ${
-        //   isOpenSidebar ? "-left-[250px]" : ""
-        // }`}
-        >
+        <div>
           <AppHeader />
           <div>
             <AppSidebar />
           </div>
           <div className={`${isOpenSidebar ? "select-none" : ""}`}>
-   
-           
             <AppContent />
           </div>
           <div className="mt-8">
             <AppFooter />
           </div>
-          {/* <div className="mt-8">
-            <Register />
-            <Footer />
-            <CopyRight />
-          </div> */}
         </div>
-        {/* {isOpenSidebar ? <AppSidebar /> : ""}
-        <div
-          className={`absolute xl:w-0 xl:h-0 ${
-            isOpenSidebar
-              ? "absolute w-[calc(100%-250px)] top-0 h-full bg-[rgba(0,0,0,0.3)] z-50"
-              : ""
-          } `}
-        ></div> */}
       </div>
       <ScrollButton />
     </div>

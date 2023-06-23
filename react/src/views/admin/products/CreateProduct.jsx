@@ -321,7 +321,7 @@ export default function CreateProduct() {
             timer: 1500,
           });
           fetchProducts()
-          // navigate("/quantri/sanpham");
+          navigate("/quantri/sanpham");
 
           // reset();
           setImage(null);
@@ -708,8 +708,9 @@ export default function CreateProduct() {
                 value={price}
                 onChange={(e) => setPrice(e.value)}
                 type="text"
-                placeholder="Vd: 1200000"
+                placeholder="Vd: 1.200.000"
                 className="w-full md:w-14rem"
+                min={0}
               />
 
               <label htmlFor="price">Giá bán</label>
@@ -725,6 +726,7 @@ export default function CreateProduct() {
                 type="text"
                 placeholder="Vd: 12"
                 className="w-full md:w-14rem"
+                min={0}
               />
 
               <label htmlFor="number">Số lượng nhập</label>
@@ -738,8 +740,9 @@ export default function CreateProduct() {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 type="text"
-                placeholder="Vd: 1.200.000"
+                placeholder="Vd: 1.2"
                 className="w-full md:w-14rem"
+                min={0}
               />
               <label htmlFor="price1">Trọng lượng / Chiều dài</label>
             </span>
@@ -772,7 +775,7 @@ export default function CreateProduct() {
             </button> */}
           </div>
         </div>
-        <div className="grid gap-2 grid-cols-3  lg:grid-cols-3">
+        <div className="grid gap-2 grid-cols-2  lg:grid-cols-3">
           {dataWeight.map((data) => (
             <div className="border p-2 rounded-md relative" key={data.sizeId}>
               <button
@@ -782,7 +785,7 @@ export default function CreateProduct() {
               >
                 Xoá
               </button>
-              <h6>Kích thước: {data.sizeValue}</h6>
+              <h6 className="mt-4 xl:mt-0">Kích thước: {data.sizeValue}</h6>
               {/* <h6>Giá: {data.price}</h6> */}
               <h6 className="">
                 Giá:{" "}

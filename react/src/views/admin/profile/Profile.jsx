@@ -11,18 +11,39 @@ import Swal from "sweetalert2";
 import axiosClient from "../../../axios-client";
 import { Calendar } from "primereact/calendar";
 import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
+import FormatDate from "../../../hook/formatDate/FormatDate";
+import Loading from "../../../components/Loading";
+
 const Profile = () => {
+  
+  // const formatDate = (date) => {
+   
+  //   const year = date.getFullYear();
+  //   // Lấy tháng, nếu là tháng 1-9 thì thêm số 0 ở đầu
+  //   const month =
+  //     date.getMonth() + 1 < 10
+  //       ? "0" + (date.getMonth() + 1)
+  //       : date.getMonth() + 1;
+  //   // Lấy ngày, nếu là ngày 1-9 thì thêm số 0 ở đầu
+  //   const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+  //   return `${year}-${month}-${day}`;
+  // };
+
   const formatDate = (date) => {
-    const year = date.getFullYear();
+    const dateTime = new Date(date);
+    const year = dateTime.getFullYear();
     // Lấy tháng, nếu là tháng 1-9 thì thêm số 0 ở đầu
     const month =
-      date.getMonth() + 1 < 10
-        ? "0" + (date.getMonth() + 1)
-        : date.getMonth() + 1;
+      dateTime.getMonth() + 1 < 10
+        ? "0" + (dateTime.getMonth() + 1)
+        : dateTime.getMonth() + 1;
     // Lấy ngày, nếu là ngày 1-9 thì thêm số 0 ở đầu
-    const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-    return `${year}-${month}-${day}`;
+    const day =
+      dateTime.getDate() < 10 ? "0" + dateTime.getDate() : dateTime.getDate();
+      return `${year}-${month}-${day}`;
   };
+
+
   const today = new Date();
   
   const { user, setUser } = useStateContext();
@@ -86,6 +107,7 @@ const Profile = () => {
       setActiveAvatar(true);
     }
   };
+  const [loading, setLoading] = useState(false);
 
   const editUserInfo = async () => {
     const formData = new FormData();
@@ -96,6 +118,8 @@ const Profile = () => {
     formData.append("avatar", image);
     console.log(typeof userBirthDay);
     console.log(typeof null);
+    setLoading(true);
+
     await axiosClient
       .post(`${API}/api/edit-user`, formData)
       .then((response) => {
@@ -114,7 +138,10 @@ const Profile = () => {
             text: "Vui lòng kiểm tra lại thông tin!",
           });
         }
-      });
+      })    .catch((err) => {})
+      .finally(() => {
+        setLoading(false);
+      });;
   };
 
   const ListBreadcrumb = [
@@ -131,11 +158,13 @@ const Profile = () => {
   return (
     <div>
        <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+      {loading && <Loading />}
+
        <div className="bg-gradient-to-r from-cyan-500 to-blue-500  xl:p-9">
       <div className="p-8 bg-white shadow mt-24">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="relative">
-            fsd
+         
             <div className="w-48 h-48 bg-indigo-100 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-24 flex items-center justify-center text-indigo-500">
               <input
                 type="file"
@@ -261,6 +290,7 @@ const Profile = () => {
                 defaultValue={user ? user.phoneNumber : ""}
                 value={userPhone}
                 onChange={(e) => setUserPhone(e.target.value)}
+                maxLength={10}
               />
             ) : (
               // <input
@@ -270,9 +300,10 @@ const Profile = () => {
               //   onBlur={handleInputBlur}
               // />
               <span className=" text-gray-700" onClick={handleInputPhoneClick}>
-                {user.phoneNumber
+                {user.phoneNumber != null
                   ? user.phoneNumber
                   : "Chưa cập nhật số điện thoại"}
+                  {/* 0776223708 */}
               </span>
             )}
           </p>
@@ -306,7 +337,7 @@ const Profile = () => {
                 className=" text-gray-700"
                 onClick={handleInputBirthDayClick}
               >
-                {user.birthday ? user.birthday : "Chưa cập nhật số ngày sinh"}
+                {user.birthday ? FormatDate(user.birthday) : "Chưa cập nhật số ngày sinh"}
               </span>
             )}
           </p>

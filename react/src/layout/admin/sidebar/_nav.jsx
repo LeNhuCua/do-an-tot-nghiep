@@ -32,7 +32,7 @@ const _nav = [
   },
   {
     component: CNavGroup,
-    name: "Menu",
+    name: "Danh mục",
     icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
     items: [
       {
@@ -79,28 +79,41 @@ const _nav = [
       // },
     ],
   },
+
   {
-    component: CNavGroup,
-    name: "Giới thiệu ",
-    icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: "Slide",
-        to: "/quantri/slide",
-      },
-      {
-        component: CNavItem,
-        name: "Đơn vị tính",
-        to: "/quantri/donvitinh",
-      },
-      // {
-      //   component: CNavItem,
-      //   name: "Loại sản phẩm",
-      //   to: "/quantri/loaisanpham",
-      // },
-    ],
+    component: CNavItem,
+    name: "Slide",
+    to: "/quantri/slide",
+    icon: <CIcon icon={cilCalculator} customClassName="nav-icon" />,
   },
+  {
+    component: CNavItem,
+    name: "Thông tin cửa hàng",
+    to: "/quantri/thongtin",
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  },
+  // {
+  //   component: CNavGroup,
+  //   name: "Giới thiệu ",
+  //   icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: "Slide",
+  //       to: "/quantri/slide",
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: "Thông tin cửa hàng",
+  //       to: "/quantri/donvitinh",
+  //     },
+  //     // {
+  //     //   component: CNavItem,
+  //     //   name: "Loại sản phẩm",
+  //     //   to: "/quantri/loaisanpham",
+  //     // },
+  //   ],
+  // },
   // {
   //   component: CNavItem,
   //   name: 'Danh mục',
@@ -128,7 +141,7 @@ const _nav = [
 
   {
     component: CNavTitle,
-    name: "Components",
+    name: "BÁN HÀNG",
   },
 
   {
@@ -138,32 +151,32 @@ const _nav = [
     icon: <CIcon icon={cilCursor} customClassName="nav-icon" />,
   },
 
-  // {
-  //   component: CNavGroup,
-  //   name: "Bán hàng",
-  //   icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: "Lập hoá đơn",
-  //       to: "/quantri/laphoadon",
-  //     },
-  //     {
-  //       component: CNavItem,
-  //       name: "Đơn hàng online",
-  //       to: "/quantri/donhangonline",
-  //     },
-  //     // {
-  //     //   component: CNavItem,
-  //     //   name: "Loại sản phẩm",
-  //     //   to: "/quantri/loaisanpham",
-  //     // },
-  //   ],
-  // },
+  {
+    component: CNavGroup,
+    name: "Thống kê",
+    icon: <CIcon icon={cilDrop} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: "Tại cửa hàng",
+        to: "/quantri/thongke",
+      },
+      {
+        component: CNavItem,
+        name: "Online",
+        to: "/quantri/donhangonline",
+      },
+      // {
+      //   component: CNavItem,
+      //   name: "Loại sản phẩm",
+      //   to: "/quantri/loaisanpham",
+      // },
+    ],
+  },
   {
     component: CNavItem,
-    name: "Thống kê",
-    to: "/quantri/thongke",
+    name: "Phí giao hàng",
+    to: "/quantri/phigiaohang",
     icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
   },
   {
@@ -375,5 +388,6 @@ const _nav = [
   //   icon: <CIcon icon={cilDescription} customClassName="nav-icon" />,
   // },
 ];
+
 
 export default _nav;

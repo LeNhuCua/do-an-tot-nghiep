@@ -11,6 +11,7 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { FilterMatchMode } from "primereact/api";
 import { InputText } from "primereact/inputtext";
+import axiosClient from "../../../axios-client.js";
 
 const StatisticalByMonth = () => {
   const formatMonth = (date) => {
@@ -53,7 +54,7 @@ const StatisticalByMonth = () => {
   }, []);
 
   useEffect(() => {
-    axios
+    axiosClient
       .get(
         `${API}/api/statistical/sales-data-month?month=${formatMonth(
           date
@@ -193,7 +194,7 @@ const StatisticalByMonth = () => {
               ></Column>
 
               <Column field="name" header="Sản phẩm"></Column>
-              <Column field="avatar" header="Sản phẩm"></Column>
+    
               <Column field="so_luong_ban" header="Số lượng bán"></Column>
             </DataTable>
           ) : (

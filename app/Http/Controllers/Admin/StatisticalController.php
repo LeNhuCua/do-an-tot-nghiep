@@ -59,8 +59,6 @@ class StatisticalController extends Controller
     {
         $date_7days_ago = Carbon::today()->subWeek();
         $dateObj = Carbon::createFromFormat('Y-m-d', $date);
-
-
         $chartData = DB::table('invoices')
 
             ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(totalAmount) as total_sale'))
@@ -83,6 +81,7 @@ class StatisticalController extends Controller
                     'hoverBackgroundColor' => 'rgb(70,130,180)',
                     'hoverBorderColor' => 'rgb(30,144,255)',
                     'data' => $data,
+                
                 ],
             ],
         ];

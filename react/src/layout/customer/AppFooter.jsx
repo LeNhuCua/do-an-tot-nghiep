@@ -118,10 +118,10 @@ const AppFooter = () => {
                 </ul>
               </div>
             </div>
-            <p>
+            {/* <p>
               Số ĐKKD: 41N8041309 cấp ngày 17/8/2018. Nơi cấp Ủy Ban Nhân Dân
               Quận Tân Bình. Hộ Kinh Doanh: Kim huy. Hotline: 0909.300.746
-            </p>
+            </p> */}
             <h1 className="text-2xl uppercase font-bold text-center">
               Chứng nhận
             </h1>

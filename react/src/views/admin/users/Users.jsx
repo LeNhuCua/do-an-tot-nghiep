@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { AiFillEdit, AiOutlinePlus } from "react-icons/ai";
+import { AiFillEdit, AiOutlineDownload, AiOutlinePlus } from "react-icons/ai";
 import { DataContext } from "../../../context/DataContext";
 
 import Swal from "sweetalert2";
@@ -26,6 +26,8 @@ import { DetailTypeCategory } from "../../../components/admin/typecategories";
 import axiosClient from "../../../axios-client";
 import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
 import DataGridNoStatus from "../../../components/admin/datatable/DataGridNoStatus";
+import { DetailUser } from "../../../components/admin/users";
+import axios from "axios";
 
 const Users = () => {
   // UseTitle("Loại sản phẩm");
@@ -69,7 +71,7 @@ const Users = () => {
     return (
       <>
         <Tippy content="Sửa">
-          <Link to={`/quantri/danhmuccon/chinhsua/${rowData.userId}`}>
+          <Link to={`/quantri/quantrivien/chinhsua/${rowData.userId}`}>
             <IconButton color="success" className="me-2 hover:ring-2 ">
               <AiFillEdit />
             </IconButton>
@@ -136,7 +138,26 @@ const Users = () => {
       </div>
     );
   };
+  const handleDownload = () => {
+    const fileUrl = "/excel/sanpham.csv";
 
+    axios({
+      url: fileUrl,
+      method: "GET",
+      responseType: "blob",
+    })
+      .then((response) => {
+        const blob = new Blob([response.data]);
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = downloadUrl;
+        link.download = "Mau_Excel_SanPham.csv";
+        link.click();
+      })
+      .catch((error) => {
+        console.error("Đã xảy ra lỗi:", error);
+      });
+  };
   const rightToolbarTemplate = () => {
     return (
       <div className="flex gap-3">
@@ -155,8 +176,18 @@ const Users = () => {
             disabled={!selectedData || !selectedData.length}
           ></Button>
         </div>
+        <div className="pointer-events-none">
+        <UploadExcelForm  ApiExcel={ApiExcel} fetch={fetchUsers} />
 
-        <UploadExcelForm className="" ApiExcel={ApiExcel} fetch={fetchUsers} />
+        </div>
+        <div className="pointer-events-none">
+        <Tippy content="Mẫu Excel">
+          <Fab onClick={handleDownload} className="z-0" color="info" component="label">
+            <AiOutlineDownload />
+          </Fab>
+        </Tippy>
+        </div>
+     
       </div>
     );
   };
@@ -179,7 +210,7 @@ const Users = () => {
     setSelectedData(_data);
     const isConfirm = await Swal.fire({
       title: `Bạn có chắc muốn xoá  ?`,
-      text: "Xoá các danh mục này sẽ xoá đi toàn bộ sản phẩm thuộc danh mục này có trong cửa hàng. Bạn sẽ không thể hoàn tác!",
+      text: "Xoá  nhân viên này sẽ xoá !",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -207,12 +238,7 @@ const Users = () => {
               (product) => !getIds(selectedData).includes(product.userId)
             ),
           });
-          dispatch({
-            type: "SET_PRODUCTS",
-            payload: products.filter(
-              (product) => !getIds(selectedData).includes(product.userId)
-            ),
-          });
+
           setSelectedData([]);
           Swal.fire({
             icon: "success",
@@ -255,7 +281,7 @@ const Users = () => {
           />
 
           {Object.keys(detailFind).length ? (
-            <DetailTypeCategory
+            <DetailUser
               detailFind={detailFind}
               visible={visible}
               setVisible={setVisible}

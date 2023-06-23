@@ -1,0 +1,10 @@
+.p-button.p-component.p-speeddial-button.p-button-rounded.p-speeddial-rotate.p-button-icon-only {
+    width: 40px; /* Thu nhỏ chiều rộng của SpeedDial */
+    height: 40px; /* Thu nhỏ chiều cao của SpeedDial */
+    outline: none !important;
+  }
+  
+  .custom-icon {
+    font-size: 20px; /* Thu nhỏ kích thước biểu tượng */
+  }
+  

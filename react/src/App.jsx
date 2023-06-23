@@ -7,6 +7,11 @@ import "react-toastify/dist/ReactToastify.css";
 import ScrollToTop from "./hook/autoscrolltotop/ScrollToTop";
 import ForgotPassword from "./views/resetpassword/ForgotPassword";
 import ResetPasswordPage from "./views/resetpassword/ResetPasswordPage ";
+
+
+import ForgotPasswordAdmin from "./views/admin/resetpassword/ForgotPassword";
+import ResetPasswordPageAdmin from "./views/admin/resetpassword/ResetPasswordPage ";
+
 const loading = (
   <div className="pt-3 text-center">
     <div className="sk-spinner sk-spinner-pulse"></div>
@@ -41,12 +46,20 @@ function App() {
               name="Login Page"
               element={<Login />}
             />
+
+            <Route exact path="/quantri/forgot-password" element={<ForgotPasswordAdmin />} />
             <Route
+              exact
+              path="/quantri/reset-password/:account"
+              element={<ResetPasswordPageAdmin />}
+            />
+
+            {/* <Route
               exact
               path="/quantri/dangki"
               name="Register Page"
               element={<Register />}
-            />
+            /> */}
 
             <Route exact path="/404" name="Page 404" element={<Page404 />} />
             <Route exact path="/500" name="Page 500" element={<Page500 />} />
@@ -81,11 +94,7 @@ function App() {
               element={<RegisterCustomer />}
             />
 
-            <Route
-              exact
-              path="/forgot-password"
-              element={<ForgotPassword/>}
-            />
+            <Route exact path="/forgot-password" element={<ForgotPassword />} />
             <Route
               exact
               path="/reset-password/:account"

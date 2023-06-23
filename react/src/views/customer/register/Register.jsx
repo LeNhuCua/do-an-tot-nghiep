@@ -15,6 +15,7 @@ import { InputText } from "primereact/inputtext";
 import { CCol, CForm } from "@coreui/react";
 import logomain from "../../../assets/images/logomain.png";
 import logo from "../../../assets/images/logo.png";
+import Loading from "../../../components/Loading";
 const Register = () => {
   const {
     register,
@@ -29,7 +30,7 @@ const Register = () => {
   const { setUser, setToken } = useStateContext();
 
   UseTitle("Đăng ký");
-
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState([]);
   const navigate = useNavigate();
   const onSubmit = (data) => {
@@ -42,6 +43,7 @@ const Register = () => {
       // role_id: role.current.value,
       // role_id: 1
     };
+    setLoading(true);
     axiosClient
       .post(`/cus-products/signupCus`, payload)
       .then(({ data }) => {
@@ -55,7 +57,7 @@ const Register = () => {
           // setToken(data.token);
           Swal.fire({
             icon: "success",
-            text: "Đăng kí tài khoản thành công",
+            text: "Đăng kí tài khoản thành công, Vui lòng vào email để xác nhận",
           });
 
           reset();
@@ -64,11 +66,15 @@ const Register = () => {
 
         // navigate('/admin/home')
       })
-      .catch((err) => {});
+      .catch((err) => {}).finally(() => {
+        setLoading(false);
+      });
+    
   };
 
   return (
     <>
+         {loading && <Loading />}
       <section className="bg-gray-5 bg-green-200">
         {/* {error && (
           <div className="alert">
@@ -209,6 +215,10 @@ const Register = () => {
                           maxLength: {
                             value: 50,
                             message: "Giới hạn chỉ 50 kí tự",
+                          },
+                          minLength: {
+                            value: 6,
+                            message: "Tối thiểu 6 kí tự",
                           },
                         })}
                         onKeyUp={() => {

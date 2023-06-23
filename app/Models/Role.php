@@ -18,6 +18,7 @@ class Role extends Model
      */
 
     protected $fillable = [
+        'id',
         'name',
     ];
     protected $primaryKey = 'id';
@@ -33,9 +34,6 @@ class Role extends Model
     ];
     protected $table = 'roles';
 
-    public function admins() {
-        return $this->belongsToMany(Admin::class);
-    }
     public function permissions()
     {
         return $this->belongsToMany(Permissions::class, 'role_permission');

@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from "react";
 import { API } from "../../../API";
 import OrderGrid from "../../../components/admin/datatable/OrderGrid";
@@ -13,7 +12,8 @@ import DetailOrder from "./DetailOrder";
 import { DataContext } from "../../../context/DataContext";
 import axiosClient from "../../../axios-client";
 import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb";
-
+import { SpeedDial } from "primereact/speeddial";
+import "./style.css";
 const OrderNew = () => {
   // const [orderNew, setOrderNew] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +21,27 @@ const OrderNew = () => {
   const { state, dispatch } = useContext(DataContext);
 
   const { orderNews } = state;
+  const items = [
+    {
+      label: "Add",
+      icon: "pi pi-pencil",
+      command: () => {
+        toast.current.show({
+          severity: "info",
+          summary: "Add",
+          detail: "Data Added",
+        });
+      },
+    },
+    {
+      label: "Update",
+      icon: "pi pi-refresh",
+      command: () => {
+        alert("fsd")
+      },
+    },
+   
+  ];
 
   useEffect(() => {
     fetchOrdersNew();
@@ -82,11 +103,9 @@ const OrderNew = () => {
       .catch(() => {});
   };
 
-
-
   const orderCheck = async (id) => {
     const isConfirm = await Swal.fire({
-      title: `Xác nhận đơn hàng?`,
+      title: `Xác nhận đơn hàng và thanh toán tiền cọc?`,
       // text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
@@ -117,11 +136,9 @@ const OrderNew = () => {
       .catch(() => {});
   };
 
-
-
   const actionButtons = (rowData) => {
     return (
-      <>
+      <div className="relative">
         <Tippy content="Xác nhận đơn">
           <IconButton
             color="success"
@@ -150,7 +167,26 @@ const OrderNew = () => {
             <AiOutlineClose />
           </IconButton>
         </Tippy>
-      </>
+
+        {/* <SpeedDial
+          model={items}
+
+          type="semi-circle"
+          direction="up"
+          color="error"
+     
+          rounded
+          text
+          aria-label="Filter"
+          className="absolute right-3 top-0 z-[100]"
+          buttonClassName="p-speeddial-button"
+          size="small"
+          
+          // onClick={() => orderCancer(rowData.orderId)}
+        >
+         
+        </SpeedDial> */}
+      </div>
     );
   };
   const col = [
@@ -191,7 +227,7 @@ const OrderNew = () => {
   ];
   return (
     <div>
-       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
 
       {!loading && <OrderGrid data={orderNews} col={col} />}

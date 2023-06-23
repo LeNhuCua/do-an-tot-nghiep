@@ -4,10 +4,14 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import avatar from "../../../assets/images/avatar.png";
 
-
 import { CAvatar, CBadge, CDropdownHeader, CDropdownItem } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
-import { cilBell, cilLockLocked, cilUser } from "@coreui/icons";
+import {
+  cilAccountLogout,
+  cilBell,
+  cilLockLocked,
+  cilUser,
+} from "@coreui/icons";
 import axiosClient from "../../../axios-client";
 import { useStateContext } from "../../../context/ContextProvider";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -23,7 +27,7 @@ export default function BasicMenu() {
     setAnchorEl(null);
   };
 
-  const { setUser, setToken, token ,user} = useStateContext();
+  const { setUser, setToken, token, user } = useStateContext();
   const navi = useNavigate();
   const onLogout = (ev) => {
     ev.preventDefault();
@@ -38,14 +42,14 @@ export default function BasicMenu() {
   return (
     <div>
       <div onClick={handleClick} className="hover:cursor-pointer">
-        {
-          user ? <CAvatar src={`${API_IMAGES}/${user.avatar}`} size="md" /> :    <CAvatar src={avatar} size="md" />
-        }
-     
+        {user.avatar ? (
+          <CAvatar src={`${API_IMAGES}/${user.avatar}`} size="md" />
+        ) : (
+          <CAvatar src={avatar} size="md" />
+        )}
       </div>
 
       <Menu
-
         id="basic-menu"
         anchorEl={anchorEl}
         open={open}
@@ -58,17 +62,30 @@ export default function BasicMenu() {
           Account
         </CDropdownHeader>
 
-        <div className="hover:bg-gray-300 py-1 px-4">
-          <CDropdownItem href="11">
-            <CIcon icon={cilBell} className="me-2" />
-            Updates
-            <CBadge color="info" className="ms-2">
-              42
-            </CBadge>
-          </CDropdownItem>
+        <div className="hover:bg-gray-300 py-1 px-4 ">
+          <Link
+            to="/quantri/thongtincanhan"
+            className="no-underline text-gray-900 hover:text-yellow-500 duration-300"
+          >
+            <div>
+              <CIcon icon={cilUser} className="me-2" />
+              Thông tin cá nhân
+            </div>
+          </Link>
+        </div>
+        <div className="hover:bg-gray-300 py-1 px-4 ">
+          <Link
+            to="/quantri/doimatkhau"
+            className="no-underline text-gray-900 hover:text-yellow-500 duration-300"
+          >
+            <div>
+              <CIcon icon={cilLockLocked} className="me-2" />
+              Đổi mật khẩu
+            </div>
+          </Link>
         </div>
 
-        <div className="hover:bg-gray-300 py-1 px-4">
+        {/* <div className="hover:bg-gray-300 py-1 px-4">
           <Link to="/quantri/thongtincanhan" className="no-underline">
             <div >
               <CIcon icon={cilBell} className="me-2" />
@@ -78,11 +95,10 @@ export default function BasicMenu() {
               </CBadge>
             </div>
           </Link>
-        </div>
+        </div> */}
 
-
-        <MenuItem className="border" onClick={onLogout}>
-          <CIcon icon={cilLockLocked} className="me-2" />
+        <MenuItem className="border font-bold" onClick={onLogout}>
+          <CIcon icon={cilAccountLogout} className="me-2" />
           Đăng xuất
         </MenuItem>
       </Menu>

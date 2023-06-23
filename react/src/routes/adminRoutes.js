@@ -1,8 +1,15 @@
 import React from "react";
 
+
 //  ---- QUẢN TRỊ ----
+
+
+const ChangePassword = React.lazy(() => import("../views/admin/changepass/ChangePassword"));
+
+
 const Dashboard = React.lazy(() => import("../views/dashboard/Dashboard"));
 const Profile = React.lazy(() => import("../views/admin/profile/Profile"));
+const Info = React.lazy(() => import("../views/admin/info/Info"));
 const EditProfile = React.lazy(() =>
   import("../views/admin/profile/EditProfile")
 );
@@ -68,9 +75,20 @@ const CreateSlide = React.lazy(() =>
 //HOÁ ĐƠN
 const Invoices = React.lazy(() => import("../views/admin/invoices/Invoices"));
 
+
+// thống kê
 const SalesReport = React.lazy(() =>
   import("../views/admin/totalrevenue/TotalRevenue")
 );
+const SalesReportOnline = React.lazy(() =>
+  import("../views/admin/totalrevenueonline/TotalRevenueOnline")
+);
+
+//phí giao hàng
+const DeliveryCharges = React.lazy(() =>
+  import("../views/admin/deliverycharge/DeliveryCharges")
+);
+
 
 //xử lí đơn hàng
 const OrderNew = React.lazy(() => import("../views/admin/order/OrderNew"));
@@ -78,7 +96,15 @@ const OrderNew = React.lazy(() => import("../views/admin/order/OrderNew"));
 const OrdersBeingProcessed = React.lazy(() =>
   import("../views/admin/order/OrdersBeingProcessed")
 );
-
+const OrdersBeingDelivered = React.lazy(() =>
+  import("../views/admin/order/OrdersBeingDelivered")
+);
+const OrdersDelivered = React.lazy(() =>
+  import("../views/admin/order/OrdersDelivered")
+);
+const OrdersCancer= React.lazy(() =>
+  import("../views/admin/order/OrdersCancer")
+);
 // NGười dùng quản trị
 const Users = React.lazy(() => import("../views/admin/users/Users"));
 const CreateUser = React.lazy(() => import("../views/admin/users/CreateUser"));
@@ -97,7 +123,7 @@ const routes = [
     exact: true,
   },
   { path: "/thongtincanhan/chinhsua", name: "Chỉnh sửa", element: EditProfile },
-
+  { path: "/doimatkhau", name: "Dổi mật khẩu", element: ChangePassword },
   // ,
   // {
   //   path: "/thongtincanhan",
@@ -183,16 +209,24 @@ const routes = [
   { path: "/quantrivien", name: "Quản trị", element: Users },
   { path: "/quantrivien/taomoi", name: "Tạo quản trị", element:  CreateUser},
   {
-    path: "/quantrivien/chinhsua/:account",
+    path: "/quantrivien/chinhsua/:id",
     name: "Sửa quản trị",
     element: EditUser,
   },
+
+  { path: "/thongtin", name: "Thông tin", element: Info },
 
   //Lap hoa don
   { path: "/laphoadon", name: "Lập hoá đơn", element: Invoices },
 
   //THỐNG KÊ
   { path: "/thongke", name: "Thống kê", element: SalesReport },
+  { path: "/donhangonline", name: "Thống kê", element: SalesReportOnline },
+
+  //Lap hoa don
+  { path: "/phigiaohang", name: "Phí giao hàng", element: DeliveryCharges },
+
+
 
   //
   { path: "/donhangmoi", name: "Đơn hàng mới", element: OrderNew },
@@ -201,6 +235,23 @@ const routes = [
     name: "Đơn hàng đang xử lý",
     element: OrdersBeingProcessed,
   },
+  {
+    path: "/donhangdanggiao",
+    name: "Đơn hàng đang giao",
+    element: OrdersBeingDelivered,
+  },
+  {
+    path: "/donhangdagiao",
+    name: "Đơn hàng đã giao",
+    element: OrdersDelivered,
+  },
+
+  {
+    path: "/donhangdahuy",
+    name: "Đơn hàng đã huỷ",
+    element: OrdersCancer,
+  },
+  
 
   // { path: '/thongtincanhan/chinhsua', name: 'Chỉnh sửa', element: EditProfile },
 ];

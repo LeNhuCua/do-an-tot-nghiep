@@ -45,6 +45,9 @@ export default function DataGridNoStatus(props) {
     representative: { value: null, matchMode: FilterMatchMode.IN },
     status: { value: null, matchMode: FilterMatchMode.CONTAINS },
     verified: { value: null, matchMode: FilterMatchMode.EQUALS },
+    userId: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    "role.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
+
   });
 
 

@@ -24,4 +24,21 @@ class ProductSizeController extends Controller
             return response()->json(['message' => 'Không tìm size'], 404);
         }
     }
+
+
+    public function update(Request $request)
+    {
+        $productSizeId = $request->input('productSizeId');
+        $order = ProductSize::where('productSizeId', $productSizeId)->first();
+        if ($order) {
+            $order->number += $request->number;
+            $order->save();
+            return response()->json([
+                'status' => 200,
+                'order' => $order
+            ]);
+        } else {
+            // Xử lý khi không tìm thấy đơn hàng
+        }
+    }
 }

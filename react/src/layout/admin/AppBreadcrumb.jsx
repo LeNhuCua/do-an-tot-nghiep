@@ -58,7 +58,7 @@ import { Link } from "react-router-dom";
 
 const AppBreadcrumb = ({ ListBreadcrumb }) => {
   return (
-    <CContainer fluid className="mb-10">
+    <CContainer fluid className="mb-10 ">
            <CHeaderDivider />
       <CBreadcrumb>
         <CBreadcrumbItem>

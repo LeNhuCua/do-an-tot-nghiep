@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { AiOutlineClose, AiOutlineUpload } from "react-icons/ai";
 import { GrFormClose } from "react-icons/gr";
-import { API_IMAGES } from "../../../API";
+import { API, API_IMAGES } from "../../../API";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -50,7 +50,8 @@ function UploadImages({ images, setImages, imagesCurrent ,setImagesCurrent}) {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Xác nhận!",
+      cancelButtonText: "Huỷ bỏ!",
     }).then((result) => {
       return result.isConfirmed;
     });
@@ -60,7 +61,7 @@ function UploadImages({ images, setImages, imagesCurrent ,setImagesCurrent}) {
     }
 
     await axios
-      .delete(`http://localhost:8000/api/products/${id}`)
+      .delete(`${API}/api/products/${id}`)
       .then(({ data }) => {
         Swal.fire({
           icon: "success",

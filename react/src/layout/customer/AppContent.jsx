@@ -8,7 +8,7 @@ import ScrollToTop from "../../hook/autoscrolltotop/ScrollToTop";
 
 const AppContent = () => {
   return (
-    <main className="min-h-[100vh]">
+    <main className="min-h-[90vh]">
       <Suspense fallback={<CSpinner color="primary" />}>
         <Routes>
           {routes.map((route, idx) => {

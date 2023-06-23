@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {  useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { CascadeSelect } from "primereact/cascadeselect";
-
 
 import { CCol, CForm } from "@coreui/react";
 import Swal from "sweetalert2";
@@ -15,7 +14,6 @@ import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { DataContext } from "../../../context/DataContext";
 
-
 import { AiOutlinePlus } from "react-icons/ai";
 import convertNameWithoutAccents from "../../../hook/admin/ConvertNameToAlias";
 import Loading from "../../../components/Loading";
@@ -27,7 +25,7 @@ import UploadImages from "../../../components/admin/products/UploadImages.jsx";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import axiosClient from "../../../axios-client.js";
 import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
-
+import DetailProductSize from "../../../components/admin/productsize/DetailProductSize.jsx";
 
 const EditProduct = () => {
   const {
@@ -184,13 +182,6 @@ const EditProduct = () => {
   }
   //tìm kiếm loại sản phẩm được chọn dựa vào bí danh và lấy lại dữ liệu nếu dữ liệu chưa tồn tại
   const updateData = async (data) => {
-    // const sizeData = Object.keys(data).reduce((acc, key) => {
-    //   if (key.includes("size")) {
-    //     acc.push(data[key]);
-    //   }
-    //   return acc;
-    // }, []);
-    // console.log(sizeData);
     const newFormData = new FormData();
     newFormData.append("name", data.name);
 
@@ -431,15 +422,29 @@ const EditProduct = () => {
     setDataWeight(newTodo);
   };
 
+  const [detailFind, setDetailFind] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const showDetail = async (id) => {
+    const getDetail = await productSize.find(
+      (category) => category.productSizeId === id
+    );
+
+    if (getDetail) {
+      setDetailFind(getDetail);
+      setVisible(!visible);
+    }
+  };
+
   const deleteSize = async (id) => {
     const isConfirm = await Swal.fire({
-      title: "Bạn có chắc muốn xoá kích thước  này?",
+      title: "Bạn có chắc muốn xoá kích thước này?",
       text: "Không thể hoàn tác!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Xác nhận!",
+      cancelButtonText: "Huỷ bỏ!",
     }).then((result) => {
       return result.isConfirmed;
     });
@@ -449,7 +454,7 @@ const EditProduct = () => {
     }
 
     await axiosClient
-      .delete(`http://localhost:8000/api/productsSize/${id}`)
+      .delete(`${API}/api/productsSize/${id}`)
       .then(({ data }) => {
         Swal.fire({
           icon: "success",
@@ -481,7 +486,7 @@ const EditProduct = () => {
 
   return (
     <div className="container">
-       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
+      <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       <Toast ref={toast} />
       {loading && <Loading />}
       {product ? (
@@ -730,37 +735,49 @@ const EditProduct = () => {
                   </div>
                 }
               >
-                <div className="grid gap-2 grid-cols-3  lg:grid-cols-3">
-                  {productSize && productSize.map((size, index) => (
-                    <div
-                      className="border p-2 rounded-md relative"
-                      key={size.productSizeId}
-                    >
-                      <button
-                        type="button"
-                        className="absolute top-1 right-1 text-red-600"
-                        onClick={() => deleteSize(size.productSizeId)}
+                <div className="grid gap-2 grid-cols-2  lg:grid-cols-3">
+                  {productSize &&
+                    productSize.map((size, index) => (
+                      <div
+                        className="border p-2 rounded-md relative"
+                        key={size.productSizeId}
                       >
-                        Xoá
-                      </button>
-                      <h6>Kích thước: {size.size[0].sizeValue}</h6>
-                      {/* <h6>Giá: {data.price}</h6> */}
-                      <h6 className="">
-                        Giá:{" "}
-                        {new Intl.NumberFormat({
-                          style: "currency",
-                          currency: "JPY",
-                        }).format(size.price)}
-                        <span> VNĐ</span>
-                      </h6>
-                      <h6>Số lượng: {size.number}</h6>
-                      <h6>
-                        Trọng lượng: {size.weight} {size.unitName}
-                      </h6>
-                    </div>
-                  ))}
+                        <div className="absolute top-1 right-1">
+                          <button
+                            type="button"
+                            className=" text-blue-500"
+                            onClick={() => showDetail(size.productSizeId)}
+                          >
+                            Nhập hàng
+                          </button>{" "}
+                          <button
+                            type="button"
+                            className=" text-red-600"
+                            onClick={() => deleteSize(size.productSizeId)}
+                          >
+                            Xoá
+                          </button>
+                        </div>
+
+                        <h6 className="mt-4 xl:mt-0">
+                          Kích thước: {size.size[0].sizeValue}
+                        </h6>
+                        {/* <h6>Giá: {data.price}</h6> */}
+                        <h6 className="">
+                          Giá:{" "}
+                          {new Intl.NumberFormat({
+                            style: "currency",
+                            currency: "JPY",
+                          }).format(size.price)}
+                          <span> VNĐ</span>
+                        </h6>
+                        <h6>Số lượng: {size.number}</h6>
+                        <h6>
+                          Trọng lượng: {size.weight} {size.unitName}
+                        </h6>
+                      </div>
+                    ))}
                 </div>
-              
               </AccordionTab>
             </Accordion>
             <div className="my-2 p-2">
@@ -786,8 +803,9 @@ const EditProduct = () => {
                       value={price}
                       onChange={(e) => setPrice(e.value)}
                       type="text"
-                      placeholder="Vd: 1200000"
+                      placeholder="Vd: 1.200.000"
                       className="w-full md:w-14rem"
+                      min={0}
                     />
 
                     <label htmlFor="price">Giá bán</label>
@@ -803,6 +821,7 @@ const EditProduct = () => {
                       type="text"
                       placeholder="Vd: 12"
                       className="w-full md:w-14rem"
+                      min={0}
                     />
 
                     <label htmlFor="number">Số lượng nhập</label>
@@ -816,7 +835,7 @@ const EditProduct = () => {
                       value={weight}
                       onChange={(e) => setWeight(e.target.value)}
                       type="text"
-                      placeholder="Vd: 1.200.000"
+                      placeholder="Vd: 1.2"
                       className="w-full md:w-14rem"
                     />
                     <label htmlFor="price1">Trọng lượng / Chiều dài</label>
@@ -899,6 +918,12 @@ const EditProduct = () => {
       ) : (
         ""
       )}
+      <DetailProductSize
+        fetchShippingCost={fetchProductsAll}
+        detailFind={detailFind}
+        visible={visible}
+        setVisible={setVisible}
+      />
     </div>
   );
 };

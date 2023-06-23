@@ -11,6 +11,9 @@ import axiosClient from "../../../axios-client";
 
 import logo from "../../../assets/images/logo.png";
 import logomain from "../../../assets/images/logomain.png";
+import axios from "axios";
+import { API } from "../../../API";
+import Loading from "../../../components/Loading";
 
 const Login = () => {
   const {
@@ -27,7 +30,7 @@ const Login = () => {
   if (token) {
     return <Navigate to="/quantri" />;
   }
-
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState([]);
   const navigate = useNavigate();
   const onSubmit = (data) => {
@@ -35,32 +38,41 @@ const Login = () => {
       account: data.account,
       password: data.password,
     };
+    axios.get(`${API}/sanctum/csrf-cookie`).then((response) => {
+      setLoading(true);
+      axiosClient.post(`${API}/api/login`, payload).then((res) => {
+        if (res.data.status === 200) {
+          if (res.data.role !== 2) {
+            setToken(res.data.token);
+            setUser(res.data.username);
+            navigate("/quantri");
+          }
 
-    axiosClient.post(`/login`, payload).then((res) => {
-      if (res.data.status === 200) {
-        setToken(res.data.token);
-        setUser(res.data.username);
-        navigate("/quantri");
-
-        // navigate("/quantri/dangnhap");
-      } else if (res.data.status === 401) {
-        setMessage([]);
-        Swal.fire({
-          icon: "error",
-          text: res.data.message,
-        });
-      } else {
-        setMessage(res.data.validation_error);
-        Swal.fire({
-          text: res.data.message,
-          icon: "error",
-        });
-      }
+          // navigate("/quantri/dangnhap");
+        } else if (res.data.status === 401) {
+          setMessage([]);
+          Swal.fire({
+            icon: "error",
+            text: res.data.message,
+          });
+          setLoading(false);
+        } else {
+          setMessage(res.data.validation_error);
+          Swal.fire({
+            text: res.data.message,
+            icon: "error",
+          });
+          setLoading(false);
+        }
+      });
     });
+    setLoading(false);
   };
 
   return (
     <>
+      {loading && <Loading />}
+
       <section className="bg-gray-5 bg-green-200">
         <div className="flex gap-6 items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
           <div className="hidden lg:block w-[18.75rem]">
@@ -137,7 +149,7 @@ const Login = () => {
                 </div>
                 <div className="flex items-center justify-end">
                   <Link
-                    to="/forgot-password"
+                    to="/quantri/forgot-password"
                     className="text-sm font-medium text-yellow-600 hover:underline"
                   >
                     Quên mật khẩu?

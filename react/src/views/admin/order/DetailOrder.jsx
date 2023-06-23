@@ -94,7 +94,7 @@ const DetailOrder = (props) => {
                   <Divider align="left">
                     <div className="inline-flex align-items-center">
                       <i className="pi pi-dollar mr-2"></i>
-                      <b>Tổng tiền</b>
+                      <b>Tổng tiền cần trả</b>
                     </div>
                   </Divider>
                   <p className="pl-16">
@@ -102,7 +102,7 @@ const DetailOrder = (props) => {
                     {new Intl.NumberFormat({
                       style: "currency",
                       currency: "JPY",
-                    }).format(detailFind && detailFind.totalAmount)}{" "}
+                    }).format(detailFind && detailFind.isDeposit === 1 ? detailFind.totalAmount - detailFind.deposits  :  detailFind.totalAmount)}{" "}
                     VNĐ
                   </p>{" "}
                 </div>

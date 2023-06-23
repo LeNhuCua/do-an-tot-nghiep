@@ -11,6 +11,7 @@ import { Calendar } from "primereact/calendar";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
+import axiosClient from "../../../axios-client.js";
 
 const StatisticalByYear = () => {
   const formatDate = (date) => {
@@ -46,7 +47,7 @@ const StatisticalByYear = () => {
   }, []);
 
   useEffect(() => {
-    axios
+    axiosClient
       .get(`${API}/api/statistical/sales-data-year?date=${formatDate(date)}`)
       .then((response) => {
         setSalesData(response.data);

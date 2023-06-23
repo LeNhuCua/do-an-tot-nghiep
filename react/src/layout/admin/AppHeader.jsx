@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   CContainer,
@@ -33,7 +33,8 @@ const AppHeader = () => {
           {/* {user ? <p className=" p-5">Ten : {user.fullName}</p> : ""} */}
         </CHeaderToggler>
         <CHeaderBrand className="mx-auto d-md-none" to="/">
-          <img src={logo} className="h-10" alt="Logo" />
+          <Link to="/quantri">    <img src={logo} className="h-10" alt="Logo" /></Link>
+      
         </CHeaderBrand>
         <CHeaderNav className="d-none d-md-flex me-auto">
           {/* <CNavItem>

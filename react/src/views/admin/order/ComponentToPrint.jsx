@@ -17,59 +17,63 @@ class ComponentToPrint extends React.Component {
 
     // Kết hợp vào chuỗi
     const currentDate = `${date}/${month}/${year} ${hour}:${minute}:${second}`;
-
+    console.log(this.props.invoices);
     return (
       <div>
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-          <div className="w-[90%] bg-white shadow-lg">
-            <div className="flex justify-between p-1">
+          <div className="w-[90%] bg-white shadow-md p-2">
+            <div className="flex justify-center">
               <div>
-                <h1 className="text-3xl italic font-extrabold tracking-widest text-indigo-500">
-                  Kim Huy
+                <h1 className="text-lg  font-extrabold tracking-widest text-indigo-500">
+                  DOANH NGHIỆP TƯ NHÂN HIỆU VÀNG KIM HUY NT
                 </h1>
-              </div>
-
-              <div className="p-2">
-                <ul className="flex">
-                  <li className="flex items-center gap-2 p-2 border-l-2 border-indigo-200">
-                    <AiOutlineInfoCircle />
-
-                    <div className="flex flex-col">
-                      <span className="text-sm">Địa chỉ</span>
-                      <span className="text-sm">Số điện thoại</span>
-                    </div>
-                  </li>
-                </ul>
+                <h3 className="text-sm">
+                  Mã số thuế{" "}
+                  <span className="font-bold">4 2 0 1 6 3 5 1 6 6</span>
+                </h3>
+                <h3 className="text-sm">
+                  Địa chỉ{" "}
+                  <span className="font-bold">
+                    19 Phương Sài - Phường Phương Sơn - Nha Trang - Khánh Hoà
+                  </span>
+                </h3>
+                <h3 className="text-sm">
+                  Điện thoại <span className="font-bold">02583826952</span>
+                </h3>
               </div>
             </div>
-            <div className="w-full h-0.5 bg-indigo-500"></div>
-            <div className="grid grid-cols-2 justify-between p-4">
-              <div>
-                <h6 className="font-bold">
-                  Ngày mua:{" "}
+            <div className="border-t border-b">
+              <div className="flex justify-center">
+                <div>
+                  <h1 className="text-xl font-bold uppercase">Hoá đơn bán hàng</h1>
+                  <h6 className="font-bold">
+                  Ngày in:{" "}
                   <span className="text-sm font-medium"> {currentDate}</span>
                 </h6>
-                {/* <h6 className="font-bold">
-                  Order ID :{" "}
-                  <span className="text-sm font-medium"> 12/12/2022</span>
-                </h6> */}
+                </div>
               </div>
-              <div className="w-40">
+            </div>
+            <div className="flex flex-col justify-between p-4">
+              <div className="">
                 <address className="text-sm">
-                  <span className="font-bold">Khách hàng: </span>
+                  <span className="font-bold">Họ tên khách hàng:  </span>
                   {this.props.invoices.customer_address.recipientName}
                 </address>
               </div>
-              <div className="w-40">
+              <div className="">
                 <address className="text-sm">
                   <span className="font-bold">Điện thoại: </span>
                   {this.props.invoices.customer_address.recipientPhone}
                 </address>
               </div>
-              <div className="w-40">
+              <div className="">
                 <address className="text-sm">
-                  <span className="font-bold">Địa chỉ nhận: </span>
-                  {this.props.invoices.customer_address.recipientAddress}
+                  <span className="font-bold">Địa chỉ nhận:  </span>
+                  {this.props.invoices.customer_address.recipientAddress} { " "}
+                  {this.props.invoices.customer_address.ward.name} { " - "}
+                  {this.props.invoices.customer_address.district.name} { " - "}
+                  {this.props.invoices.customer_address.province.name}
+
                 </address>
               </div>
               <div></div>
@@ -167,11 +171,27 @@ class ComponentToPrint extends React.Component {
                         </b>
                       </td>
                     </tr>
+                    <tr className="text-gray-800">
+                      <th colSpan="3"></th>
+                      <td className="text-sm font-bold">
+                        <b>Tiền cọc đã trả</b>
+                      </td>
+                      <td className="text-sm font-bold">
+                        <b>
+                          {" "}
+                          {new Intl.NumberFormat({
+                            style: "currency",
+                            currency: "JPY",
+                          }).format(this.props.invoices.deposits)}{" "}
+                          đồng
+                        </b>
+                      </td>
+                    </tr>
 
                     <tr className="text-gray-800">
                       <th colSpan="3"></th>
                       <td className="text-sm font-bold">
-                        <b>Tổng tiền</b>
+                        <b>Tổng tiền phải trả</b>
                       </td>
                       <td className="text-sm font-bold">
                         <b>
@@ -180,13 +200,14 @@ class ComponentToPrint extends React.Component {
                             style: "currency",
                             currency: "JPY",
                           }).format(
-                            this.props.invoices.totalAmount - this.props.invoices.shipping_fee.shippingFeeAmount
+                            (this.props.invoices.totalAmount - this.props.invoices.shipping_fee.shippingFeeAmount) - this.props.invoices.deposits
                           )}{" "}
                           đồng
                         </b>
                       </td>
                     </tr>
                   </tbody>
+
                 </table>
               </div>
             </div>
@@ -219,6 +240,7 @@ class ComponentToPrint extends React.Component {
               <div className="flex items-center justify-center">
                 Cảm ơn và hẹn gặp lại quý khách
               </div>
+           
             </div>
           </div>
         </div>

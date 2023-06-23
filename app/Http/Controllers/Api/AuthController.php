@@ -59,7 +59,6 @@ class AuthController extends Controller
             try {
                 $product = User::findOrFail($userId);
                 $product->fullName  = $request->fullName;
-
                 $product->phoneNumber  = $request->phoneNumber;
                 $product->gender  = $request->gender;
                 $product->save();
@@ -86,7 +85,7 @@ class AuthController extends Controller
                     'status' => 400,
                     'message' => 'Product Updated Successfully!!',
                     'product' => $product,
-                    '$request->gender' => $request->birthday
+                    '$request->birthday' => $request->birthday
 
 
                 ]);
@@ -123,7 +122,6 @@ class AuthController extends Controller
         $userUpdate = User::find($userId);
         $userUpdate->password = Hash::make($request->input('new_password'));
         $userUpdate->save();
-
 
         return response()->json([
             'status' => 200,
@@ -251,20 +249,6 @@ class AuthController extends Controller
             'message' => "Tài khoản hoặc mật khẩu không chính xác",
         ]);
 
-
-        // $credentials = $request->only('account', 'password');
-        // if (Auth::attempt($credentials)) {
-        //     $user = Auth::user();
-        //     $token = $user->createToken('admin-token')->plainTextToken;
-        //     return response()->json([
-        //         'status' => 200,
-        //         // 'username' => $admin->fullName,
-        //         'token' => $token,
-        //         'message' => 'Dang nhap thanh cong',
-        //     ]);
-        // } else {
-        //     return response()->json(['message' => 'Unauthorized'], 401);
-        // }
     }
 
     // public function login(Request $request)
@@ -307,6 +291,62 @@ class AuthController extends Controller
     //     }
     // }
 
+
+
+
+    public function logincs(Request $request)
+    {
+        $messages = [
+            'required' => 'Trường :attribute phải nhập',
+            'max' => 'Trường :attribute không được vượt quá :max.',
+            'unique' => 'Trường :attribute đã tồn tại.',
+            'email' => 'The :attribute phải là email',
+        ];
+        $credentials = $request->only('account', 'password');
+        $validator = Validator::make($credentials, [
+            'account' => 'required',
+            'password' => 'required|min:3',
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'validation_error' => $validator->errors(),
+                'message' => 'Hay kiem tra lai thong tin dang nhap',
+            ]);
+        }
+        if (Auth::guard('web')->attempt($credentials)) {
+            $admin = Auth::user();
+            if ($admin->confirmed) {
+                // Người dùng đã được xác nhận
+                $token = $admin->createToken('main')->plainTextToken;
+                $cookie = cookie('jwt', $token, 60 * 24); // 1 day
+                $user = User::find($admin->userId)->first();
+             
+                    $user->last_login_at = Carbon::now();
+                    $user->save();
+                    return response()->json([
+                        'status' => 200,
+                        'username' => $user,
+                        'token' => $token,
+                        'message' => 'Đăng nhập thành công',
+                        'user' => $request->user()
+                    ])->withCookie($cookie);
+              
+            } else {
+                // Người dùng chưa được xác nhận
+                return response()->json([
+                    'status' => 401,
+                    'message' => "Vui lòng vào email để xác nhận",
+                ]);
+            }
+        }
+        // return new UserResource(auth()->user());
+        return response()->json([
+            'status' => 401,
+            'message' => "Tài khoản hoặc mật khẩu không chính xác",
+        ]);
+    }
     public function logout(Request $request)
     {
         /** @var \App\Models\User $admin */

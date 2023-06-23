@@ -12,11 +12,13 @@ const StateContext = createContext({
   setUser: () => {},
   setToken: () => {},
   setNotification: () => {},
+  setInfo: () => {},
 });
 
 export const ContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({});
+  const [info, setInfo] = useState({});
   const [token, _setToken] = useState(localStorage.getItem("ACCESS_TOKEN"));
   const [tokenCustomer, _setTokenCustomer] = useState(localStorage.getItem("ACCESS_TOKEN_CUSTOMER"));
   // const [tokenCustomer, _setTokenCustomer] = useState("tui");
@@ -79,7 +81,9 @@ export const ContextProvider = ({ children }) => {
         loading,
         setLoading,
         tostStatus,
-         setTostStatus
+        setTostStatus,
+        info,
+        setInfo
       }}
     >
       {children}

@@ -15,6 +15,8 @@ import { DataContext } from "../../../context/DataContext";
 import { API, API_SLIDE_IMAGES } from "../../../API";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import axiosClient from "../../../axios-client-customer";
+import { ProgressSpinner } from "primereact/progressspinner";
 
 export default function Slides() {
   const swiperRef = useRef();
@@ -33,14 +35,28 @@ export default function Slides() {
     }
   }, []);
   const fetchSlides = async () => {
-    await axios.get(`${API}/api/slides/`).then(({ data }) => {
+    await axios.get(`${API}/api/cus-products/slides/`).then(({ data }) => {
       dispatch({ type: "FETCH_SLIDES", payload: data });
       setLoading(false);
     });
   };
 
   return (
-    <div className="relative py-5">
+    <div className="relative py-0 lg:py-5">
+      {loading && (
+        <div
+          className="flex items-center justify-center bg-contain bg-center bg-no-repeat h-[200px] md:h-[300px] xl:h-[500px]"
+        
+        >
+            <ProgressSpinner
+                style={{ width: "50px", height: "50px" }}
+                strokeWidth="8"
+                fill="var(--surface-ground)"
+                animationDuration=".5s"
+              />
+
+        </div>
+      )}
       <Swiper
         onBeforeInit={(swiper) => {
           swiperRef.current = swiper;

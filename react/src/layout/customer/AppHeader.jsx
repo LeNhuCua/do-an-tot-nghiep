@@ -46,7 +46,7 @@ const AppHeader = () => {
     formState: { errors },
   } = useForm();
   const location = useLocation();
-  const match = location.pathname === "/nhan-nu";
+
   const { searchOpen, Open, hoverIndex, setHoverIndex } =
     useContext(MenusContext);
   const { isOpenSidebar, Handle } = useContext(SidebarContext);
@@ -97,7 +97,7 @@ const AppHeader = () => {
     });
   }, []);
 
-  const { tokenCustomer, user } = useStateContext();
+  const { tokenCustomer, user ,info} = useStateContext();
 
   let Author = "";
   if (!tokenCustomer) {
@@ -150,7 +150,9 @@ const AppHeader = () => {
             <IoCall className="inline" />
             <span className="ml-1">Hotline:</span>
             <a href="##" className="font-bold text-lg ml-1 cs-hover">
-              0909300746
+              {
+                info.phone
+              }
             </a>
           </li>
         </ul>

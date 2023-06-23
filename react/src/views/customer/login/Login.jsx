@@ -39,10 +39,11 @@ const Login = () => {
     };
     axios.get(`${API}/sanctum/csrf-cookie`).then((response) => {
       setLoading(true);
-      axiosClient.post(`${API}/api/login`, payload).then((res) => {
+      axiosClient.post(`${API}/api/logincs`, payload).then((res) => {
         if (res.data.status === 200) {
           setTokenCustomer(res.data.token);
           setUser(res.data.username);
+          console.log(res.data);
           navigate("/");
         } else if (res.data.status === 401) {
           setMessage([]);
@@ -50,12 +51,14 @@ const Login = () => {
             icon: "error",
             text: res.data.message,
           });
+          setLoading(false);
         } else {
           setMessage(res.data.validation_error);
           Swal.fire({
             text: res.data.message,
             icon: "error",
           });
+          setLoading(false);
         }
       });
     });

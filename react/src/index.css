@@ -45,6 +45,9 @@
     .animate-aa {
         animation: animate-aa ease-in-out 0.5s;
     }
+    .animate-ping1{
+        animation: animate-ping1 ease-in-out 0.8s infinite;
+    }
 
 }
 
@@ -103,6 +106,16 @@
 
     to {
         right: 0;
+    }
+}
+
+@keyframes animate-ping1 {
+    from {
+        transform: scale(0);
+    }
+
+    to {
+        transform: scale(0.8);
     }
 }
 

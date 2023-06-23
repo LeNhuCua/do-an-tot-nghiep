@@ -51,7 +51,7 @@ const Products = () => {
     });
   };
 
-  const ApiExcel = `${API}/api/products/importExcel`;
+  const ApiExcel = `${API}/api/products1/importExcel`;
 
   //model
   const [visible, setVisible] = useState(false);
@@ -217,7 +217,7 @@ const Products = () => {
     setSelectedData(_products);
     const isConfirm = await Swal.fire({
       title: `Bạn có chắc muốn xoá  ?`,
-      text: "You won't be able to revert this!",
+      text: "Không thể hoàn tác!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",

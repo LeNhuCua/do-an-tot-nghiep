@@ -31,6 +31,39 @@ const OrderDetail = () => {
   }, [id]);
 
   const navigate = useNavigate();
+
+  const orderSuccsess = async (id) => {
+    const isConfirm = await Swal.fire({
+      title: `Nhận đơn hàng thành công và không yêu cầu hoàn trả hàng?`,
+      // text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Xác nhận!",
+      cancelButtonText: "Huỷ bỏ!",
+    }).then((result) => {
+      return result.isConfirmed;
+    });
+    if (!isConfirm) {
+      return;
+    }
+    await axiosClient
+      .put(`${API}/api/cus-order/orderSuccsess?orderId=${id}`)
+      .then(({ data }) => {
+        if (data.status === 200) {
+          navigate("/dondathang");
+          Swal.fire({
+            icon: "success",
+            title: "Xác nhận thành công",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
   const orderCancer = async (id) => {
     const isConfirm = await Swal.fire({
       title: `Bạn có chắc muốn huỷ đơn hàng?`,
@@ -62,6 +95,42 @@ const OrderDetail = () => {
       })
       .catch(() => {});
   };
+
+
+
+  const orderReturns= async (id) => {
+    const isConfirm = await Swal.fire({
+      title: `Bạn có chắc muốn hoàn trả đơn hàng?`,
+      // text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Xác nhận!",
+      cancelButtonText: "Huỷ bỏ!",
+    }).then((result) => {
+      return result.isConfirmed;
+    });
+    if (!isConfirm) {
+      return;
+    }
+    await axiosClient
+      .put(`${API}/api/cus-order/orderReturns?orderId=${id}`)
+      .then(({ data }) => {
+        if (data.status === 200) {
+          navigate("/dondathang");
+          Swal.fire({
+            icon: "success",
+            title: "Đơn hàng đã được yêu cầu hoàn trả",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      })
+      .catch(() => {});
+  };
+
+
   console.log(orderStatus);
 
   const ListBreadcrumb = [
@@ -166,6 +235,39 @@ const OrderDetail = () => {
               >
                 <i className="pi pi-times"></i>
                 <span className="p-3">Huỷ đơn hàng</span>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+
+        {orderStatus && orderStatus.orderStatusId === "TT004" || orderStatus.orderStatusId === "TT007"  ? (
+          <div className="mt-2">
+            <div className="w-full">
+              <Button
+                className="youtube p-0 w-full justify-center"
+                onClick={() => orderSuccsess(id)}
+              >
+                <i className="pi pi-check"></i>
+                <span className="p-3">Nhận hàng thành công</span>
+              </Button>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
+
+        {orderStatus && orderStatus.orderStatusId === "TT004" || orderStatus.orderStatusId === "TT007"? (
+          <div className="mt-2">
+            <div className="w-full">
+              <Button
+                severity="help"
+                className="youtube p-0 w-full justify-center"
+                onClick={() => orderReturns(id)}
+              >
+                <i className="pi pi-send"></i>
+                <span className="p-3">Hoàn trả hàng</span>
               </Button>
             </div>
           </div>

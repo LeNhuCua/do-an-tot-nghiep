@@ -1,21 +1,57 @@
 import React, { useEffect, useState } from "react";
 
-import { BiMap } from "react-icons/bi";
-import { Link, useActionData } from "react-router-dom";
-
 import { useStateContext } from "../../../context/ContextProvider";
 import { AiFillEdit, AiOutlineMail } from "react-icons/ai";
 import { API, API_IMAGES } from "../../../API";
 import avatar from "../../../assets/images/avatar.png";
-import axiosClient from "../../../axios-client-customer";
+
 import { InputText } from "primereact/inputtext";
 import { RadioButton } from "primereact/radiobutton";
 import Swal from "sweetalert2";
+
+import { Calendar } from "primereact/calendar";
+
+import FormatDate from "../../../hook/formatDate/FormatDate";
+import Loading from "../../../components/Loading";
+import Breadcrumb from "../../../components/customer/breadcrumb/Breadcrumb";
+import axiosClient from "../../../axios-client-customer";
+
 const Profile = () => {
+  
+  // const formatDate = (date) => {
+   
+  //   const year = date.getFullYear();
+  //   // Lấy tháng, nếu là tháng 1-9 thì thêm số 0 ở đầu
+  //   const month =
+  //     date.getMonth() + 1 < 10
+  //       ? "0" + (date.getMonth() + 1)
+  //       : date.getMonth() + 1;
+  //   // Lấy ngày, nếu là ngày 1-9 thì thêm số 0 ở đầu
+  //   const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+  //   return `${year}-${month}-${day}`;
+  // };
+
+  const formatDate = (date) => {
+    const dateTime = new Date(date);
+    const year = dateTime.getFullYear();
+    // Lấy tháng, nếu là tháng 1-9 thì thêm số 0 ở đầu
+    const month =
+      dateTime.getMonth() + 1 < 10
+        ? "0" + (dateTime.getMonth() + 1)
+        : dateTime.getMonth() + 1;
+    // Lấy ngày, nếu là ngày 1-9 thì thêm số 0 ở đầu
+    const day =
+      dateTime.getDate() < 10 ? "0" + dateTime.getDate() : dateTime.getDate();
+      return `${year}-${month}-${day}`;
+  };
+
+
+  const today = new Date();
+  
   const { user, setUser } = useStateContext();
 
   useEffect(() => {
-    if (user.length === 0) {
+    if (Object.keys(user).length === 0) {
       fetchUserLogin();
     }
   }, []);
@@ -25,14 +61,24 @@ const Profile = () => {
       setUser(res.data.user);
     });
   };
-  const [userInput, setUserInput] = useState(user ? user.fullName : "");
-  const [userEmail, setUserEmail] = useState(user ? user.email : "");
-  const [userPhone, setUserPhone] = useState(user ? user.phoneNumber : "");
-  const [userBirthDay, setUserBirthDay] = useState(user ? user.birthday : "");
-  const [ingredient, setIngredient] = useState(user ? user.gender : "");
+  const [userInput, setUserInput] = useState(null);
+  const [userPhone, setUserPhone] = useState(null);
+  const [userBirthDay, setUserBirthDay] = useState(null);
+  const [ingredient, setIngredient] = useState(null);
+
+  // console.log(user ? formatDate(userBirthDay) : "af");
+  useEffect(() => {
+    if (user) {
+      setUserInput(user.fullName);
+      setUserBirthDay(user.birthday);
+      setUserPhone(user.phoneNumber);
+      setIngredient(user.gender);
+    }
+  }, [user]);
+
+  console.log(user);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isEditingEmail, setEditingEmail] = useState(false);
   const [isEditingPhone, setEditingPhone] = useState(false);
   const [isEditingBirthDay, setEditingBirthDay] = useState(false);
   // useEffect(() => {
@@ -43,9 +89,7 @@ const Profile = () => {
   const handleInputClick = () => {
     setIsEditing(true);
   };
-  const handleInputEmailClick = () => {
-    setEditingEmail(true);
-  };
+
   const handleInputPhoneClick = () => {
     setEditingPhone(true);
   };
@@ -65,15 +109,18 @@ const Profile = () => {
       setActiveAvatar(true);
     }
   };
+  const [loading, setLoading] = useState(false);
 
   const editUserInfo = async () => {
     const formData = new FormData();
     formData.append("fullName", userInput);
-    formData.append("email", userEmail);
-    formData.append("birthday", userBirthDay);
+    formData.append("birthday", formatDate(userBirthDay));
     formData.append("phoneNumber", userPhone);
-    formData.append("gender", ingredient);
+    formData.append("gender", Number(ingredient));
     formData.append("avatar", image);
+    console.log(typeof userBirthDay);
+    console.log(typeof null);
+    setLoading(true);
 
     await axiosClient
       .post(`${API}/api/edit-user`, formData)
@@ -93,13 +140,33 @@ const Profile = () => {
             text: "Vui lòng kiểm tra lại thông tin!",
           });
         }
-      });
+      })    .catch((err) => {})
+      .finally(() => {
+        setLoading(false);
+      });;
   };
+
+  const ListBreadcrumb = [
+    // {
+    //   name: "Tỉ giá vàng 1",
+    //   link: "fsdf",
+    // },
+    {
+      name: "Thông tin cá nhân",
+    },
+  ];
+
+
   return (
-    <div className="bg-gradient-to-r from-cyan-500 to-blue-500  xl:p-9">
+    <div>
+       <Breadcrumb ListBreadcrumb={ListBreadcrumb} />
+      {loading && <Loading />}
+
+       <div className="bg-gradient-to-r from-cyan-500 to-blue-500  xl:p-9">
       <div className="p-8 bg-white shadow mt-24">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="relative">
+         
             <div className="w-48 h-48 bg-indigo-100 mx-auto rounded-full shadow-2xl absolute inset-x-0 top-0 -mt-24 flex items-center justify-center text-indigo-500">
               <input
                 type="file"
@@ -175,7 +242,7 @@ const Profile = () => {
               className="text-white py-2 px-4 uppercase no-underline rounded bg-blue-400 hover:bg-blue-500 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
               onClick={editUserInfo}
             >
-               <AiFillEdit className="inline" /> Cập nhật  thông tin
+              <AiFillEdit className="inline" /> Cập nhật thông tin
             </button>
 
             {/* <Link
@@ -215,33 +282,6 @@ const Profile = () => {
               </h1>
             )}
           </div>
-          <div className="text-sm flex justify-center items-center leading-normal mt-0 mb-2 text-blueGray-400 font-bold ">
-            <AiOutlineMail className="mr-2 text-lg text-blueGray-400" />
-
-            <div>
-              {isEditingEmail ? (
-                <InputText
-                  onBlur={() => setEditingEmail(false)}
-                  defaultValue={user ? user.email : ""}
-                  value={userEmail}
-                  onChange={(e) => setUserEmail(e.target.value)}
-                />
-              ) : (
-                // <input
-                //   type="text"
-                //   value={userInput}
-                //   onChange={handleInputNameChange}
-                //   onBlur={handleInputBlur}
-                // />
-                <p
-                  onClick={handleInputEmailClick}
-                  className="font-light text-lg text-gray-600 mt-3"
-                >
-                  {user ? user.email : ""}
-                </p>
-              )}
-            </div>
-          </div>
 
           <p className="mt-8 text-gray-500">
             <span className="font-bold">Điện thoại: </span>
@@ -252,6 +292,7 @@ const Profile = () => {
                 defaultValue={user ? user.phoneNumber : ""}
                 value={userPhone}
                 onChange={(e) => setUserPhone(e.target.value)}
+                maxLength={10}
               />
             ) : (
               // <input
@@ -261,9 +302,10 @@ const Profile = () => {
               //   onBlur={handleInputBlur}
               // />
               <span className=" text-gray-700" onClick={handleInputPhoneClick}>
-                {user.phoneNumber
+                {user.phoneNumber != null
                   ? user.phoneNumber
                   : "Chưa cập nhật số điện thoại"}
+                  {/* 0776223708 */}
               </span>
             )}
           </p>
@@ -271,13 +313,22 @@ const Profile = () => {
             <span className="font-bold">Ngày sinh: </span>
 
             {isEditingBirthDay ? (
-              <InputText
-                onBlur={() => setEditingBirthDay(false)}
+              <Calendar
+                 onBlur={() => setEditingBirthDay(false)}
                 defaultValue={user ? user.birth : ""}
                 value={userBirthDay}
-                onChange={(e) => setUserBirthDay(e.target.value)}
+                onChange={(e) => setUserBirthDay(e.value)}
+                showButtonBar
+                maxDate={today}
+                showIcon
               />
             ) : (
+              // <InputText
+              //   onBlur={() => setEditingBirthDay(false)}
+              //   defaultValue={user ? user.birth : ""}
+              //   value={userBirthDay}
+              //   onChange={(e) => setUserBirthDay(e.target.value)}
+              // />
               // <input
               //   type="text"
               //   value={userInput}
@@ -288,7 +339,7 @@ const Profile = () => {
                 className=" text-gray-700"
                 onClick={handleInputBirthDayClick}
               >
-                {user.birthday ? user.birthday : "Chưa cập nhật số ngày sinh"}
+                {user.birthday ? FormatDate(user.birthday) : "Chưa cập nhật số ngày sinh"}
               </span>
             )}
           </p>
@@ -323,6 +374,10 @@ const Profile = () => {
         </div>
       </div>
     </div>
+    </div>
+
+
+  
   );
 };
 

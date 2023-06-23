@@ -12,6 +12,7 @@ import { Calendar } from "primereact/calendar";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
+import axiosClient from "../../../axios-client.js";
 
 const StatisticalByDay = () => {
   const formatDate = (date) => {
@@ -54,7 +55,7 @@ const StatisticalByDay = () => {
   }, []);
 
   useEffect(() => {
-    axios
+    axiosClient
       .get(`${API}/api/statistical/sales-data?date=${formatDate(date)}`)
       .then((response) => {
         setSalesData(response.data);

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\AccountConfirmation;
 use App\Models\Admin;
 use App\Models\Customer;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -20,9 +21,15 @@ class UsersController extends Controller
 {
     public function index()
     {
-        $posts = User::orderBy("userId", "desc")->where('role_id', '<>', 2)->get();
+        $posts = User::orderBy("userId", "desc")->where('role_id', '=', 3)->get();
         return $posts;
     }
+    public function role1()
+    {
+        $posts = Role::where('id', '<>', 2)->get();
+        return $posts;
+    }
+
 
 
 
@@ -68,7 +75,7 @@ class UsersController extends Controller
                 'email' => $request->email,
                 'account' => $request->account,
                 'password' => Hash::make($request->password),
-                'role_id' => $request->role_id,
+                'role_id' => $request->role,
                 'confirmation_token' => Str::random(60),
 
             ]);
@@ -92,8 +99,10 @@ class UsersController extends Controller
 
 
 
-    public function show(User $user)
+    public function show($id)
     {
+        $user = User::findOrFail($id);
+
         return response()->json([
             'user' => $user
         ]);
@@ -107,7 +116,7 @@ class UsersController extends Controller
 
         ];
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:50',
+            'fullName' => 'required|max:50',
 
         ], $messages);
 
@@ -118,17 +127,11 @@ class UsersController extends Controller
 
             ]);
         } else {
-            try {
-                $alreadyExistName = User::where('sizeValue', '=', $request->name)->first();
-                if ($alreadyExistName) {
-                    return response()->json([
-                        'status' => 201,
-                        'message' => 'Giá trị kích thước đã tồn tại!!',
-                        ' $alreadyExistName ' => $alreadyExistName
-                    ]);
-                } else {
+            try { {
                     $size = User::findOrFail($sizeId);
-                    $size->sizeValue = $request->name;
+                    $size->fullName = $request->fullName;
+                    $size->gender = $request->gender;
+                    $size->phoneNumber = $request->phoneNumber;
                     $size->save();
                     return response()->json([
                         'status' => 400,

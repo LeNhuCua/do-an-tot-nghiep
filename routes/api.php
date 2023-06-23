@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\InfoController;
 use App\Http\Controllers\Admin\InvoicesController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductsController;
@@ -8,9 +9,12 @@ use App\Http\Controllers\Admin\ProductSizeController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\ProductTypesController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\ShippingCostsController as AdminShippingCostsController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\SlideController;
 use App\Http\Controllers\Admin\StatisticalController;
+use App\Http\Controllers\Admin\StatisticalOnlineController;
 use App\Http\Controllers\Admin\SubCategoriesController;
 use App\Http\Controllers\Admin\TypeCategoriesController;
 use App\Http\Controllers\Admin\UnitsController;
@@ -25,6 +29,7 @@ use App\Http\Controllers\Customer\ProductsController as CustomerProductsControll
 use App\Http\Controllers\Customer\UsersController as CustomerUserController;
 use App\Http\Controllers\Customer\ProvincesController;
 use App\Http\Controllers\Customer\ShippingCostsController;
+use App\Http\Controllers\Customer\SlideController as CustomerSlideController;
 use App\Http\Controllers\Customer\WardsController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\MessageController;
@@ -43,6 +48,20 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
+//phí ship
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::middleware(['access'])->group(function () {
+        Route::group(['prefix' => 'admin-shippingCosts'], function () {
+            Route::resource('/', AdminShippingCostsController::class);
+            Route::get('/{id}', [AdminShippingCostsController::class, 'show']);
+            Route::put('/{id}', [AdminShippingCostsController::class, 'update']);
+        });
+    });
+});
+
 
 
 //danh mục sản phẩm
@@ -100,6 +119,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::post('/units/importExcel', [UnitsController::class, 'importExcel']);
 
 
+
+// giới thiệu cưa hàng
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'info'], function () {
+        Route::resource('/', InfoController::class);
+        Route::put('/{id}', [InfoController::class, 'update']);
+    });
+});
+
+
 //kích thước
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'sizes'], function () {
@@ -122,7 +151,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/{productImage}', [ProductsController::class, 'deleteImages']);
     });
 });
-Route::post('/products/importExcel', [ProductsController::class, 'importExcel']);
+Route::post('/products1/importExcel', [ProductsController::class, 'importExcel']);
 
 
 //nhân viên
@@ -131,10 +160,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::resource('/', UsersController::class);
         Route::delete('/deleteAll', [UsersController::class, 'deleteAll']);
         Route::get('/{id}', [UsersController::class, 'show']);
-        Route::post('/{id}', [UsersController::class, 'update']);
-
+        Route::put('/{id}', [UsersController::class, 'update']);
     });
 });
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'roles'], function () {
+        Route::get('/role', [RoleController::class, 'role']);
+    });
+});
+
+
 Route::post('/users/importExcel', [ProductsController::class, 'importExcel']);
 
 
@@ -172,6 +208,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 });
 
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'statistical-online'], function () {
+        Route::get('/sales-data', [StatisticalOnlineController::class, 'getSalesDataByDay']);
+        Route::get('/sales-data-month', [StatisticalOnlineController::class, 'getSalesDataByMonth']);
+        Route::get('/sales-data-year', [StatisticalOnlineController::class, 'getSalesDataByYear']);
+    });
+});
+
 
 
 
@@ -180,14 +224,27 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'orders'], function () {
         Route::resource('/', AdminOrderController::class);
         Route::get('/ordersBeingProcessed', [AdminOrderController::class, 'ordersBeingProcessed']);
+        Route::get('/ordersBeingDelivered', [AdminOrderController::class, 'ordersBeingDelivered']);
+        Route::get('/ordersDelivered', [AdminOrderController::class, 'ordersDelivered']);
+        Route::get('/orderCanceled', [AdminOrderController::class, 'orderCanceled']);
+
+
         Route::put('/orderCheckDelivery', [AdminOrderController::class, 'orderCheckDelivery']);
         Route::put('/orderCheck', [AdminOrderController::class, 'orderCheck']);
         Route::put('/orderCancel', [AdminOrderController::class, 'orderCancel']);
+        Route::put('/orderSuccess', [AdminOrderController::class, 'orderSuccess']);
+        Route::put('/orderSuccsessDelivered', [AdminOrderController::class, 'orderSuccsessDelivered']);
+
+        
+
+        Route::delete('/{order}', [AdminOrderController::class, 'destroy']);
     });
 });
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'productsSize'], function () {
         Route::delete('/{id}', [ProductSizeController::class, 'destroy']);
+        Route::put('/update', [ProductSizeController::class, 'update']);
+
     });
 });
 
@@ -211,6 +268,8 @@ Route::group(['prefix' => 'cus-products'], function () {
     Route::get('/showCategories', [CustomerProductsController::class, 'showCategories']);
     Route::get('/search', [CustomerProductsController::class, 'search']);
     Route::get('/searchProducts', [CustomerProductsController::class, 'searchProducts']);
+    Route::get('/slides', [CustomerSlideController::class, 'index']);
+    Route::get('/info', [CustomerSlideController::class, 'info']);
     //đăng kí tài khoản
     Route::post('/signupCus', [CustomerUserController::class, 'signupCus']);
     // Route::get('/sales-data-month', [StatisticalController::class, 'getSalesDataByMonth']);
@@ -242,10 +301,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::resource('/', CustomerAddressesController::class);
         Route::get('/{id}', [CustomerAddressesController::class, 'show']);
         Route::put('/{id}', [CustomerAddressesController::class, 'update']);
-
-        // Route::put('/{id}/{scope}', [CustomerAddressesController::class, 'update']);
-        // Route::delete('/{id}', [CustomerAddressesController::class, 'destroy']);
-        // Route::get('/totalCart', [CustomerAddressesController::class, 'totalCart']);
     });
 });
 
@@ -282,6 +337,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::resource('/', OrderController::class);
         Route::get('/show', [OrderController::class, 'show']);
         Route::put('/orderCancel', [OrderController::class, 'orderCancel']);
+        Route::put('/orderSuccsess', [OrderController::class, 'orderSuccsess']);
+        Route::put('/orderReturns', [OrderController::class, 'orderReturns']);
+        
 
 
         // Route::get('/index/{id}', [OrderController::class, 'index']);
@@ -319,6 +377,7 @@ Route::post('/messages', [MessageController::class, 'store']);
 // Route::get('/login1',  [AuthController::class, 'showLoginForm'])->name('login');
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logincs', [AuthController::class, 'logincs']);
 
 Route::get('/confirm-account/{token}', [CustomerUserController::class, 'confirmAccount']);
 

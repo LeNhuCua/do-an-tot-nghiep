@@ -27,6 +27,7 @@ import ComponentToPrint from "./ComponentToPrint";
 import Bill from "../../../components/admin/Invoices/Bill";
 import Loading from "../../../components/Loading";
 import AppBreadcrumb from "../../../layout/admin/AppBreadcrumb.jsx";
+import axiosClient from "../../../axios-client";
 
 export default function Invoices() {
   const {
@@ -45,6 +46,8 @@ export default function Invoices() {
   const [visible, setVisible] = useState(false);
   const { products } = state;
   const [loading, setLoading] = useState(true);
+
+
   const handleCustomerInfoChange = (name, value) => {
     setFormInput((prevState) => ({ ...prevState, [name]: value }));
   };
@@ -57,7 +60,7 @@ export default function Invoices() {
   }, []);
   const componentRef = useRef();
   const fetchProducts = async () => {
-    await axios.get(`${API}/api/products/`).then(({ data }) => {
+    await axiosClient.get(`${API}/api/products/`).then(({ data }) => {
       dispatch({ type: "FETCH_PRODUCTS", payload: data });
       setLoading(false);
     });
@@ -238,7 +241,7 @@ export default function Invoices() {
   };
 
   const [totalAmount, setTotalAmount] = useState(0);
-  const { user } = useStateContext();
+  const { user, info } = useStateContext();
 
   function sumArray(arr) {
     if (!Array.isArray(arr)) {
@@ -292,7 +295,7 @@ export default function Invoices() {
       return;
     }
     setIsLoading(true);
-    await axios.post(`${API}/api/invoices`, formData).then((response) => {
+    await axiosClient.post(`${API}/api/invoices`, formData).then((response) => {
       if (response.data.status === 400) {
         Swal.fire({
           icon: "success",
@@ -459,8 +462,8 @@ export default function Invoices() {
                                 greaterThanOrEqualTo1: (value) =>
                                   value >= 1 || "Vui lòng nhập tiền nhận >= 1",
                                 lessThanOrEqualTo1Billion: (value) =>
-                                  value <= 1000000000 ||
-                                  "Vui lòng nhập tiền nhận <= 1 tỷ",
+                                  value <= 10000000000 ||
+                                  "Vui lòng nhập tiền nhận <= 10 tỷ",
                               },
                               validate: (value) =>
                                 value >= totalAmount ||
@@ -559,14 +562,16 @@ export default function Invoices() {
                   </CCol>
                   <CCol xl={6}>
                     <span className="p-float-label ">
-                      <InputNumber
+                      <InputText
                         className="w-full"
+                        keyfilter="int"
                         placeholder="Vd: 0999999999"
                         value={tableData[selectedTable]?.phone || ""}
-                        onValueChange={(e) =>
+                        onChange={(e) =>
                           handlePhoneChange(e, selectedTable)
                         }
-                        useGrouping={false}
+                        maxLength={10}
+                      
                       />
                       <label htmlFor="phone">Điện thoại</label>
                     </span>
@@ -762,12 +767,13 @@ export default function Invoices() {
                 </CCol>
                 <CCol xl={6}>
                   <span className="p-float-label ">
-                    <InputNumber
+                    <InputText
                       className="w-full"
+                      keyfilter="int"
                       placeholder="Vd: 0999999999"
                       value={tableData[selectedTable]?.phone || ""}
-                      onValueChange={(e) => handlePhoneChange(e, selectedTable)}
-                      useGrouping={false}
+                      onChange={(e) => handlePhoneChange(e, selectedTable)}
+                      maxLength={10}
                     />
                     <label htmlFor="phone">Điện thoại</label>
                   </span>
@@ -820,6 +826,7 @@ export default function Invoices() {
           <div>
             <div style={{ display: "none" }}>
               <ComponentToPrint
+                info={info.phone}
                 ref={componentRef}
                 invoices={invoices[selectedTable]}
                 totalAmount={totalAmount}

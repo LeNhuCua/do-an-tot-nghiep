@@ -41,13 +41,13 @@ const EditUser = () => {
 
   const getID = useParams().id;
 
-  const [typeCategory, setTypeCategory] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchTyCategory = async () => {
       try {
-        const { data } = await axiosClient.get(`${API}/api/typeCategories/${getID}`);
-        setTypeCategory(data.typeCategory);
+        const { data } = await axiosClient.get(`${API}/api/users/${getID}`);
+        setUser(data.user);
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -69,90 +69,36 @@ const EditUser = () => {
     }
   }, []);
 
-  //lấy dữ liệu của danh mục sản phẩm và loại sản phẩm
-  // const fetchInitialData = async () => {
-  //   const [categoryRes, productsTypeRes] = await Promise.all([
-  //     axiosClient.get(`${API}/api/categories/`),
-  //     axiosClient.get(`${API}/api/productsType/`),
-  //   ]);
 
-  //   dispatch({ type: "FETCH_CATEGORIES", payload: categoryRes.data });
-  //   // dispatch({ type: "FETCH_PRODUCTSTYPE", payload: productsTypeRes.data });
-  // };
-
-  // useEffect(() => {
-  //   fetchInitialData();
-  // }, []);
-
-  //lấy thông số bí danh từ url
-
-  //tạo các biến để lấy dữ liệu của loại sản phẩm được chọn
 
   const [validationError, setValidationError] = useState([]);
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const fetchTypeCategoriesAll = async () => {
-    await axiosClient.get(`${API}/api/typeCategories/`).then(({ data }) => {
-      dispatch({ type: "FETCH_TYPECATEGORIES", payload: data });
+  const fetchUsersAll = async () => {
+    await axiosClient.get(`${API}/api/users/`).then(({ data }) => {
+      dispatch({ type: "FETCH_USERS", payload: data });
     });
   };
   const [alreadyExistName, setAlreadyExistName] = useState(null);
 
   //tìm kiếm loại sản phẩm được chọn dựa vào bí danh và lấy lại dữ liệu nếu dữ liệu chưa tồn tại
   const updateData = async (data) => {
-    console.log(
-      selectedCategory ? selectedCategory.name : typeCategory.category.name
-    );
+
     const formData = {
       _method: "PATCH",
-      typeCategoryId: data.typeCategoryId,
-      name: data.name,
-      alias: convertNameWithoutAccents(data.name),
-      status: checked ? 1 : 0,
-      categoryId: selectedCategory
-        ? selectedCategory.categoryId
-        : typeCategory.categoryId,
+      fullName: data.fullName,
+      phoneNumber: data.phoneNumber,
+      gender: checked ? 1 : 0,
     };
 
     await axiosClient
-      .put(`${API}/api/typeCategories/${getID}`, formData)
+      .put(`${API}/api/users/${getID}`, formData)
       .then((response) => {
-        if (response.data.status === 201) {
-          const alreadyExist = typeCategories.find(
-            (typeCategory) => typeCategory.name === data.name
-          );
-          if (alreadyExist) setAlreadyExistName("Tên danh mục đã tồn tại");
-        } else if (response.data.status === 400) {
-          const updatedProductsType = {
-            typeCategoryId: data.typeCategoryId,
-            name: data.name,
-            alias: convertNameWithoutAccents(data.name),
-            status: checked ? 1 : 0,
-            categoryId: selectedCategory
-              ? selectedCategory.categoryId
-              : typeCategory.categoryId,
-            category: {
-              name: selectedCategory
-                ? selectedCategory.name
-                : typeCategory.category.name,
-            },
-            typeCategory: {
-              typeCategoryId: data.typeCategoryId,
-              name: data.name,
-            },
-          };
-          // dispatch({ type: "SET_PRODUCTSTYPE", payload: productsType });
-
-          dispatch({
-            type: "UPDATE_TYPECATEGORY",
-            payload: updatedProductsType,
-          });
-          if (data.typeCategoryId !== typeCategory.typeCategoryId) {
-            fetchTypeCategoriesAll();
-          }
-          navigate("/quantri/danhmuccon");
+         if (response.data.status === 400) {
+            fetchUsersAll();
+          navigate("/quantri/quantrivien");
           Swal.fire({
             icon: "success",
             title: "Thông tin đã được cập nhật",
@@ -175,9 +121,9 @@ const EditUser = () => {
   };
 
   let currentStatus = null;
-  if (typeCategory) {
+  if (user) {
     currentStatus =
-      typeCategory.status && typeCategory.status === 1 ? true : false;
+      user.gender && user.gender === 1 ? true : false;
   }
   const [checked, setChecked] = useState(null);
   useEffect(() => {
@@ -195,11 +141,11 @@ const EditUser = () => {
   };
   const ListBreadcrumb = [
     {
-      name: "Quản lý loại danh mục",
-      link: "/quantri/danhmuccon",
+      name: "Quản lý nhân viên",
+      link: "/quantri/quantrivien",
     },
     {
-      name: typeCategory ? typeCategory.name : "",
+      name: user ? user.account : "",
     },
   ];
 
@@ -208,12 +154,12 @@ const EditUser = () => {
       <Toast ref={toast} />
       <AppBreadcrumb ListBreadcrumb={ListBreadcrumb} />
       {loading && <Loading />}
-      {typeCategory ? (
+      {user ? (
         <CForm onSubmit={handleSubmit(updateData)} className="row g-4">
           <div className=" flex justify-content-end">
             <ToggleButton
-              onLabel="Hiển thị"
-              offLabel="Đang ẩn"
+              onLabel="Nam"
+              offLabel="Nữ"
               onIcon="pi pi-check"
               offIcon="pi pi-times"
               checked={checked}
@@ -223,41 +169,41 @@ const EditUser = () => {
               }}
             />
           </div>
-
+{/* 
           <CCol md={12}>
             <span className="p-float-label ">
               <InputText
                 id="id"
-                defaultValue={typeCategory ? typeCategory.typeCategoryId : null}
-                className={`w-full ${errors.typeCategoryId && "invalid"}`}
-                {...register("typeCategoryId", {
-                  required: "Vui lòng nhập mã danh mục",
+                defaultValue={user ? user.userId : null}
+                className={`w-full ${errors.userId && "invalid"}`}
+                {...register("userId", {
+                  required: "Vui lòng Mã nhân viên",
                   maxLength: {
                     value: 20,
                     message: "Giới hạn chỉ 20 kí tự",
                   },
                 })}
                 onKeyUp={() => {
-                  trigger("typeCategoryId");
+                  trigger("userId");
                 }}
               />
-              <label htmlFor="id">Mã danh mục</label>
+              <label htmlFor="id">Mã nhân viên</label>
             </span>
-            {errors.typeCategoryId && (
+            {errors.userId && (
               <small className="cs-text-error">
-                {errors.typeCategoryId.message}
+                {errors.userId.message}
               </small>
             )}
-          </CCol>
+          </CCol> */}
 
           <CCol md={12}>
             <span className="p-float-label ">
               <InputText
-                id="name"
+                id="fullName"
                 // value={name}
-                defaultValue={typeCategory ? typeCategory.name : null}
-                className={`w-full ${errors.name && "invalid"}`}
-                {...register("name", {
+                defaultValue={user ? user.fullName : null}
+                className={`w-full ${errors.fullName && "invalid"}`}
+                {...register("fullName", {
                   required: "Vui lòng nhập tên danh mục",
                   maxLength: {
                     value: 50,
@@ -265,14 +211,14 @@ const EditUser = () => {
                   },
                 })}
                 onKeyUp={() => {
-                  trigger("name");
+                  trigger("fullName");
                 }}
               />
 
-              <label htmlFor="name">Tên danh mục</label>
+              <label htmlFor="fullName">Họ và tên</label>
             </span>
-            {errors.name && (
-              <small className="cs-text-error">{errors.name.message}</small>
+            {errors.fullName && (
+              <small className="cs-text-error">{errors.fullName.message}</small>
             )}
 
             {alreadyExistName ? (
@@ -281,23 +227,36 @@ const EditUser = () => {
               ""
             )}
           </CCol>
-          <div>
-            <span>
-              <label htmlFor="danhmuc">Danh mục cha</label>
-            </span>
-            <div className=" flex justify-content-center">
-              <Dropdown
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.value)}
-                options={categories}
-                optionLabel="name"
-                placeholder={typeCategory ? typeCategory.category.name : null}
-                filter
-                itemTemplate={categoryOptionTemplate}
-                className="w-full md:w-14rem"
+      
+          <CCol md={12}>
+            <span className="p-float-label ">
+              <InputText
+                id="phoneNumber"
+                // value={name}
+                defaultValue={user ? user.phoneNumber : null}
+                className={`w-full ${errors.phoneNumber && "invalid"}`}
+                {...register("phoneNumber", {
+                  required: "Vui lòng nhập tên danh mục",
+                  maxLength: {
+                    value: 50,
+                    message: "Giới hạn chỉ 50 kí tự",
+                  },
+                })}
+                onKeyUp={() => {
+                  trigger("phoneNumber");
+                }}
               />
-            </div>
-          </div>
+
+              <label htmlFor="phoneNumber">Số điện thoại</label>
+            </span>
+            {errors.phoneNumber && (
+              <small className="cs-text-error">{errors.phoneNumber.message}</small>
+            )}
+
+      
+          </CCol>
+
+
           <CCol xs={12}>
             <Button className="youtube p-0 w-full justify-center">
               <i className="pi pi-check"></i>

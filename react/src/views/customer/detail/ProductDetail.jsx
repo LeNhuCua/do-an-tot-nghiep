@@ -143,11 +143,12 @@ const ProductDetail = () => {
   ];
   const itemTemplate = (item) => {
     return (
-      <div className="item-navigation my-3">
+      <div className="item-navigation my-3 h-96">
         <img
           src={`${API_IMAGES}/${item.image}`}
           alt={"ảnh"}
-          style={{ width: "100%", display: "block" }}
+          className="h-full object-fill"
+          style={{  display: "block" }}
         />
       </div>
     );
@@ -155,8 +156,9 @@ const ProductDetail = () => {
 
   const thumbnailTemplate = (item) => {
     return (
-      <div className="bg-gray-300">
+      <div className="bg-gray-300 h-24">
         <img
+        className="h-full object-fill"
           src={`${API_IMAGES}/${item.image}`}
           alt={"ảnh"}
           style={{ display: "block" }}

@@ -86,7 +86,6 @@ class InvoicesController extends Controller
                         $product = Product::find($invoiceItemObject->productId);
                         $product->numberBuy += $invoiceItemObject->amount;
                         $product->save();
-
                         $productSize = ProductSize::where('sizeId', '=', $invoiceItemObject->sizeId)->where('productId' , '=', $invoiceItemObject->productId)->first();
                         $productSize->number -= $invoiceItemObject->amount;
                         $productSize->save();

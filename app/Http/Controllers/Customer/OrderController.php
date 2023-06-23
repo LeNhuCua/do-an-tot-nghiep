@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Product;
 use App\Models\ShippingAddress;
 use App\Models\ShippingFee;
 use Carbon\Carbon;
@@ -80,6 +81,53 @@ class OrderController extends Controller
         }
     }
 
+
+    public function orderSuccsess(Request $request)
+    {
+        $orderId = $request->input('orderId');
+        $userId = Auth::user()->userId;
+        $order = Order::where('orderId', $orderId)->where('userId', $userId)->first();
+        if ($order) {
+            $order->orderStatusId = "TT005";
+            $orderDetails = OrderDetail::where('orderId', $order->orderId)->get();
+            foreach ($orderDetails as $orderDetail) {
+                $product = Product::where('productId', $orderDetail->productId)->first();
+                $product->numberBuy += $orderDetail->quantity;
+                $product->save();
+            }
+            $order->save();
+            return response()->json([
+                'status' => 200,
+                'order' => $order
+            ]);
+        } else {
+            // Xử lý khi không tìm thấy đơn hàng
+        }
+    }
+
+
+    
+    public function orderReturns(Request $request)
+    {
+        $orderId = $request->input('orderId');
+        $userId = Auth::user()->userId;
+        $order = Order::where('orderId', $orderId)->where('userId', $userId)->first();
+        if ($order) {
+            $order->orderStatusId = "TT007";
+            $order->save();
+            return response()->json([
+                'status' => 200,
+                'order' => $order
+            ]);
+        } else {
+            // Xử lý khi không tìm thấy đơn hàng
+        }
+    }
+
+
+
+    
+    
 
 
     public function store(Request $request)

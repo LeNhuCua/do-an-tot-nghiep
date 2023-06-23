@@ -19,12 +19,16 @@ import "simplebar/dist/simplebar.min.css";
 
 // sidebar nav config
 import navigation from "./_nav";
+import navigation_user from "./_navuser";
+import { useStateContext } from "../../../context/ContextProvider";
 
 const AppSidebar = () => {
   const dispatch = useDispatch();
   const unfoldable = useSelector((state) => state.sidebarUnfoldable);
   const sidebarShow = useSelector((state) => state.sidebarShow);
 
+  const { setUser, setToken, token ,user} = useStateContext();
+  console.log(user.role_id);
   return (
     <CSidebar
       position="fixed"
@@ -40,7 +44,10 @@ const AppSidebar = () => {
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>
-          <AppSidebarNav items={navigation} />
+          {
+            user &&  user.role_id === 3 ?   <AppSidebarNav items={navigation_user} /> :   <AppSidebarNav items={navigation} />
+           }
+        
         </SimpleBar>
       </CSidebarNav>
       <CSidebarToggler

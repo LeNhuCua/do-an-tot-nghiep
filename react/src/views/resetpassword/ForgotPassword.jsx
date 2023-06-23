@@ -131,7 +131,7 @@ const ForgotPassword = () => {
           </div>
         </div>
       </section>
-      {message && <p>{message}</p>}
+      {/* {message && <p>{message}</p>} */}
     </div>
   );
 };

@@ -24,33 +24,42 @@ const ResetPasswordPage = () => {
     reset,
     formState: { errors },
   } = useForm();
+
   const onSubmit = async (data) => {
     const formData = new FormData();
     setIsLoading(true); // Đặt isLoading thành true khi bắt đầu submit
-
     formData.append("otp", data.otp);
     formData.append("new_password", data.password);
-    try {
-      const response = await axios.post(`${API}/api/reset-password`, formData);
-      if (response.data.status === 200) {
-        navigate(`/dangnhap/`);
-        Swal.fire({
-          icon: "success",
-          title: "Đặt lại mật khẩu thành công",
-          // showConfirmButton: false,
-          timer: 1500,
-        });
-      } else if (response.data.status === 201) {
-        Swal.fire({
-          icon: "error",
-          title: "Mã OTP không chính xác!",
-          // showConfirmButton: false,
-          timer: 1500,
-        });
+    setConfirmPassword("");
+    if (data.c_password === data.password) {
+      try {
+        const response = await axios.post(
+          `${API}/api/reset-password`,
+          formData
+        );
+        if (response.data.status === 200) {
+          navigate(`/dangnhap/`);
+          Swal.fire({
+            icon: "success",
+            title: "Đặt lại mật khẩu thành công",
+            // showConfirmButton: false,
+            timer: 1500,
+          });
+        } else if (response.data.status === 201) {
+          Swal.fire({
+            icon: "error",
+            title: "Mã OTP không chính xác!",
+            // showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      } catch (error) {
+        setMessage("Lỗi trong việc đặt lại mật khẩu");
       }
-    } catch (error) {
-      setMessage("Lỗi trong việc đặt lại mật khẩu");
+    } else {
+      setConfirmPassword("Xác nhận mật khẩu không chính xác");
     }
+
     setIsLoading(false); // Đặt isLoading thành false khi kết thúc submit
   };
   const sendOtp = async () => {
@@ -149,6 +158,39 @@ const ResetPasswordPage = () => {
                     </small>
                   )}
                 </div>
+
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block mb-2 text-sm font-medium text-gray-900 "
+                  >
+                    Xác nhận mật khẩu
+                  </label>
+                  <input
+                    type="password"
+                    autoComplete="on"
+                    id="c_password"
+                    placeholder="Mật khẩu"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg  focus:border-yellow-400 block w-full p-2.5 "
+                    {...register("c_password", {
+                      required: true,
+                    })}
+                  />
+                  {errors?.c_password?.type === "required" && (
+                    <small className="text-danger before:content-['_⚠']">
+                      Vui lòng xác nhận mật khẩu
+                    </small>
+                  )}
+
+              
+                </div>
+                {confirmPassword && confirmPassword !== "" ? (
+                    <small className="text-danger before:content-['_⚠']">
+                      Xác nhận mật khẩu không chính xác
+                    </small>
+                  ) : (
+                    ""
+                  )}
                 <div className="flex justify-center items-center  cursor-pointer  bg-yellow-400 rounded-2xl hover:text-yellow-400 hover:bg-gray-400 transition-all duration-300">
                   <button
                     className="p-3 w-full h-full uppercase text-xs font-bold"

@@ -42,6 +42,7 @@ export default function BasicMenu() {
       setUser({});
       setTokenCustomer(null);
       dispatch({ type: "SET_TOTAL_CART", payload: null });
+      dispatch({ type: "SET_CUSTOMER_ADDRESSES", payload: [] });
       navigate("/");
     });
     setLoading(false);
@@ -90,6 +91,10 @@ export default function BasicMenu() {
             </div>
           </Link>
         </div>
+
+
+
+
 
         <div className="hover:bg-gray-300 py-1 px-4 ">
           <Link

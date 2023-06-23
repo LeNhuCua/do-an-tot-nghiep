@@ -28,7 +28,8 @@ class Order extends Model
         'paymentMethodId',
         'shippingMethodId',
         'deposits',
-        'isDeposit'
+        'isDeposit',
+        'processingOrderBy'
     ];
     protected $primaryKey = 'orderId';
     public $incrementing = false;
